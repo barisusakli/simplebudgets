@@ -10,8 +10,9 @@ function refreshBudgets() {
 				<li class="d-flex flex-column gap-2">
 					<div class="d-flex justify-content-between"><strong>${budget.name}</strong> ${budget.leftOrOver}</div>
 					<div>
-						<div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+						<div class="progress position-relative" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
 							<div class="progress-bar ${budget.bgColor}" style="width: ${Math.min(100, budget.percent)}%"></div>
+							<div class="position-absolute border" style="border-color: black!important;left: ${budget.percentMonth}%;width: 1px;height: 100%;"></div>
 						</div>
 					</div>
 					<div>

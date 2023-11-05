@@ -45,6 +45,15 @@ function getMonthStartEnd() {
 	};
 }
 
+function daysInThisMonth() {
+	const now = new Date();
+	return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+}
+
+function getMonthPercent() {
+	return parseFloat((new Date().getDate() / daysInThisMonth()) * 100);
+}
+
 app.get('/budgets', async (req, res) => {
 	const budgets = await db.collection('budgets').find({}).toArray();
 
@@ -67,6 +76,7 @@ app.get('/budgets', async (req, res) => {
 			budget.current = budget.current || 0;
 			budget.current = (budget.current / 100).toFixed(2);
 			budget.percent =  parseFloat(((budget.current / budget.amount) * 100));
+			budget.percentMonth = getMonthPercent();
 			budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
 			budget.leftOrOver = (budget.amount - budget.current);
 			if (budget.leftOrOver > 0) {
