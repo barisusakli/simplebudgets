@@ -1,8 +1,12 @@
 
 let budgetOptions = [];
 
+const date = new Date();
+let year = date.getUTCFullYear();
+let month = date.getUTCMonth();
+
 function refreshBudgets() {
-	$.get('/budgets').then((budgets) => {
+	$.get('/budgets', { year, month }).then((budgets) => {
 		budgetOptions = budgets.map(budget => budget.name);
 		$('#budgets-list').empty();
 		for (const budget of budgets) {
@@ -15,7 +19,7 @@ function refreshBudgets() {
 							<div class="position-absolute border" style="border-color: black!important;left: ${budget.percentMonth}%;width: 1px;height: 100%;"></div>
 						</div>
 					</div>
-					<div>
+					<div class="text-secondary">
 						$${budget.current} of $${budget.amount}
 					</div>
 				</li>
@@ -23,8 +27,9 @@ function refreshBudgets() {
 		}
 	});
 }
+
 function refreshTransactions() {
-	$.get('/transactions').then((txs) => {
+	$.get('/transactions', { year, month }).then((txs) => {
 		$('#transaction-list tbody').empty();
 		for (const tx of txs) {
 			$('#transaction-list tbody').append(`
@@ -33,15 +38,37 @@ function refreshTransactions() {
 					<td>${tx.description}</td>
 					<td>${tx.budget}</td>
 					<td>$${tx.amountDollars}</td>
-					<td class="text-end"><button data-id="${tx._id}" class="btn btn-sm btn-danger delete-tx">X</button></td>
+					<td class="text-end"><button data-id="${tx._id}" class="btn btn-sm btn-danger delete-tx lh-1">X</button></td>
 				</tr>
 			`);
 		}
 	});
 }
 
+function fillDateSelection() {
+	const date = new Date();
+	for (let i=0; i<10; i++) {
+		const currentYear = date.getUTCFullYear() - i;
+		$('#year-select').append(`<option value="${currentYear}">${currentYear}</option>`);
+	}
+
+	$('#month-select').val(date.getUTCMonth());
+	$('#year-select').val(date.getUTCFullYear());
+
+	function onDateChange() {
+		year = $('#year-select').val();
+		month = $('#month-select').val();
+		refreshBudgets();
+		refreshTransactions();
+	}
+
+	$('#month-select').on('change', onDateChange);
+	$('#year-select').on('change', onDateChange);
+}
+
 refreshBudgets();
 refreshTransactions();
+fillDateSelection();
 
 
 $('#create-budget').on('click', async () => {

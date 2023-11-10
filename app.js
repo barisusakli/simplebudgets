@@ -29,13 +29,24 @@ app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'index.html'));
 })
 
-function getMonthStartEnd() {
+function getMonthStartEnd(month, year) {
 	const startDate = new Date();
-	// Set the date to the first day of the current month (day 1)
+	if (year) {
+		startDate.setUTCFullYear(year);
+	}
+	if (month) {
+		startDate.setUTCMonth(month);
+	}
 	startDate.setUTCDate(1);
 	startDate.setUTCHours(0, 0, 0, 0);
 
 	const endDate = new Date();
+	if (year) {
+		endDate.setUTCFullYear(year);
+	}
+	if (month) {
+		endDate.setUTCMonth(month);
+	}
 	endDate.setUTCMonth(endDate.getUTCMonth() + 1, 1);
 	endDate.setUTCHours(0, 0, 0, 0);
 
@@ -57,7 +68,7 @@ function getMonthPercent() {
 app.get('/budgets', async (req, res) => {
 	const budgets = await db.collection('budgets').find({}).toArray();
 
-	const { monthStart, monthEnd } = getMonthStartEnd();
+	const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
 
 	const txs = await db.collection('transactions').find({
 		date: { $gte: monthStart, $lt: monthEnd }
@@ -96,7 +107,7 @@ app.get('/budgets', async (req, res) => {
 
 
 app.get('/transactions', async (req, res) => {
-	const { monthStart, monthEnd } = getMonthStartEnd();
+	const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
 	const txs = await db.collection('transactions').find({
 		date: { $gte: monthStart, $lt: monthEnd }
 	}).sort({
