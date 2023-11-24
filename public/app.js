@@ -131,6 +131,8 @@ $('#create-transaction').on('click', async () => {
 			}
 		}
 	});
+
+	dialog.find('#date')[0].valueAsDate = new Date();
 });
 
 $('#transaction-list').on('click', '.delete-tx', function () {
