@@ -74,13 +74,22 @@ app.get('/budgets', async (req, res) => {
 		date: { $gte: monthStart, $lt: monthEnd }
 	}).toArray();
 
+	let totalSpent = 0;
+
 	txs.forEach((tx) => {
 		const budget = budgets.find(b => b.name === tx.budget);
 		if (budget) {
 			budget.current = budget.current || 0;
 			budget.current += tx.amount;
 		}
+		totalSpent += tx.amount;
 	});
+
+	budgets.unshift({
+		name: 'Total',
+		amount: budgets.reduce((curr, b) => curr + parseInt(b.amount, 10), 0),
+		current: totalSpent,
+	})
 
 	budgets.forEach((budget) => {
 		if (budget) {

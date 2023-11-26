@@ -23,6 +23,7 @@ function refreshBudgets() {
 						$${budget.current} of $${budget.amount}
 					</div>
 				</li>
+				${budget.name === 'Total' ? '<hr/>' : ''}
 			`);
 		}
 	});
