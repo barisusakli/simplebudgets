@@ -48,7 +48,7 @@ module.exports = function (app, db, passport) {
 	app.get('/user', (req, res) => {
 		console.log('get user', req.user);
 		if (req.user) {
-			res.json({ email: req.user.email })
+			res.json({ _id: req.user._id, email: req.user.email })
 		} else {
 			res.json(null);
 		}

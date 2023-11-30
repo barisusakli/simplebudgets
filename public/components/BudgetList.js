@@ -1,5 +1,5 @@
 import React from "react"
-
+import fetchJson from "../fetchJson"
 import CreateBudget from "./CreateBudget";
 
 export default function BudgetList({ budgets, refreshAll }) {
@@ -17,16 +17,25 @@ export default function BudgetList({ budgets, refreshAll }) {
 						}}></div>
 					</div>
 				</div>
-				<div className="text-sm text-secondary">
-					${budget.current} of ${budget.amount}
+				<div className="d-flex justify-content-between align-items-center">
+					<div className="text-sm text-secondary">
+						${budget.current} of ${budget.amount}
+					</div>
+					{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => handleDelete(budget._id)}>Delete</a>}
 				</div>
-				{budget.name === 'Total' && <hr/>}
+				{!budget._id && <hr/>}
 			</li>
 		)
 	})
 
-	function handleCreate() {
-		console.log('TODO create new budget');
+	function handleDelete(_id) {
+		fetchJson({
+			url: '/budgets/delete',
+			data: { _id },
+			method: 'post',
+		}).then(() => {
+			refreshAll()
+		})
 	}
 
 	return (

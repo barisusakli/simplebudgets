@@ -75,7 +75,6 @@ function setupExpress() {
 
 	app.get('/budgets', ensureLoggedIn, async (req, res) => {
 		const budgets = await db.collection('budgets').find({}).toArray();
-
 		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
 
 		const txs = await db.collection('transactions').find({
@@ -139,7 +138,17 @@ function setupExpress() {
 		await db.collection('budgets').insertOne({
 			name: req.body.name,
 			amount: req.body.amount,
+			uid: req.user._id,
 		})
+		res.json('ok');
+	});
+
+	app.post('/budgets/delete', ensureLoggedIn, async (req, res) => {
+		await db.collection('budgets').deleteOne({
+			_id: new mongodb.ObjectId(req.body._id),
+			uid: req.user._id,
+		});
+
 		res.json('ok');
 	});
 

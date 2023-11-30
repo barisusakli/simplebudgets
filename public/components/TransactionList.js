@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react"
-
 import fetchJson from "../fetchJson"
-
 import CreateTransaction from "./CreateTransaction"
 
 export default function TransactionList({ transactions, budgetOptions, refreshAll }) {
