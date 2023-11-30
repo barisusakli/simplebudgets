@@ -4,7 +4,6 @@ module.exports = function (app, db, passport) {
 	// TODO: move all routes here
 	// TODO: add csrf to post routes
 	app.post('/register', async function (req, res) {
-		console.log(req.body);
 		const user = await db.collection('users').findOne({
 			email: req.body.email,
 		});
@@ -19,8 +18,6 @@ module.exports = function (app, db, passport) {
 			password: hashedPassword,
 		})
 
-		console.log(user);
-		// TODO register
 		res.json('ok');
 	});
 
@@ -51,7 +48,8 @@ module.exports = function (app, db, passport) {
 	});
 
 	app.get('/user', (req, res) => {
-		console.log(req.user);
+		console.log('get user', req.user);
+		console.log('gg', req.session.cookie);
 		if (req.user) {
 			res.json({ email: req.user.email })
 		} else {

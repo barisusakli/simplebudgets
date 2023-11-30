@@ -8,11 +8,9 @@ const mongodb = require('mongodb');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
-const passportLocal = require('passport-local').Strategy;
-const expressSession = require('express-session');
+const session = require('express-session');
 const connectMongo = require('connect-mongo');
 const csrfSync = require('csrf-sync');
-console.log(csrfSync);
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -24,15 +22,19 @@ app.use(cors({
 }))
 
 const secret = "get me from config";
+const twoweeksInSeconds = 1209600;
 
 // for sessions
-app.use(expressSession({
+app.use(session({
 	secret: secret,
-	resave: true,
-	saveUninitialized: true,
+	resave: false,
+	saveUninitialized: false,
 	store: connectMongo.create({
 		mongoUrl: `mongodb://127.0.0.1:27017/mybudget`
-	})
+	}),
+	cookie: {
+		maxAge: twoweeksInSeconds * 1000,
+	}
 }))
 
 app.use(cookieParser(secret))
@@ -52,12 +54,11 @@ async function connectToDb() {
 	db = mongodb.db();
 	// db.collection('budgets').createIndex({ name: 1, amount: 1 }, { background: true });
 	db.collection('transactions').createIndex({ date: 1 }, { background: true });
-	db.collection('users').createIndex({ email: 1}, { unique: true, background: true });
+	db.collection('users').createIndex({ email: 1 }, { unique: true, background: true });
 }
 
 function setupExpress() {
-	require('./src/passportConfig')(passport, db);
-	console.log('adding routes');
+	require('./src/passportConfig')(db, passport);
 	require('./src/routes')(app, db, passport);
 
 	app.get('/budgets', async (req, res) => {
@@ -117,12 +118,7 @@ function setupExpress() {
 		}).sort({
 			date: -1,
 		}).toArray();
-		txs.forEach((tx) => {
-			if (tx) {
-				tx.amountDollars = (tx.amount / 100).toFixed(2);
-				tx.dateString = tx.date;
-			}
-		})
+
 		res.json(txs);
 	});
 
@@ -134,17 +130,26 @@ function setupExpress() {
 		res.json('ok');
 	});
 
+	function formatDollarsToCents(value) {
+		value = (value + '').replace(/[^\d.-]/g, '');
+		if (value && value.includes('.')) {
+		  value = value.substring(0, value.indexOf('.') + 3);
+		}
+
+		return value ? Math.round(parseFloat(value) * 100) : 0;
+	}
+
 	app.post('/transactions/create', async (req, res) => {
 		if (!req.body.date) {
 			return res.status(500).json('invalid-date');
 		}
-
-		await db.collection('transactions').insertOne({
+		const newTx = {
 			description: req.body.description,
 			budget: req.body.budget,
-			amount: req.body.amount * 100,
+			amount: formatDollarsToCents(req.body.amount),
 			date: new Date(req.body.date),
-		});
+		}
+		await db.collection('transactions').insertOne(newTx);
 		res.json('ok');
 	});
 
@@ -171,7 +176,6 @@ function setupExpress() {
 
 (async function() {
 	await connectToDb();
-	console.log('db connnected')
 	setupExpress();
 })();
 

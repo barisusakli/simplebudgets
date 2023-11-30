@@ -23,7 +23,7 @@ export default async function xhrJson({ url, data, method}) {
 				result = await response.text();
 			}
 		}
-		console.log('result', result);
+
 		if (!response.ok) {
 			if (result) {
 				throw new Error(isJSON ? result : result);

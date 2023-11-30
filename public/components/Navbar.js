@@ -1,40 +1,16 @@
 import React from "react"
 
-export default function Navbar() {
-	// TODO: fill out year-select?
-
-	function fillDateSelection() {
-		const date = new Date();
-		// for (let i=0; i<10; i++) {
-		// 	const currentYear = date.getUTCFullYear() - i;
-		// 	$('#year-select').append(`<option value="${currentYear}">${currentYear}</option>`);
-		// }
-
-		$('#month-select').val(date.getUTCMonth());
-		// $('#year-select').val(date.getUTCFullYear());
-
-		function onDateChange() {
-			year = $('#year-select').val();
-			month = $('#month-select').val();
-			refreshBudgets();
-			refreshTransactions();
-		}
-
-		$('#month-select').on('change', onDateChange);
-		$('#year-select').on('change', onDateChange);
-	}
+export default function Navbar(props) {
 	const date = new Date();
 
-	const years = [];
+	const yearEls = [];
 	for (let i = 0; i < 10; i++) {
 		const currentYear = date.getUTCFullYear() - i;
-		years.push(<option key={i} value={currentYear}>{currentYear}</option>)
+		yearEls.push(<option key={i} value={currentYear}>{currentYear}</option>)
 	}
-	const months = [];
-	console.log(years);
 
 	return (
-		<div className="d-flex justify-content-between align-items-center">
+		<div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
 			<ul className="nav nav-underline" id="myTab" role="tablist">
 				<li className="nav-item" role="presentation">
 					<button className="nav-link active" id="budgets-tab" data-bs-toggle="tab" data-bs-target="#budgets-tab-pane" type="button" role="tab" aria-controls="budgets-tab-pane" aria-selected="true">Budgets</button>
@@ -45,7 +21,11 @@ export default function Navbar() {
 			</ul>
 
 			<div className="d-flex gap-1">
-				<select id="month-select" className="form-select w-auto">
+				<select id="month-select"
+					className="form-select w-auto"
+					value={props.month}
+					onChange={(e) => props.setMonth(e.target.value)}
+					>
 					<option value="0">January</option>
 					<option value="1">February</option>
 					<option value="2">March</option>
@@ -59,8 +39,12 @@ export default function Navbar() {
 					<option value="10">November</option>
 					<option value="11">December</option>
 				</select>
-				<select id="year-select" className="form-select w-auto">
-					{years}
+				<select id="year-select"
+					className="form-select w-auto"
+					value={props.year}
+					onChange={(e) => props.setYear(e.target.value)}
+					>
+					{yearEls}
 				</select>
 			</div>
 		</div>
