@@ -29,10 +29,10 @@ module.exports = function (app, db, passport) {
 		passport.authenticate('local', (err, user, info) => {
 			console.log('wtf', err, user, info)
 			if (err) {
-				return res.status(500).json('error')
+				return res.status(500).send(err.message)
 			}
 			if (!user) {
-				return res.status(500).json('no user exists');
+				return res.status(500).send('no user exists');
 			}
 
 			req.logIn(user, (err) => {
