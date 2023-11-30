@@ -20,7 +20,7 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				<td>{tx.description}</td>
 				<td>{tx.budget}</td>
 				<td>{formatCentsToDollars(tx.amount)}</td>
-				<td className="text-end"><button onClick={() => handleDelete(tx._id)} data-id="${tx._id}" className="btn btn-sm btn-danger delete-tx lh-1">X</button></td>
+				<td className="text-end"><button onClick={() => handleDelete(tx._id)} className="btn btn-sm btn-danger lh-1">X</button></td>
 			</tr>
 		)
 	})

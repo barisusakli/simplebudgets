@@ -65,7 +65,15 @@ function setupExpress() {
 	require('./src/passportConfig')(db, passport);
 	require('./src/routes')(app, db, passport);
 
-	app.get('/budgets', async (req, res) => {
+	// make middleware
+	function ensureLoggedIn(req, res, next) {
+		if (!req.user) {
+			return res.status(403).send('Not allowed');
+		}
+		next()
+	}
+
+	app.get('/budgets', ensureLoggedIn, async (req, res) => {
 		const budgets = await db.collection('budgets').find({}).toArray();
 
 		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
@@ -115,10 +123,7 @@ function setupExpress() {
 	})
 
 
-	app.get('/transactions', async (req, res) => {
-		if (!req.user) {
-			return res.status(403).send('not allowed');
-		}
+	app.get('/transactions', ensureLoggedIn, async (req, res) => {
 		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
 		const txs = await db.collection('transactions').find({
 			uid: req.user._id,
@@ -130,7 +135,7 @@ function setupExpress() {
 		res.json(txs);
 	});
 
-	app.post('/budgets/create', async (req, res) => {
+	app.post('/budgets/create', ensureLoggedIn, async (req, res) => {
 		await db.collection('budgets').insertOne({
 			name: req.body.name,
 			amount: req.body.amount,
@@ -147,13 +152,11 @@ function setupExpress() {
 		return value ? Math.round(parseFloat(value) * 100) : 0;
 	}
 
-	app.post('/transactions/create', async (req, res) => {
+	app.post('/transactions/create', ensureLoggedIn, async (req, res) => {
 		if (!req.body.date) {
 			return res.status(500).send('invalid-date');
 		}
-		if (!req.user) {
-			return res.status(403).send('not allowed');
-		}
+
 		const newTx = {
 			description: req.body.description,
 			budget: req.body.budget,
@@ -165,9 +168,10 @@ function setupExpress() {
 		res.json('ok');
 	});
 
-	app.post('/transactions/delete', async (req, res) => {
+	app.post('/transactions/delete', ensureLoggedIn, async (req, res) => {
 		await db.collection('transactions').deleteOne({
 			_id: new mongodb.ObjectId(req.body._id),
+			uid: req.user._id,
 		});
 		res.json('ok');
 	});

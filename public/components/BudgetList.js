@@ -1,6 +1,8 @@
 import React from "react"
 
-export default function BudgetList({ budgets }) {
+import CreateBudget from "./CreateBudget";
+
+export default function BudgetList({ budgets, refreshAll }) {
 	const els = budgets.map((budget) => {
 		return (
 			<li key={budget._id || budget.name} className="d-flex flex-column gap-2">
@@ -29,7 +31,9 @@ export default function BudgetList({ budgets }) {
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<button id="create-budget" className="btn btn-primary" onClick={handleCreate}>Create Budget</button>
+			<CreateBudget
+				refreshAll={refreshAll}
+			/>
 			<ul id="budgets-list" className="list-unstyled d-flex flex-column gap-3">
 				{els}
 			</ul>

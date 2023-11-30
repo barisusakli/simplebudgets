@@ -2,17 +2,13 @@ import React, { useState } from "react"
 import { Modal } from "bootstrap"
 import fetchJson from "../fetchJson"
 
-export default function CreateTransaction({ budgetOptions, refreshAll }) {
+export default function CreateBudget({ refreshAll }) {
 	const [modal, setModal] = useState(null)
-
-	const options = budgetOptions.map((opt, i) => <option key={i}>{opt}</option>)
 
 	function newFormData() {
 		return {
-			budget: '',
-			description: '',
-			amount: 0,
-			date: new Date().toISOString().split('T')[0], // returns YYYY-mm-dd
+			name: '',
+			amount: '',
 		}
 	}
 
@@ -32,22 +28,22 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 			modal.show();
 			return;
 		}
-		const myModal = new Modal('#tx-modal', {});
+		const myModal = new Modal('#budget-modal', {});
 		myModal.show()
 		setModal(myModal);
 	}
 
 	function handleSubmit() {
 		console.log('create', formData);
+		if (!formData.name || !formData.amount) {
+			return;
+		}
 		if (modal) {
 			modal.hide();
 		}
-		if (!formData.budget || !formData.amount || !formData.description) {
-			return
-		}
 		// create new tx
 		fetchJson({
-			url: '/transactions/create',
+			url: '/budgets/create',
 			data: formData,
 			method: 'post',
 		}).then((result) => {
@@ -60,34 +56,26 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 
 	return (
 		<div className="d-flex">
-			<button id="create-transaction" className="btn btn-primary w-100" onClick={handleCreate}>Add Transaction</button>
-			<div className="modal" tabIndex="-1" id="tx-modal">
+			<button id="create-budget" className="btn btn-primary w-100" onClick={handleCreate}>Create Budget</button>
+			<div className="modal" tabIndex="-1" id="budget-modal">
 				<div className="modal-dialog">
 					<div className="modal-content">
 						<div className="modal-header">
-							<h5 className="modal-title">Create Transaction</h5>
+							<h5 className="modal-title">Create Budget</h5>
 							<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div className="modal-body">
 							<div className="mb-3">
-								<label className="form-label" htmlFor="budget">Budget</label>
-								<select className="form-select" name="budget" value={formData.budget} onChange={handleChange}>${options}</select>
-							</div>
-							<div className="mb-3">
-								<label className="form-label" htmlFor="description">Description</label>
-								<input className="form-control" type="text" name="description" value={formData.description} onChange={handleChange}/>
+								<label className="form-label" htmlFor="name">Name</label>
+								<input className="form-control" type="text" name="name" value={formData.name} onChange={handleChange}/>
 							</div>
 							<div className="mb-3">
 								<label className="form-label" htmlFor="amount">Amount</label>
 								<input className="form-control" type="text" name="amount" value={formData.amount} onChange={handleChange}/>
 							</div>
-							<div className="mb-3">
-								<label className="form-label" htmlFor="date">Date</label>
-								<input className="form-control" type="date" name="date" value={formData.date} onChange={handleChange}/>
-							</div>
 						</div>
 						<div className="modal-footer">
-							<button type="button" className="btn btn-primary" onClick={handleSubmit}>Add</button>
+							<button type="button" className="btn btn-primary" onClick={handleSubmit}>Create</button>
 						</div>
 					</div>
 				</div>
