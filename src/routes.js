@@ -22,9 +22,7 @@ module.exports = function (app, db, passport) {
 	});
 
 	app.post('/login', function (req, res, next) {
-		console.log(req.body);
 		passport.authenticate('local', (err, user, info) => {
-			console.log('wtf', err, user, info)
 			if (err) {
 				return res.status(500).send(err.message)
 			}
@@ -49,7 +47,6 @@ module.exports = function (app, db, passport) {
 
 	app.get('/user', (req, res) => {
 		console.log('get user', req.user);
-		console.log('gg', req.session.cookie);
 		if (req.user) {
 			res.json({ email: req.user.email })
 		} else {

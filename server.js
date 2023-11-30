@@ -12,34 +12,6 @@ const session = require('express-session');
 const connectMongo = require('connect-mongo');
 const csrfSync = require('csrf-sync');
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-
-// cors ?
-app.use(cors({
-	origin: 'http://127.0.0.1:3000',
-	credentials: true,
-}))
-
-const secret = "get me from config";
-const twoweeksInSeconds = 1209600;
-
-// for sessions
-app.use(session({
-	secret: secret,
-	resave: false,
-	saveUninitialized: false,
-	store: connectMongo.create({
-		mongoUrl: `mongodb://127.0.0.1:27017/mybudget`
-	}),
-	cookie: {
-		maxAge: twoweeksInSeconds * 1000,
-	}
-}))
-
-app.use(cookieParser(secret))
-app.use(passport.initialize())
-app.use(passport.session())
 
 const port = 3000
 
@@ -54,10 +26,42 @@ async function connectToDb() {
 	db = mongodb.db();
 	// db.collection('budgets').createIndex({ name: 1, amount: 1 }, { background: true });
 	db.collection('transactions').createIndex({ date: 1 }, { background: true });
+	db.collection('transactions').createIndex({ uid: 1 }, { background: true });
 	db.collection('users').createIndex({ email: 1 }, { unique: true, background: true });
 }
 
 function setupExpress() {
+
+	app.use(bodyParser.urlencoded({ extended: false }))
+	app.use(bodyParser.json())
+
+	// cors ?
+	app.use(cors({
+		origin: 'http://127.0.0.1:3000',
+		credentials: true,
+	}))
+
+	const secret = "get me from config";
+	const twoweeksInSeconds = 1209600;
+
+	// for sessions
+	app.use(session({
+		secret: secret,
+		resave: false,
+		saveUninitialized: false,
+		store: connectMongo.create({
+			mongoUrl: `mongodb://127.0.0.1:27017/mybudget`
+		}),
+		cookie: {
+			maxAge: twoweeksInSeconds * 1000,
+		}
+	}))
+
+	app.use(cookieParser(secret))
+	app.use(passport.initialize())
+	app.use(passport.session())
+
+
 	require('./src/passportConfig')(db, passport);
 	require('./src/routes')(app, db, passport);
 
@@ -112,8 +116,12 @@ function setupExpress() {
 
 
 	app.get('/transactions', async (req, res) => {
+		if (!req.user) {
+			return res.status(403).send('not allowed');
+		}
 		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
 		const txs = await db.collection('transactions').find({
+			uid: req.user._id,
 			date: { $gte: monthStart, $lt: monthEnd }
 		}).sort({
 			date: -1,
@@ -141,13 +149,17 @@ function setupExpress() {
 
 	app.post('/transactions/create', async (req, res) => {
 		if (!req.body.date) {
-			return res.status(500).json('invalid-date');
+			return res.status(500).send('invalid-date');
+		}
+		if (!req.user) {
+			return res.status(403).send('not allowed');
 		}
 		const newTx = {
 			description: req.body.description,
 			budget: req.body.budget,
 			amount: formatDollarsToCents(req.body.amount),
 			date: new Date(req.body.date),
+			uid: req.user._id,
 		}
 		await db.collection('transactions').insertOne(newTx);
 		res.json('ok');
