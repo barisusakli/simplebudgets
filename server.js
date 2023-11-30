@@ -24,11 +24,6 @@ async function connectToDb() {
 
 connectToDb();
 
-
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, 'index.html'));
-})
-
 function getMonthStartEnd(month, year) {
 	const startDate = new Date();
 	if (year) {
@@ -64,6 +59,8 @@ function daysInThisMonth() {
 function getMonthPercent() {
 	return parseFloat((new Date().getDate() / daysInThisMonth()) * 100);
 }
+
+require('./src/routes')(app);
 
 app.get('/budgets', async (req, res) => {
 	const budgets = await db.collection('budgets').find({}).toArray();
@@ -160,8 +157,16 @@ app.post('/transactions/delete', async (req, res) => {
 	res.json('ok');
 });
 
+app.use(express.static("dist"));
+
+const DIST_DIR = path.join(__dirname, "dist");
+const HTML_FILE = path.join(DIST_DIR, "index.html");
+
+app.get('*', (req, res) => {
+	res.sendFile(HTML_FILE);
+})
+
 app.listen(port, () => {
 	console.log(`listening on port ${port}`)
 });
 
-app.use('/static', express.static(path.join(__dirname, 'public')));
