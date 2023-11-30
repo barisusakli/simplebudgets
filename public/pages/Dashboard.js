@@ -52,9 +52,7 @@ export default function Dashboard(props) {
 					<Navbar year={year} setYear={setYear} month={month} setMonth={setMonth} />
 					<Main
 						budgets={budgets}
-						setBudgets={setBudgets}
 						transactions={transactions}
-						setTransactions={setTransactions}
 						budgetOptions={budgetOptions}
 						refreshAll={refreshAll}
 					/>

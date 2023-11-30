@@ -3,13 +3,12 @@ import React from "react"
 import BudgetList from "./BudgetList"
 import TransactionList from "./TransactionList"
 
-export default function Main({ budgets, setBudgets, transactions, budgetOptions, refreshAll }) {
+export default function Main({ budgets, transactions, budgetOptions, refreshAll }) {
 	return (
 		<div className="tab-content" id="myTabContent">
 			<div className="tab-pane fade show active" id="budgets-tab-pane" role="tabpanel" aria-labelledby="budgets-tab" tabIndex="0">
 				<BudgetList
 					budgets={budgets}
-					setBudgets={setBudgets}
 					refreshAll={refreshAll}
 					/>
 			</div>
