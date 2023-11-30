@@ -4,8 +4,40 @@ const app = express()
 const bodyParser = require('body-parser')
 const mongodb = require('mongodb');
 
+// Login/logout requires
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const passportLocal = require('passport-local').Strategy;
+const expressSession = require('express-session');
+const connectMongo = require('connect-mongo');
+const csrfSync = require('csrf-sync');
+console.log(csrfSync);
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+// cors ?
+app.use(cors({
+	origin: 'http://127.0.0.1:3000',
+	credentials: true,
+}))
+
+const secret = "get me from config";
+
+// for sessions
+app.use(expressSession({
+	secret: secret,
+	resave: true,
+	saveUninitialized: true,
+	store: connectMongo.create({
+		mongoUrl: `mongodb://127.0.0.1:27017/mybudget`
+	})
+}))
+
+app.use(cookieParser(secret))
+app.use(passport.initialize())
+app.use(passport.session())
 
 const port = 3000
 
@@ -20,9 +52,129 @@ async function connectToDb() {
 	db = mongodb.db();
 	// db.collection('budgets').createIndex({ name: 1, amount: 1 }, { background: true });
 	db.collection('transactions').createIndex({ date: 1 }, { background: true });
+	db.collection('users').createIndex({ email: 1}, { unique: true, background: true });
 }
 
-connectToDb();
+function setupExpress() {
+	require('./src/passportConfig')(passport, db);
+	console.log('adding routes');
+	require('./src/routes')(app, db, passport);
+
+	app.get('/budgets', async (req, res) => {
+		const budgets = await db.collection('budgets').find({}).toArray();
+
+		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
+
+		const txs = await db.collection('transactions').find({
+			date: { $gte: monthStart, $lt: monthEnd }
+		}).toArray();
+
+		let totalSpent = 0;
+
+		txs.forEach((tx) => {
+			const budget = budgets.find(b => b.name === tx.budget);
+			if (budget) {
+				budget.current = budget.current || 0;
+				budget.current += tx.amount;
+			}
+			totalSpent += tx.amount;
+		});
+
+		budgets.unshift({
+			name: 'Total',
+			amount: budgets.reduce((curr, b) => curr + parseInt(b.amount, 10), 0),
+			current: totalSpent,
+		})
+
+		budgets.forEach((budget) => {
+			if (budget) {
+				budget.current = budget.current || 0;
+				budget.current = (budget.current / 100).toFixed(2);
+				budget.percent =  parseFloat(((budget.current / budget.amount) * 100));
+				budget.percentMonth = getMonthPercent();
+				budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
+				budget.leftOrOver = (budget.amount - budget.current);
+				if (budget.leftOrOver > 0) {
+					budget.leftOrOver = `$${budget.leftOrOver.toFixed(2)} left`;
+				} else if (budget.leftOrOver < 0) {
+					budget.leftOrOver = `$${Math.abs(budget.leftOrOver).toFixed(2)} over`;
+				}
+
+				if (budget.percent > 95 && budget.percent < 100) {
+					budget.bgColor = 'bg-warning';
+				}
+			}
+		})
+
+		res.json(budgets);
+	})
+
+
+	app.get('/transactions', async (req, res) => {
+		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
+		const txs = await db.collection('transactions').find({
+			date: { $gte: monthStart, $lt: monthEnd }
+		}).sort({
+			date: -1,
+		}).toArray();
+		txs.forEach((tx) => {
+			if (tx) {
+				tx.amountDollars = (tx.amount / 100).toFixed(2);
+				tx.dateString = tx.date;
+			}
+		})
+		res.json(txs);
+	});
+
+	app.post('/budgets/create', async (req, res) => {
+		await db.collection('budgets').insertOne({
+			name: req.body.name,
+			amount: req.body.amount,
+		})
+		res.json('ok');
+	});
+
+	app.post('/transactions/create', async (req, res) => {
+		if (!req.body.date) {
+			return res.status(500).json('invalid-date');
+		}
+
+		await db.collection('transactions').insertOne({
+			description: req.body.description,
+			budget: req.body.budget,
+			amount: req.body.amount * 100,
+			date: new Date(req.body.date),
+		});
+		res.json('ok');
+	});
+
+	app.post('/transactions/delete', async (req, res) => {
+		await db.collection('transactions').deleteOne({
+			_id: new mongodb.ObjectId(req.body._id),
+		});
+		res.json('ok');
+	});
+
+	app.use(express.static("dist"));
+
+	const DIST_DIR = path.join(__dirname, "dist");
+	const HTML_FILE = path.join(DIST_DIR, "index.html");
+
+	app.get('*', (req, res) => {
+		res.sendFile(HTML_FILE);
+	})
+
+	app.listen(port, () => {
+		console.log(`listening on port ${port}`)
+	});
+}
+
+(async function() {
+	await connectToDb();
+	console.log('db connnected')
+	setupExpress();
+})();
+
 
 function getMonthStartEnd(month, year) {
 	const startDate = new Date();
@@ -59,114 +211,3 @@ function daysInThisMonth() {
 function getMonthPercent() {
 	return parseFloat((new Date().getDate() / daysInThisMonth()) * 100);
 }
-
-require('./src/routes')(app);
-
-app.get('/budgets', async (req, res) => {
-	const budgets = await db.collection('budgets').find({}).toArray();
-
-	const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
-
-	const txs = await db.collection('transactions').find({
-		date: { $gte: monthStart, $lt: monthEnd }
-	}).toArray();
-
-	let totalSpent = 0;
-
-	txs.forEach((tx) => {
-		const budget = budgets.find(b => b.name === tx.budget);
-		if (budget) {
-			budget.current = budget.current || 0;
-			budget.current += tx.amount;
-		}
-		totalSpent += tx.amount;
-	});
-
-	budgets.unshift({
-		name: 'Total',
-		amount: budgets.reduce((curr, b) => curr + parseInt(b.amount, 10), 0),
-		current: totalSpent,
-	})
-
-	budgets.forEach((budget) => {
-		if (budget) {
-			budget.current = budget.current || 0;
-			budget.current = (budget.current / 100).toFixed(2);
-			budget.percent =  parseFloat(((budget.current / budget.amount) * 100));
-			budget.percentMonth = getMonthPercent();
-			budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
-			budget.leftOrOver = (budget.amount - budget.current);
-			if (budget.leftOrOver > 0) {
-				budget.leftOrOver = `$${budget.leftOrOver.toFixed(2)} left`;
-			} else if (budget.leftOrOver < 0) {
-				budget.leftOrOver = `$${Math.abs(budget.leftOrOver).toFixed(2)} over`;
-			}
-
-			if (budget.percent > 95 && budget.percent < 100) {
-				budget.bgColor = 'bg-warning';
-			}
-		}
-	})
-
-	res.json(budgets);
-})
-
-
-app.get('/transactions', async (req, res) => {
-	const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
-	const txs = await db.collection('transactions').find({
-		date: { $gte: monthStart, $lt: monthEnd }
-	}).sort({
-		date: -1,
-	}).toArray();
-	txs.forEach((tx) => {
-		if (tx) {
-			tx.amountDollars = (tx.amount / 100).toFixed(2);
-			tx.dateString = tx.date;
-		}
-	})
-	res.json(txs);
-});
-
-app.post('/budgets/create', async (req, res) => {
-	await db.collection('budgets').insertOne({
-		name: req.body.name,
-		amount: req.body.amount,
-	})
-	res.json('ok');
-});
-
-app.post('/transactions/create', async (req, res) => {
-	if (!req.body.date) {
-		return res.status(500).json('invalid-date');
-	}
-
-	await db.collection('transactions').insertOne({
-		description: req.body.description,
-		budget: req.body.budget,
-		amount: req.body.amount * 100,
-		date: new Date(req.body.date),
-	});
-	res.json('ok');
-});
-
-app.post('/transactions/delete', async (req, res) => {
-	await db.collection('transactions').deleteOne({
-		_id: new mongodb.ObjectId(req.body._id),
-	});
-	res.json('ok');
-});
-
-app.use(express.static("dist"));
-
-const DIST_DIR = path.join(__dirname, "dist");
-const HTML_FILE = path.join(DIST_DIR, "index.html");
-
-app.get('*', (req, res) => {
-	res.sendFile(HTML_FILE);
-})
-
-app.listen(port, () => {
-	console.log(`listening on port ${port}`)
-});
-

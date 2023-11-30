@@ -10,7 +10,7 @@ import Dashboard from "./pages/Dashboard"
 import Error from "./pages/Error"
 
 export default function App() {
-	const [user, setUser] = React.useState({ email: 'asdasd' })
+	const [user, setUser] = React.useState(null)
 
 	return (
 		<BrowserRouter>
@@ -21,7 +21,7 @@ export default function App() {
 					<Route path="register" element={<Register user={user} setUser={setUser} />} />
 					<Route path="dashboard" element={
 						<ProtectedRoute user={user}>
-							<Dashboard user={user} />
+							<Dashboard user={user} setUser={setUser} />
 						</ProtectedRoute>
 					} />
 					<Route path="*" element={<Error />} />

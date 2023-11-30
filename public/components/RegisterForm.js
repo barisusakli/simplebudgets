@@ -1,6 +1,6 @@
 import React from "react"
 import { Link } from "react-router-dom";
-
+import fetchJson from "../fetchJson"
 
 export default function RegisterForm() {
 	const [formData, setFormData] = React.useState({
@@ -17,7 +17,7 @@ export default function RegisterForm() {
 		}))
 	}
 
-	function handleSubmit(event) {
+	async function handleSubmit(event) {
 		event.preventDefault();
 		if (formData.password === formData.passwordConfirm) {
 			console.log('successully signed up');
@@ -26,7 +26,16 @@ export default function RegisterForm() {
 			return;
 		}
 		console.log(formData)
-		// TODO: send register request
+		try {
+			await fetchJson({
+				url: '/register',
+				data: formData,
+				method: 'post',
+			})
+		} catch (err) {
+			// TODO add error alerts
+			console.error(err.message);
+		}
 	}
 
 	return (

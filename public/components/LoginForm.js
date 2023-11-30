@@ -1,5 +1,6 @@
 import React from "react"
 import { Link, useNavigate } from "react-router-dom";
+import fetchJson from "../fetchJson"
 
 export default function LoginForm({ setUser }) {
 	const [formData, setFormData] = React.useState({
@@ -23,28 +24,14 @@ export default function LoginForm({ setUser }) {
 
 		console.log(formData)
 		// TODO: send login request
-		await postJSON(formData);
+		await fetchJson({
+			url: '/login',
+			data: formData,
+			method: 'post',
+		})
+		setUser({email: formData.email });
 		navigate('/dashboard');
 	}
-
-	async function postJSON(data) {
-		try {
-			const response = await fetch("/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			});
-
-			const result = await response.json();
-			console.log("Success:", result);
-			setUser({ email: data.email })
-		} catch (error) {
-			console.error("Error:", error);
-			throw error;
-		}
-	  }
 
 	return (
 		<div className="row justify-content-center">
