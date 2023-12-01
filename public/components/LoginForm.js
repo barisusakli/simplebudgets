@@ -1,5 +1,5 @@
 import React from "react"
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 
 export default function LoginForm({ setUser }) {
@@ -15,22 +15,20 @@ export default function LoginForm({ setUser }) {
 			[name]: type === 'checkbox' ? checked : value
 		}))
 	}
-	const navigate = useNavigate();
+
 	async function handleSubmit(event) {
 		event.preventDefault();
 		if (!formData.email || !formData.password) {
 			return;
 		}
 
-		console.log(formData)
-		// TODO: send login request
 		await fetchJson({
 			url: '/login',
 			data: formData,
 			method: 'post',
+		}).then((loggedInUser) => {
+			setUser(loggedInUser)
 		})
-		setUser({email: formData.email });
-		navigate('/dashboard');
 	}
 
 	return (

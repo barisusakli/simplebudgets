@@ -34,7 +34,7 @@ module.exports = function (app, db, passport) {
 				if (err) {
 					return res.status(500).json(err.message);
 				}
-				res.json('ok');
+				res.json({ _id: req.user._id, email: req.user.email });
 			});
 		})(req, res, next)
 	});
@@ -46,7 +46,6 @@ module.exports = function (app, db, passport) {
 	});
 
 	app.get('/user', (req, res) => {
-		console.log('get user', req.user);
 		if (req.user) {
 			res.json({ _id: req.user._id, email: req.user.email })
 		} else {

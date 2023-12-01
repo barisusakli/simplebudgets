@@ -20,7 +20,7 @@ export default function Dashboard(props) {
 			method: 'get',
 		}).then((result) => {
 			setBudgets(result);
-			setBudgetOptions(result.map(budget => budget.name));
+			setBudgetOptions(result.filter(budget => !!budget._id).map(budget => budget.name));
 			console.log('budgets', result)
 		})
 	}

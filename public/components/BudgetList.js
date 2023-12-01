@@ -1,12 +1,17 @@
 import React from "react"
 import fetchJson from "../fetchJson"
 import CreateBudget from "./CreateBudget";
+import formatCentsToDollars from "../format"
 
 export default function BudgetList({ budgets, refreshAll }) {
 	const els = budgets.map((budget) => {
 		return (
 			<li key={budget._id || budget.name} className="d-flex flex-column gap-2">
-				<div className="d-flex justify-content-between"><strong>{budget.name}</strong><span className="text-sm">{budget.leftOrOver}</span></div>
+				<div className="d-flex justify-content-between"><strong>{budget.name}</strong><span className="text-sm">{
+					budget.leftOrOver >= 0 ?
+					`${formatCentsToDollars(budget.leftOrOver)} left` :
+					`${formatCentsToDollars(Math.abs(budget.leftOrOver))} over`
+				}</span></div>
 				<div>
 					<div className="progress position-relative" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
 						<div className={`progress-bar ${budget.bgColor}`} style={{width: Math.min(100, budget.percent) + '%'}}></div>
@@ -19,7 +24,7 @@ export default function BudgetList({ budgets, refreshAll }) {
 				</div>
 				<div className="d-flex justify-content-between align-items-center">
 					<div className="text-sm text-secondary">
-						${budget.current} of ${budget.amount}
+						{formatCentsToDollars(budget.current)} of {formatCentsToDollars(budget.amount)}
 					</div>
 					{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => handleDelete(budget._id)}>Delete</a>}
 				</div>

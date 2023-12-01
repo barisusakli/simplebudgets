@@ -12,7 +12,6 @@ const session = require('express-session');
 const connectMongo = require('connect-mongo');
 const csrfSync = require('csrf-sync');
 
-
 const port = 3000
 
 const mongoClient = mongodb.MongoClient;
@@ -24,14 +23,12 @@ async function connectToDb() {
 	);
 
 	db = mongodb.db();
-	// db.collection('budgets').createIndex({ name: 1, amount: 1 }, { background: true });
-	db.collection('transactions').createIndex({ date: 1 }, { background: true });
-	db.collection('transactions').createIndex({ uid: 1 }, { background: true });
+	db.collection('budgets').createIndex({ uid: 1 }, { background: true });
+	db.collection('transactions').createIndex({ uid: 1, date: 1 }, { background: true });
 	db.collection('users').createIndex({ email: 1 }, { unique: true, background: true });
 }
 
 function setupExpress() {
-
 	app.use(bodyParser.urlencoded({ extended: false }))
 	app.use(bodyParser.json())
 
@@ -61,7 +58,6 @@ function setupExpress() {
 	app.use(passport.initialize())
 	app.use(passport.session())
 
-
 	require('./src/passportConfig')(db, passport);
 	require('./src/routes')(app, db, passport);
 
@@ -73,11 +69,24 @@ function setupExpress() {
 		next()
 	}
 
-	app.get('/budgets', ensureLoggedIn, async (req, res) => {
-		const budgets = await db.collection('budgets').find({}).toArray();
-		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
+	function formatDollarsToCents(value) {
+		value = (value + '').replace(/[^\d.-]/g, '');
+		if (value && value.includes('.')) {
+		  value = value.substring(0, value.indexOf('.') + 3);
+		}
 
+		return value ? Math.round(parseFloat(value) * 100) : 0;
+	}
+
+	app.get('/budgets', ensureLoggedIn, async (req, res) => {
+		console.log(Date.now(), new Date(Date.now()));
+		const budgets = await db.collection('budgets').find({
+			uid: req.user._id,
+		}).toArray();
+
+		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
 		const txs = await db.collection('transactions').find({
+			uid: req.user._id,
 			date: { $gte: monthStart, $lt: monthEnd }
 		}).toArray();
 
@@ -101,17 +110,10 @@ function setupExpress() {
 		budgets.forEach((budget) => {
 			if (budget) {
 				budget.current = budget.current || 0;
-				budget.current = (budget.current / 100).toFixed(2);
 				budget.percent =  parseFloat(((budget.current / budget.amount) * 100));
 				budget.percentMonth = getMonthPercent();
-				budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
 				budget.leftOrOver = (budget.amount - budget.current);
-				if (budget.leftOrOver > 0) {
-					budget.leftOrOver = `$${budget.leftOrOver.toFixed(2)} left`;
-				} else if (budget.leftOrOver < 0) {
-					budget.leftOrOver = `$${Math.abs(budget.leftOrOver).toFixed(2)} over`;
-				}
-
+				budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
 				if (budget.percent > 95 && budget.percent < 100) {
 					budget.bgColor = 'bg-warning';
 				}
@@ -137,7 +139,7 @@ function setupExpress() {
 	app.post('/budgets/create', ensureLoggedIn, async (req, res) => {
 		await db.collection('budgets').insertOne({
 			name: req.body.name,
-			amount: req.body.amount,
+			amount: formatDollarsToCents(req.body.amount),
 			uid: req.user._id,
 		})
 		res.json('ok');
@@ -151,15 +153,6 @@ function setupExpress() {
 
 		res.json('ok');
 	});
-
-	function formatDollarsToCents(value) {
-		value = (value + '').replace(/[^\d.-]/g, '');
-		if (value && value.includes('.')) {
-		  value = value.substring(0, value.indexOf('.') + 3);
-		}
-
-		return value ? Math.round(parseFloat(value) * 100) : 0;
-	}
 
 	app.post('/transactions/create', ensureLoggedIn, async (req, res) => {
 		if (!req.body.date) {

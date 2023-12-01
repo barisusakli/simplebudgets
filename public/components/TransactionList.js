@@ -2,14 +2,9 @@ import React, { useState, useEffect } from "react"
 import fetchJson from "../fetchJson"
 import CreateTransaction from "./CreateTransaction"
 
-export default function TransactionList({ transactions, budgetOptions, refreshAll }) {
+import formatCentsToDollars from "../format"
 
-	var formatCentsToDollars = function(value) {
-		// value = (value + '').replace(/[^\d.-]/g, '');
-		// value = parseFloat(value);
-		// return value ? value / 100 : 0;
-		return (value / 100).toLocaleString('en-CA', { style: 'currency', currency: 'CAD' })
-	}
+export default function TransactionList({ transactions, budgetOptions, refreshAll }) {
 
 	const els = transactions.map((tx, i) => {
 		return (
