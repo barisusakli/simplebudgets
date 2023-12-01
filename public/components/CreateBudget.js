@@ -54,7 +54,7 @@ export default function CreateBudget({ refreshAll }) {
 
 	return (
 		<div className="d-flex">
-			<button id="create-budget" className="btn btn-primary w-100 ff-secondary" onClick={handleCreate}>Create Budget</button>
+			<button id="create-budget" className="btn btn-primary ff-secondary" onClick={handleCreate}>Create Budget</button>
 			<div className="modal" tabIndex="-1" id="budget-modal">
 				<div className="modal-dialog">
 					<div className="modal-content">

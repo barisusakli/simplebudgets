@@ -1,9 +1,10 @@
 import React from "react"
 import fetchJson from "../fetchJson"
-import CreateBudget from "./CreateBudget";
+import CreateBudget from "./CreateBudget"
 import formatCentsToDollars from "../format"
+import * as bootstrap from 'bootstrap'
 
-export default function BudgetList({ budgets, refreshAll }) {
+export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
 	const now = new Date();
 	const numberOfDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
@@ -11,10 +12,19 @@ export default function BudgetList({ budgets, refreshAll }) {
 		return Math.min(99.5, parseFloat((new Date().getDate() / numberOfDaysInMonth) * 100));
 	}
 
+	function handleFilterBudget(ev, name) {
+		ev.preventDefault();
+		setCurrentBudget(name);
+		const triggerEl = document.querySelector('#myTab button[data-bs-target="#transactions-tab-pane"]')
+		if (triggerEl) {
+			bootstrap.Tab.getOrCreateInstance(triggerEl).show()
+		}
+	}
+
 	const els = budgets.map((budget) => {
 		return (
 			<li key={budget._id || budget.name} className="d-flex flex-column gap-2">
-				<div className="d-flex justify-content-between"><strong>{budget.name}</strong><span className="text-sm">{
+				<div className="d-flex justify-content-between"><a href="#" className="fw-bold text-reset link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover" onClick={(ev)=> handleFilterBudget(ev, budget._id ? budget.name : '')}>{budget.name}</a><span className="text-sm">{
 					budget.leftOrOver >= 0 ?
 					`${formatCentsToDollars(budget.leftOrOver)} left` :
 					`${formatCentsToDollars(Math.abs(budget.leftOrOver))} over`

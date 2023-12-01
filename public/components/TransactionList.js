@@ -4,19 +4,21 @@ import CreateTransaction from "./CreateTransaction"
 
 import formatCentsToDollars from "../format"
 
-export default function TransactionList({ transactions, budgetOptions, refreshAll }) {
+export default function TransactionList({ transactions, budgetOptions, refreshAll, currentBudget, setCurrentBudget }) {
 
-	const els = transactions.map((tx, i) => {
-		return (
-			<tr key={i}>
-				<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
-				<td>{tx.description}</td>
-				<td>{tx.budget}</td>
-				<td>{formatCentsToDollars(tx.amount)}</td>
-				<td className="text-end"><button onClick={() => handleDelete(tx._id)} className="btn btn-sm btn-danger lh-1">X</button></td>
-			</tr>
-		)
-	})
+	const els = transactions
+		.filter(tx => !currentBudget || tx.budget === currentBudget)
+		.map((tx, i) => {
+			return (
+				<tr key={i}>
+					<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
+					<td>{tx.description}</td>
+					<td>{tx.budget}</td>
+					<td>{formatCentsToDollars(tx.amount)}</td>
+					<td className="text-end"><button onClick={() => handleDelete(tx._id)} className="btn btn-sm btn-danger lh-1">X</button></td>
+				</tr>
+			)
+		})
 
 	function handleDelete(_id) {
 		fetchJson({
@@ -30,10 +32,18 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<CreateTransaction
-				budgetOptions={budgetOptions}
-				refreshAll={refreshAll}
+			<div className="d-flex justify-content-between gap-2">
+				<CreateTransaction
+					budgetOptions={budgetOptions}
+					refreshAll={refreshAll}
 				/>
+				<select className="form-select w-auto" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
+					<option value="">All bugdets</option>
+					{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
+				</select>
+			</div>
+
+
 			{ transactions.length > 0 &&
 				<table id="transaction-list" className="table table-hover table-sm">
 					<thead>

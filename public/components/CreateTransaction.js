@@ -78,8 +78,8 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 	}
 
 	return (
-		<div className="d-flex">
-			<button id="create-transaction" className="btn btn-primary w-100 ff-secondary" onClick={handleCreate}>Add Transaction</button>
+		<div className="d-flex justify-content-end">
+			<button id="create-transaction" className="btn btn-primary ff-secondary" onClick={handleCreate}>Add Transaction</button>
 			<div className="modal" tabIndex="-1" id="tx-modal">
 				<div className="modal-dialog">
 					<div className="modal-content">

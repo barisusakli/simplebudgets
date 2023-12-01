@@ -22,7 +22,7 @@ export default function Navbar(props) {
 
 			<div className="d-flex gap-1">
 				<select id="month-select"
-					className="form-select w-auto"
+					className="form-select form-select-sm w-auto"
 					value={props.month}
 					onChange={(e) => props.setMonth(e.target.value)}
 					>
@@ -39,8 +39,9 @@ export default function Navbar(props) {
 					<option value="10">November</option>
 					<option value="11">December</option>
 				</select>
+
 				<select id="year-select"
-					className="form-select w-auto"
+					className="form-select form-select-sm w-auto"
 					value={props.year}
 					onChange={(e) => props.setYear(e.target.value)}
 					>
