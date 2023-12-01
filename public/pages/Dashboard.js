@@ -6,38 +6,54 @@ import Main from "../components/Main"
 import fetchJson from "../fetchJson"
 
 export default function Dashboard(props) {
+	const [isLoaded, setIsLoaded] = useState(false);
 	const [budgets, setBudgets] = useState([]);
 	const [transactions, setTransactions] = useState([]);
 	const [budgetOptions, setBudgetOptions] = useState([]);
 
 	const date = new Date();
-	const [year, setYear] = useState(date.getUTCFullYear())
-	const [month, setMonth] = useState(date.getUTCMonth())
+	const [year, setYear] = useState(date.getFullYear())
+	const [month, setMonth] = useState(date.getMonth())
 
-	function refreshBudgets() {
-		fetchJson({
-			url: '/budgets?' + new URLSearchParams({ year, month }),
+	function getStartEnd() {
+		const startDate = new Date();
+		startDate.setFullYear(year, month, 1);
+		startDate.setHours(0, 0, 0, 0);
+
+		const endDate = new Date();
+		endDate.setFullYear(year, startDate.getMonth() + 1, 1);
+		endDate.setHours(0, 0, 0, 0);
+
+		return {
+			monthStart: startDate.getTime(),
+			monthEnd: endDate.getTime(),
+		};
+	}
+
+	async function refreshBudgets() {
+		return await fetchJson({
+			url: '/budgets?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
-		}).then((result) => {
-			setBudgets(result);
-			setBudgetOptions(result.filter(budget => !!budget._id).map(budget => budget.name));
-			console.log('budgets', result)
 		})
 	}
 
-	function refreshTransactions() {
-		fetchJson({
-			url: '/transactions?' + new URLSearchParams({ year, month }),
+	async function refreshTransactions() {
+		return await fetchJson({
+			url: '/transactions?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
-		}).then((result) => {
-			setTransactions(result)
-			console.log('txs', result)
-		})
+		});
 	}
 
-	function refreshAll() {
-		refreshBudgets()
-		refreshTransactions()
+	async function refreshAll() {
+		const [b, tx] = await Promise.all([
+			refreshBudgets(),
+			refreshTransactions(),
+		]);
+		console.log(b, tx);
+		setBudgets(b);
+		setBudgetOptions(b.filter(budget => !!budget._id).map(budget => budget.name));
+		setTransactions(tx)
+		setIsLoaded(true);
 	}
 
 	useEffect(() => {
@@ -50,12 +66,12 @@ export default function Dashboard(props) {
 			<div className="card shadow-sm">
 				<div className="card-body">
 					<Navbar year={year} setYear={setYear} month={month} setMonth={setMonth} />
-					<Main
+					{isLoaded && <Main
 						budgets={budgets}
 						transactions={transactions}
 						budgetOptions={budgetOptions}
 						refreshAll={refreshAll}
-					/>
+					/>}
 				</div>
 			</div>
 		</section>

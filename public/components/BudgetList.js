@@ -4,6 +4,13 @@ import CreateBudget from "./CreateBudget";
 import formatCentsToDollars from "../format"
 
 export default function BudgetList({ budgets, refreshAll }) {
+	const now = new Date();
+	const numberOfDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+	function calculateMonthProgressPercent() {
+		return Math.min(99.5, parseFloat((new Date().getDate() / numberOfDaysInMonth) * 100));
+	}
+
 	const els = budgets.map((budget) => {
 		return (
 			<li key={budget._id || budget.name} className="d-flex flex-column gap-2">
@@ -16,7 +23,7 @@ export default function BudgetList({ budgets, refreshAll }) {
 					<div className="progress position-relative" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
 						<div className={`progress-bar ${budget.bgColor}`} style={{width: Math.min(100, budget.percent) + '%'}}></div>
 						<div className="position-absolute border border-black" style={{
-							left: `${Math.min(99.5, budget.percentMonth)}%`,
+							left: `${calculateMonthProgressPercent()}%`,
 							width: '1px',
 							height: '100%'
 						}}></div>

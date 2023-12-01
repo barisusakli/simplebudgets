@@ -7,12 +7,26 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 
 	const options = budgetOptions.map((opt, i) => <option key={i}>{opt}</option>)
 
+	function getYYYYmmdd() {
+		const d = new Date();
+		let month = '' + (d.getMonth() + 1);
+		let day = '' + d.getDate();
+		let year = d.getFullYear();
+
+		if (month.length < 2)
+			month = '0' + month;
+		if (day.length < 2)
+			day = '0' + day;
+
+		return [year, month, day].join('-');
+	}
+
 	function newFormData() {
 		return {
-			budget: '',
+			budget: budgetOptions.length > 0 ? budgetOptions[0] : '',
 			description: '',
 			amount: 0,
-			date: new Date().toISOString().split('T')[0], // returns YYYY-mm-dd
+			date: getYYYYmmdd(),
 		}
 	}
 
@@ -38,17 +52,24 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 	}
 
 	function handleSubmit() {
-		console.log('create', formData);
+		console.log('create tx', formData);
 		if (modal) {
 			modal.hide();
 		}
 		if (!formData.budget || !formData.amount || !formData.description) {
 			return
 		}
+		const newDate = new Date();
+		const parts = formData.date.split('-');
+		newDate.setFullYear(parts[0], parts[1] - 1, parts[2])
+		const submitData = {
+			...formData,
+			date: newDate.getTime(),
+		}
 		// create new tx
 		fetchJson({
 			url: '/transactions/create',
-			data: formData,
+			data: submitData,
 			method: 'post',
 		}).then((result) => {
 			console.log('done', result)

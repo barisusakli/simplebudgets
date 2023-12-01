@@ -9,7 +9,7 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 	const els = transactions.map((tx, i) => {
 		return (
 			<tr key={i}>
-				<td>{tx.date.split('T')[0]}</td>
+				<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
 				<td>{tx.description}</td>
 				<td>{tx.budget}</td>
 				<td>{formatCentsToDollars(tx.amount)}</td>

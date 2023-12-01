@@ -84,10 +84,13 @@ function setupExpress() {
 			uid: req.user._id,
 		}).toArray();
 
-		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
+		const { monthStart, monthEnd } = req.query;
 		const txs = await db.collection('transactions').find({
 			uid: req.user._id,
-			date: { $gte: monthStart, $lt: monthEnd }
+			date: {
+				$gte: new Date(parseInt(monthStart, 10)),
+				$lt: new Date(parseInt(monthEnd, 10))
+			}
 		}).toArray();
 
 		let totalSpent = 0;
@@ -111,7 +114,6 @@ function setupExpress() {
 			if (budget) {
 				budget.current = budget.current || 0;
 				budget.percent =  parseFloat(((budget.current / budget.amount) * 100));
-				budget.percentMonth = getMonthPercent();
 				budget.leftOrOver = (budget.amount - budget.current);
 				budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
 				if (budget.percent > 95 && budget.percent < 100) {
@@ -125,10 +127,16 @@ function setupExpress() {
 
 
 	app.get('/transactions', ensureLoggedIn, async (req, res) => {
-		const { monthStart, monthEnd } = getMonthStartEnd(req.query.month, req.query.year);
+		const { monthStart, monthEnd } = req.query;
+		console.log('query', req.query);
+		console.log('start', new Date(parseInt(monthStart, 10)));
+		console.log('end', new Date(parseInt(monthEnd, 10)));
 		const txs = await db.collection('transactions').find({
 			uid: req.user._id,
-			date: { $gte: monthStart, $lt: monthEnd }
+			date: {
+				$gte: new Date(parseInt(monthStart, 10)),
+				$lt: new Date(parseInt(monthEnd, 10))
+			}
 		}).sort({
 			date: -1,
 		}).toArray();
@@ -158,7 +166,13 @@ function setupExpress() {
 		if (!req.body.date) {
 			return res.status(500).send('invalid-date');
 		}
-
+		console.log('ROUTE')
+		console.log(req.body);
+		console.log('new Date', new Date(req.body.date))
+		console.log('utc', new Date(req.body.date).toUTCString())
+		console.log('iso', new Date(req.body.date).toISOString())
+		//res.json('ok')
+		//return;
 		const newTx = {
 			description: req.body.description,
 			budget: req.body.budget,
@@ -197,39 +211,3 @@ function setupExpress() {
 	setupExpress();
 })();
 
-
-function getMonthStartEnd(month, year) {
-	const startDate = new Date();
-	if (year) {
-		startDate.setUTCFullYear(year);
-	}
-	if (month) {
-		startDate.setUTCMonth(month);
-	}
-	startDate.setUTCDate(1);
-	startDate.setUTCHours(0, 0, 0, 0);
-
-	const endDate = new Date();
-	if (year) {
-		endDate.setUTCFullYear(year);
-	}
-	if (month) {
-		endDate.setUTCMonth(month);
-	}
-	endDate.setUTCMonth(endDate.getUTCMonth() + 1, 1);
-	endDate.setUTCHours(0, 0, 0, 0);
-
-	return {
-		monthStart: startDate,
-		monthEnd: endDate,
-	};
-}
-
-function daysInThisMonth() {
-	const now = new Date();
-	return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-}
-
-function getMonthPercent() {
-	return parseFloat((new Date().getDate() / daysInThisMonth()) * 100);
-}
