@@ -62,10 +62,10 @@ exports.login = function (req, res, next) {
 	})(req, res, next);
 };
 
-exports.logout = function (req, res) {
+exports.logout = function (req, res, next) {
 	req.logout((err) => {
 		if (err) {
-			res.status(500).send(err.message);
+			return next(err);
 		}
 		res.json('ok');
 	});
@@ -163,14 +163,13 @@ exports.getTransactions = async (req, res) => {
 };
 
 exports.createTransaction = async (req, res) => {
-	if (!req.body.date) {
-		return res.status(500).send('invalid-date');
+	if (!req.body.budget || !req.body.date || !req.body.amount || !req.body.description) {
+		return res.status(500).send('invalid-data');
 	}
-	console.log('ROUTE');
-	console.log(req.body);
-	console.log('new Date', new Date(req.body.date));
-	console.log('utc', new Date(req.body.date).toUTCString());
-	console.log('iso', new Date(req.body.date).toISOString());
+	// TODO: check if budget exists
+	// TODO: trim description to 100 chars
+	// TODO: check amount is number
+	// TODO: check date is actually date
 
 	await db.collection('transactions').insertOne({
 		description: req.body.description,

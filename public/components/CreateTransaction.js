@@ -98,7 +98,7 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 							</div>
 							<div className="mb-3">
 								<label className="form-label" htmlFor="amount">Amount</label>
-								<input className="form-control" type="text" name="amount" value={formData.amount} onChange={handleChange}/>
+								<input className="form-control" type="number" min="1" step="any" name="amount" value={formData.amount} onChange={handleChange}/>
 							</div>
 							<div className="mb-3">
 								<label className="form-label" htmlFor="date">Date</label>
