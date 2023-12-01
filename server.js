@@ -1,8 +1,9 @@
-const express = require('express')
+'use strict';
+
+const express = require('express');
 const path = require('path');
-const app = express()
-const bodyParser = require('body-parser')
-const mongodb = require('mongodb');
+const bodyParser = require('body-parser');
+
 
 // Login/logout requires
 const cors = require('cors');
@@ -10,35 +11,25 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
 const connectMongo = require('connect-mongo');
-const csrfSync = require('csrf-sync');
+const database = require('./src/database');
 
-const port = 3000
-
-const mongoClient = mongodb.MongoClient;
-let db = null;
-async function connectToDb() {
-	const mongodb = await mongoClient.connect(
-		`mongodb://127.0.0.1:27017/mybudget`,
-		{}
-	);
-
-	db = mongodb.db();
-	db.collection('budgets').createIndex({ uid: 1 }, { background: true });
-	db.collection('transactions').createIndex({ uid: 1, date: 1 }, { background: true });
-	db.collection('users').createIndex({ email: 1 }, { unique: true, background: true });
-}
+const config = {
+	port: 3000,
+	dbConnectionString: 'mongodb://127.0.0.1:27017/mybudget',
+	secret: 'get me from config',
+};
 
 function setupExpress() {
-	app.use(bodyParser.urlencoded({ extended: false }))
-	app.use(bodyParser.json())
+	const app = express();
 
-	// cors ?
+	app.use(bodyParser.urlencoded({ extended: false }));
+	app.use(bodyParser.json());
 	app.use(cors({
 		origin: 'http://127.0.0.1:3000',
 		credentials: true,
-	}))
+	}));
 
-	const secret = "get me from config";
+	const secret = 'get me from config';
 	const twoweeksInSeconds = 1209600;
 
 	// for sessions
@@ -47,167 +38,44 @@ function setupExpress() {
 		resave: false,
 		saveUninitialized: false,
 		store: connectMongo.create({
-			mongoUrl: `mongodb://127.0.0.1:27017/mybudget`
+			mongoUrl: `mongodb://127.0.0.1:27017/mybudget`,
 		}),
 		cookie: {
 			maxAge: twoweeksInSeconds * 1000,
+		},
+	}));
+
+	app.use(cookieParser(secret));
+	app.use(passport.initialize());
+	app.use(passport.session());
+
+	require('./src/passportConfig')(passport);
+	require('./src/routes')(app);
+
+	app.use(express.static('dist'));
+
+	app.use((err, req, res, next) => {
+		if (err.code === 'EBADCSRFTOKEN') {
+			res.status(403).send('csrf-error');
+			return;
 		}
-	}))
-
-	app.use(cookieParser(secret))
-	app.use(passport.initialize())
-	app.use(passport.session())
-
-	require('./src/passportConfig')(db, passport);
-	require('./src/routes')(app, db, passport);
-
-	// make middleware
-	function ensureLoggedIn(req, res, next) {
-		if (!req.user) {
-			return res.status(403).send('Not allowed');
-		}
-		next()
-	}
-
-	function formatDollarsToCents(value) {
-		value = (value + '').replace(/[^\d.-]/g, '');
-		if (value && value.includes('.')) {
-		  value = value.substring(0, value.indexOf('.') + 3);
-		}
-
-		return value ? Math.round(parseFloat(value) * 100) : 0;
-	}
-
-	app.get('/budgets', ensureLoggedIn, async (req, res) => {
-		console.log(Date.now(), new Date(Date.now()));
-		const budgets = await db.collection('budgets').find({
-			uid: req.user._id,
-		}).toArray();
-
-		const { monthStart, monthEnd } = req.query;
-		const txs = await db.collection('transactions').find({
-			uid: req.user._id,
-			date: {
-				$gte: new Date(parseInt(monthStart, 10)),
-				$lt: new Date(parseInt(monthEnd, 10))
-			}
-		}).toArray();
-
-		let totalSpent = 0;
-
-		txs.forEach((tx) => {
-			const budget = budgets.find(b => b.name === tx.budget);
-			if (budget) {
-				budget.current = budget.current || 0;
-				budget.current += tx.amount;
-			}
-			totalSpent += tx.amount;
-		});
-
-		budgets.unshift({
-			name: 'Total',
-			amount: budgets.reduce((curr, b) => curr + parseInt(b.amount, 10), 0),
-			current: totalSpent,
-		})
-
-		budgets.forEach((budget) => {
-			if (budget) {
-				budget.current = budget.current || 0;
-				budget.percent =  parseFloat(((budget.current / budget.amount) * 100));
-				budget.leftOrOver = (budget.amount - budget.current);
-				budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
-				if (budget.percent > 95 && budget.percent < 100) {
-					budget.bgColor = 'bg-warning';
-				}
-			}
-		})
-
-		res.json(budgets);
-	})
-
-
-	app.get('/transactions', ensureLoggedIn, async (req, res) => {
-		const { monthStart, monthEnd } = req.query;
-		console.log('query', req.query);
-		console.log('start', new Date(parseInt(monthStart, 10)));
-		console.log('end', new Date(parseInt(monthEnd, 10)));
-		const txs = await db.collection('transactions').find({
-			uid: req.user._id,
-			date: {
-				$gte: new Date(parseInt(monthStart, 10)),
-				$lt: new Date(parseInt(monthEnd, 10))
-			}
-		}).sort({
-			date: -1,
-		}).toArray();
-
-		res.json(txs);
+		next(err);
 	});
 
-	app.post('/budgets/create', ensureLoggedIn, async (req, res) => {
-		await db.collection('budgets').insertOne({
-			name: req.body.name,
-			amount: formatDollarsToCents(req.body.amount),
-			uid: req.user._id,
-		})
-		res.json('ok');
-	});
-
-	app.post('/budgets/delete', ensureLoggedIn, async (req, res) => {
-		await db.collection('budgets').deleteOne({
-			_id: new mongodb.ObjectId(req.body._id),
-			uid: req.user._id,
-		});
-
-		res.json('ok');
-	});
-
-	app.post('/transactions/create', ensureLoggedIn, async (req, res) => {
-		if (!req.body.date) {
-			return res.status(500).send('invalid-date');
-		}
-		console.log('ROUTE')
-		console.log(req.body);
-		console.log('new Date', new Date(req.body.date))
-		console.log('utc', new Date(req.body.date).toUTCString())
-		console.log('iso', new Date(req.body.date).toISOString())
-		//res.json('ok')
-		//return;
-		const newTx = {
-			description: req.body.description,
-			budget: req.body.budget,
-			amount: formatDollarsToCents(req.body.amount),
-			date: new Date(req.body.date),
-			uid: req.user._id,
-		}
-		await db.collection('transactions').insertOne(newTx);
-		res.json('ok');
-	});
-
-	app.post('/transactions/delete', ensureLoggedIn, async (req, res) => {
-		await db.collection('transactions').deleteOne({
-			_id: new mongodb.ObjectId(req.body._id),
-			uid: req.user._id,
-		});
-		res.json('ok');
-	});
-
-	app.use(express.static("dist"));
-
-	const DIST_DIR = path.join(__dirname, "dist");
-	const HTML_FILE = path.join(DIST_DIR, "index.html");
+	const DIST_DIR = path.join(__dirname, 'dist');
+	const HTML_FILE = path.join(DIST_DIR, 'index.html');
 
 	app.get('*', (req, res) => {
 		res.sendFile(HTML_FILE);
-	})
+	});
 
-	app.listen(port, () => {
-		console.log(`listening on port ${port}`)
+	app.listen(config.port, () => {
+		console.log(`listening on port ${config.port}`);
 	});
 }
 
-(async function() {
-	await connectToDb();
+(async function () {
+	await database.connect(config.dbConnectionString);
 	setupExpress();
-})();
+}());
 

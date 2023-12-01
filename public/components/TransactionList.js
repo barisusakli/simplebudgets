@@ -34,19 +34,22 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				budgetOptions={budgetOptions}
 				refreshAll={refreshAll}
 				/>
+			{ transactions.length > 0 &&
+				<table id="transaction-list" className="table table-hover table-sm">
+					<thead>
+						<tr>
+							<th scope="col">Date</th>
+							<th scope="col">Description</th>
+							<th scope="col">Budget</th>
+							<th scope="col">Amount</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>{els}</tbody>
+				</table>
+			}
 
-			<table id="transaction-list" className="table table-hover table-sm">
-				<thead>
-					<tr>
-						<th scope="col">Date</th>
-						<th scope="col">Description</th>
-						<th scope="col">Budget</th>
-						<th scope="col">Amount</th>
-						<th scope="col"></th>
-					</tr>
-				</thead>
-				<tbody>{els}</tbody>
-			</table>
+			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
 
 		</div>
 	)

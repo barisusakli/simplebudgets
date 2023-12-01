@@ -57,6 +57,7 @@ export default function BudgetList({ budgets, refreshAll }) {
 			/>
 			<ul id="budgets-list" className="list-unstyled d-flex flex-column gap-3">
 				{els}
+				{budgets.length <= 1 &&	<div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
 			</ul>
 		</div>
 	)

@@ -1,55 +1,33 @@
-const bcryptjs = require('bcryptjs')
+'use strict';
 
-module.exports = function (app, db, passport) {
-	// TODO: move all routes here
-	// TODO: add csrf to post routes
-	app.post('/register', async function (req, res) {
-		const user = await db.collection('users').findOne({
-			email: req.body.email,
-		});
-		if (user) {
-			res.status(500).json('User already exists')
-			return;
-		}
-		const salt = await bcryptjs.genSalt();
-		const hashedPassword = await bcryptjs.hash(req.body.password, salt);
-		await db.collection('users').insertOne({
-			email: req.body.email,
-			password: hashedPassword,
-		})
+const controllers = require('./controllers');
 
-		res.json('ok');
-	});
+const {
+	generateToken,
+	csrfSynchronisedProtection,
+} = require('./csrf');
 
-	app.post('/login', function (req, res, next) {
-		passport.authenticate('local', (err, user, info) => {
-			if (err) {
-				return res.status(500).send(err.message)
-			}
-			if (!user) {
-				return res.status(500).send('no user exists');
-			}
-
-			req.logIn(user, (err) => {
-				if (err) {
-					return res.status(500).json(err.message);
-				}
-				res.json({ _id: req.user._id, email: req.user.email });
-			});
-		})(req, res, next)
-	});
-
-	app.post('/logout', function (req, res) {
-		req.logout(() => {
-			res.json('ok');
-		})
-	});
-
-	app.get('/user', (req, res) => {
-		if (req.user) {
-			res.json({ _id: req.user._id, email: req.user.email })
-		} else {
-			res.json(null);
-		}
-	})
+function ensureLoggedIn(req, res, next) {
+	if (!req.user) {
+		return res.status(403).send('Not allowed');
+	}
+	next();
 }
+
+module.exports = function (app) {
+	app.get('/csrf-token', (req, res) => res.send(generateToken(req)));
+
+	app.post('/register', csrfSynchronisedProtection, controllers.register);
+	app.post('/login', csrfSynchronisedProtection, controllers.login);
+	app.post('/logout', csrfSynchronisedProtection, controllers.logout);
+	app.get('/user', controllers.getUser);
+
+	app.get('/budgets', ensureLoggedIn, controllers.getBudgets);
+	app.get('/transactions', ensureLoggedIn, controllers.getTransactions);
+
+	const middlewares = [ensureLoggedIn, csrfSynchronisedProtection];
+	app.post('/budgets/create', middlewares, controllers.createBudget);
+	app.post('/budgets/delete', middlewares, controllers.deleteBudget);
+	app.post('/transactions/create', middlewares, controllers.createTransaction);
+	app.post('/transactions/delete', middlewares, controllers.deleteTransaction);
+};

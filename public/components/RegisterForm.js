@@ -2,7 +2,7 @@ import React from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 
-export default function RegisterForm() {
+export default function RegisterForm({ setUser }) {
 	const [formData, setFormData] = React.useState({
 		email: '',
 		password: '',
@@ -25,13 +25,14 @@ export default function RegisterForm() {
 			console.log('passwords do not match');
 			return;
 		}
-		console.log(formData)
+
 		try {
-			await fetchJson({
+			const user = await fetchJson({
 				url: '/register',
 				data: formData,
 				method: 'post',
 			})
+			setUser(user)
 		} catch (err) {
 			// TODO add error alerts
 			console.error(err.message);

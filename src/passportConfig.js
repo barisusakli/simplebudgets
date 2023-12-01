@@ -1,17 +1,22 @@
+'use strict';
+
 const mongodb = require('mongodb');
 const bcryptjs = require('bcryptjs');
 const localStrategy = require('passport-local').Strategy;
 
-module.exports = function (db, passport) {
+const db = require('./database').db();
+
+module.exports = function (passport) {
 	passport.use(new localStrategy({
 		usernameField: 'email',
 		passwordField: 'password',
-	}, async function (email, password, done) {
+	}, async (email, password, done) => {
 		const user = await db.collection('users').findOne({
 			email: email,
 		});
+		console.log('local str', user);
 		if (!user) {
-			done(null, false)
+			done(null, false, 'user does not exist');
 			return;
 		}
 		const ok = await bcryptjs.compare(password, user.password);
@@ -24,13 +29,16 @@ module.exports = function (db, passport) {
 
 	passport.serializeUser((user, cb) => {
 		cb(null, user._id);
-	})
+	});
 
 	passport.deserializeUser((id, cb) => {
 		db.collection('users').findOne({
-			_id: new mongodb.ObjectId(id)
+			_id: new mongodb.ObjectId(id),
 		}).then((result) => {
+			if (!result) {
+				return cb(new Error('cant find user to deserialize'));
+			}
 			cb(null, { _id: result._id, email: result.email });
 		});
-	})
+	});
 };

@@ -2,17 +2,20 @@
 
 export default async function xhrJson({ url, data, method}) {
 	try {
+		const headers = {
+			"Content-Type": "application/json",
+		};
+		if (['post', 'put', 'delete'].includes(method.toLowerCase())) {
+			headers['x-csrf-token'] = await (await fetch('/csrf-token')).text();
+		}
 		const response = await fetch(url, {
 			method: method,
-			headers: {
-				"Content-Type": "application/json",
-			},
+			headers: headers,
 			credentials: 'include',
 			body: data ? JSON.stringify(data) : undefined,
 		});
 
-		const { headers } = response;
-		const contentType = headers.get('content-type');
+		const contentType = response.headers.get('content-type');
 		const isJSON = contentType && contentType.startsWith('application/json');
 
 		let result;

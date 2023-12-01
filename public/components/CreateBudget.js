@@ -34,20 +34,18 @@ export default function CreateBudget({ refreshAll }) {
 	}
 
 	function handleSubmit() {
-		console.log('create', formData);
 		if (!formData.name || !formData.amount) {
 			return;
 		}
 		if (modal) {
 			modal.hide();
 		}
-		// create new tx
+
 		fetchJson({
 			url: '/budgets/create',
 			data: formData,
 			method: 'post',
-		}).then((result) => {
-			console.log('done', result)
+		}).then(() => {
 			refreshAll()
 			setFormData(newFormData())
 			setModal(null);
@@ -56,7 +54,7 @@ export default function CreateBudget({ refreshAll }) {
 
 	return (
 		<div className="d-flex">
-			<button id="create-budget" className="btn btn-primary w-100" onClick={handleCreate}>Create Budget</button>
+			<button id="create-budget" className="btn btn-primary w-100 ff-secondary" onClick={handleCreate}>Create Budget</button>
 			<div className="modal" tabIndex="-1" id="budget-modal">
 				<div className="modal-dialog">
 					<div className="modal-content">

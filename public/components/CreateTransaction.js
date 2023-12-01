@@ -52,7 +52,6 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 	}
 
 	function handleSubmit() {
-		console.log('create tx', formData);
 		if (modal) {
 			modal.hide();
 		}
@@ -66,13 +65,12 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 			...formData,
 			date: newDate.getTime(),
 		}
-		// create new tx
+
 		fetchJson({
 			url: '/transactions/create',
 			data: submitData,
 			method: 'post',
-		}).then((result) => {
-			console.log('done', result)
+		}).then(() => {
 			refreshAll()
 			setFormData(newFormData())
 			setModal(null);
@@ -81,7 +79,7 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 
 	return (
 		<div className="d-flex">
-			<button id="create-transaction" className="btn btn-primary w-100" onClick={handleCreate}>Add Transaction</button>
+			<button id="create-transaction" className="btn btn-primary w-100 ff-secondary" onClick={handleCreate}>Add Transaction</button>
 			<div className="modal" tabIndex="-1" id="tx-modal">
 				<div className="modal-dialog">
 					<div className="modal-content">
