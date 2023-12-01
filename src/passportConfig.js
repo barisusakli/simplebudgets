@@ -14,7 +14,7 @@ module.exports = function (passport) {
 		const user = await db.collection('users').findOne({
 			email: email,
 		});
-		console.log('local str', user);
+
 		if (!user) {
 			done(null, false, 'user does not exist');
 			return;

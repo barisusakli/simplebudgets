@@ -3,6 +3,7 @@
 const passport = require('passport');
 const bcryptjs = require('bcryptjs');
 const mongodb = require('mongodb');
+const config = require('../config.default');
 
 const db = require('./database').db();
 
@@ -80,7 +81,6 @@ exports.getUser = (req, res) => {
 };
 
 exports.getBudgets = async (req, res) => {
-	console.log(Date.now(), new Date(Date.now()));
 	const budgets = await db.collection('budgets').find({
 		uid: req.user._id,
 	}).toArray();
@@ -146,9 +146,7 @@ exports.deleteBudget = async (req, res) => {
 
 exports.getTransactions = async (req, res) => {
 	const { monthStart, monthEnd } = req.query;
-	console.log('query', req.query);
-	console.log('start', new Date(parseInt(monthStart, 10)));
-	console.log('end', new Date(parseInt(monthEnd, 10)));
+
 	const txs = await db.collection('transactions').find({
 		uid: req.user._id,
 		date: {

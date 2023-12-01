@@ -3,7 +3,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-
+const favicon = require('serve-favicon');
 
 // Login/logout requires
 const cors = require('cors');
@@ -13,14 +13,11 @@ const session = require('express-session');
 const connectMongo = require('connect-mongo');
 const database = require('./src/database');
 
-const config = {
-	port: 3000,
-	dbConnectionString: 'mongodb://127.0.0.1:27017/mybudget',
-	secret: 'get me from config',
-};
+const config = require('./config.default');
 
 function setupExpress() {
 	const app = express();
+	app.use(favicon(path.join(__dirname, 'public', 'favicon', 'favicon.ico')));
 
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
@@ -29,23 +26,19 @@ function setupExpress() {
 		credentials: true,
 	}));
 
-	const secret = 'get me from config';
-	const twoweeksInSeconds = 1209600;
-
 	// for sessions
 	app.use(session({
-		secret: secret,
+		name: config.sessionKey,
+		secret: config.secret,
 		resave: false,
 		saveUninitialized: false,
 		store: connectMongo.create({
 			mongoUrl: `mongodb://127.0.0.1:27017/mybudget`,
 		}),
-		cookie: {
-			maxAge: twoweeksInSeconds * 1000,
-		},
+		cookie: config.cookie,
 	}));
 
-	app.use(cookieParser(secret));
+	app.use(cookieParser(config.secret));
 	app.use(passport.initialize());
 	app.use(passport.session());
 
@@ -54,19 +47,19 @@ function setupExpress() {
 
 	app.use(express.static('dist'));
 
+	const DIST_DIR = path.join(__dirname, 'dist');
+	const HTML_FILE = path.join(DIST_DIR, 'index.html');
+
+	app.get('*', (req, res) => {
+		res.sendFile(HTML_FILE);
+	});
+
 	app.use((err, req, res, next) => {
 		if (err.code === 'EBADCSRFTOKEN') {
 			res.status(403).send('csrf-error');
 			return;
 		}
 		next(err);
-	});
-
-	const DIST_DIR = path.join(__dirname, 'dist');
-	const HTML_FILE = path.join(DIST_DIR, 'index.html');
-
-	app.get('*', (req, res) => {
-		res.sendFile(HTML_FILE);
 	});
 
 	app.listen(config.port, () => {
