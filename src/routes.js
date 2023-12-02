@@ -30,4 +30,5 @@ module.exports = function (app) {
 	app.post('/budgets/delete', middlewares, controllers.deleteBudget);
 	app.post('/transactions/create', middlewares, controllers.createTransaction);
 	app.post('/transactions/delete', middlewares, controllers.deleteTransaction);
+	app.post('/transactions/edit', middlewares, controllers.editTransaction);
 };

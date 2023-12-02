@@ -187,3 +187,17 @@ exports.deleteTransaction = async (req, res) => {
 	res.json('ok');
 };
 
+exports.editTransaction = async (req, res) => {
+	await db.collection('transactions').updateOne({
+		_id: new mongodb.ObjectId(req.body._id),
+		uid: req.user._id,
+	}, {
+		$set: {
+			description: req.body.description,
+			budget: req.body.budget,
+			amount: formatDollarsToCents(req.body.amount),
+			date: new Date(req.body.date),
+		},
+	});
+	res.json('ok');
+};

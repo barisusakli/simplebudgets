@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { Modal } from "bootstrap"
 import fetchJson from "../fetchJson"
-import formatCentsToDollars, { centsToDollars } from '../format'
 
 export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, setTxEdit }) {
 	const options = budgetOptions.map((opt, i) => <option key={i}>{opt}</option>)
 
-	function getYYYYmmdd() {
-		const d = new Date();
-		let month = '' + (d.getMonth() + 1);
-		let day = '' + d.getDate();
-		let year = d.getFullYear();
+	function getYYYYmmdd(date) {
+		let month = '' + (date.getMonth() + 1);
+		let day = '' + date.getDate();
+		let year = date.getFullYear();
 
 		if (month.length < 2)
 			month = '0' + month;
@@ -25,7 +23,7 @@ export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, s
 			budget: budgetOptions.length > 0 ? budgetOptions[0] : '',
 			description: '',
 			amount: 0,
-			date: getYYYYmmdd(),
+			date: getYYYYmmdd(new Date()),
 		}
 	}
 
@@ -39,22 +37,33 @@ export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, s
 		}))
 	}
 
+	function showModal() {
+		const myModalEl = document.getElementById('tx-modal')
+		const myModal = Modal.getOrCreateInstance(myModalEl);
+		myModal.show()
+		function onModalHidden() {
+			if (txEdit) {
+				setTxEdit(null);
+			}
+			setFormData(newFormData())
+		}
+
+		myModalEl.addEventListener('hidden.bs.modal', onModalHidden, { once: true });
+	}
+
 	function handleCreate(ev) {
 		ev.preventDefault();
-		const myModal = Modal.getOrCreateInstance('#tx-modal');
-		myModal.show()
+		showModal();
 	}
 
 	useEffect(() => {
 		if (txEdit) {
-			console.log('SHOW MODAL', txEdit)
 			setFormData({
 				...txEdit,
-				date: txEdit.date.split('T')[0],
+				date: getYYYYmmdd(new Date(txEdit.date)),
 				amount: (txEdit.amount / 100).toFixed(2),
 			});
-			const myModal = Modal.getOrCreateInstance('#tx-modal');
-			myModal.show()
+			showModal();
 		}
 	}, [txEdit]);
 
@@ -71,12 +80,15 @@ export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, s
 		}
 
 		fetchJson({
-			url: '/transactions/create',
+			url: txEdit ?
+				'/transactions/edit' :
+				'/transactions/create',
 			data: submitData,
 			method: 'post',
 		}).then(() => {
 			refreshAll()
-			setFormData(newFormData())
+			const myModal = Modal.getOrCreateInstance('#tx-modal')
+			myModal.hide()
 		})
 	}
 
@@ -87,7 +99,7 @@ export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, s
 				<div className="modal-dialog">
 					<div className="modal-content">
 						<div className="modal-header">
-							<h5 className="modal-title">Create Transaction</h5>
+							<h5 className="modal-title">{`${txEdit ? 'Edit' : 'Add'} Transaction`}</h5>
 							<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						</div>
 						<div className="modal-body">
@@ -109,7 +121,7 @@ export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, s
 							</div>
 						</div>
 						<div className="modal-footer">
-							<button type="button" className="btn btn-primary" onClick={handleSubmit}>Add</button>
+							<button type="button" className="btn btn-primary" onClick={handleSubmit}>Save</button>
 						</div>
 					</div>
 				</div>

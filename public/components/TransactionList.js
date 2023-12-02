@@ -12,23 +12,18 @@ export default function TransactionList({
 		.filter(tx => !currentBudget || tx.budget === currentBudget)
 		.map((tx, i) => {
 			return (
-				<tr key={i} className="pointer" role="button" onClick={() => handleTxEdit(tx)}>
+				<tr key={i} className="pointer" role="button" onClick={() => setTxEdit(tx)}>
 					<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
 					<td>{tx.description}</td>
 					<td>{tx.budget}</td>
 					<td>{formatCentsToDollars(tx.amount)}</td>
-					<td className="text-end"><button onClick={() => handleDelete(tx._id)} className="btn btn-sm btn-danger lh-1">X</button></td>
+					<td className="text-end"><button onClick={(ev) => handleDelete(ev, tx._id)} className="btn btn-sm btn-danger lh-1">X</button></td>
 				</tr>
 			)
 		})
 
-	function handleTxEdit(tx) {
-		// TODO edit tx
-		console.log(tx)
-		setTxEdit(tx);
-	}
-
-	function handleDelete(_id) {
+	function handleDelete(ev, _id) {
+		ev.stopPropagation();
 		fetchJson({
 			url: '/transactions/delete',
 			data: { _id },
