@@ -1,10 +1,9 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Modal } from "bootstrap"
 import fetchJson from "../fetchJson"
+import formatCentsToDollars, { centsToDollars } from '../format'
 
-export default function CreateTransaction({ budgetOptions, refreshAll }) {
-	const [modal, setModal] = useState(null)
-
+export default function CreateTransaction({ budgetOptions, refreshAll, txEdit, setTxEdit }) {
 	const options = budgetOptions.map((opt, i) => <option key={i}>{opt}</option>)
 
 	function getYYYYmmdd() {
@@ -42,19 +41,24 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 
 	function handleCreate(ev) {
 		ev.preventDefault();
-		if (modal) {
-			modal.show();
-			return;
-		}
-		const myModal = new Modal('#tx-modal', {});
+		const myModal = Modal.getOrCreateInstance('#tx-modal');
 		myModal.show()
-		setModal(myModal);
 	}
 
-	function handleSubmit() {
-		if (modal) {
-			modal.hide();
+	useEffect(() => {
+		if (txEdit) {
+			console.log('SHOW MODAL', txEdit)
+			setFormData({
+				...txEdit,
+				date: txEdit.date.split('T')[0],
+				amount: (txEdit.amount / 100).toFixed(2),
+			});
+			const myModal = Modal.getOrCreateInstance('#tx-modal');
+			myModal.show()
 		}
+	}, [txEdit]);
+
+	function handleSubmit() {
 		if (!formData.budget || !formData.amount || !formData.description) {
 			return
 		}
@@ -73,7 +77,6 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 		}).then(() => {
 			refreshAll()
 			setFormData(newFormData())
-			setModal(null);
 		})
 	}
 
@@ -89,19 +92,19 @@ export default function CreateTransaction({ budgetOptions, refreshAll }) {
 						</div>
 						<div className="modal-body">
 							<div className="mb-3">
-								<label className="form-label" htmlFor="budget">Budget</label>
-								<select className="form-select" name="budget" value={formData.budget} onChange={handleChange}>${options}</select>
+								<label className="form-label">Budget</label>
+								<select className="form-select" name="budget" id="budget" value={formData.budget} onChange={handleChange}>${options}</select>
 							</div>
 							<div className="mb-3">
-								<label className="form-label" htmlFor="description">Description</label>
+								<label className="form-label">Description</label>
 								<input className="form-control" type="text" name="description" value={formData.description} onChange={handleChange}/>
 							</div>
 							<div className="mb-3">
-								<label className="form-label" htmlFor="amount">Amount</label>
+								<label className="form-label">Amount</label>
 								<input className="form-control" type="number" min="1" step="any" name="amount" value={formData.amount} onChange={handleChange}/>
 							</div>
 							<div className="mb-3">
-								<label className="form-label" htmlFor="date">Date</label>
+								<label className="form-label">Date</label>
 								<input className="form-control" type="date" name="date" value={formData.date} onChange={handleChange}/>
 							</div>
 						</div>

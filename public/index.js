@@ -3,8 +3,6 @@ import { createRoot } from 'react-dom/client';
 
 import "./styles.scss";
 import * as bootstrap from "bootstrap"
-
-
 import App from "./App";
 
 const container = document.getElementById('root');

@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import fetchJson from "../fetchJson"
 import CreateTransaction from "./CreateTransaction"
-
 import formatCentsToDollars from "../format"
 
-export default function TransactionList({ transactions, budgetOptions, refreshAll, currentBudget, setCurrentBudget }) {
+export default function TransactionList({
+	transactions, budgetOptions, refreshAll, currentBudget, setCurrentBudget
+}) {
+	const [txEdit, setTxEdit] = React.useState(null)
 
 	const els = transactions
 		.filter(tx => !currentBudget || tx.budget === currentBudget)
 		.map((tx, i) => {
 			return (
-				<tr key={i}>
+				<tr key={i} className="pointer" role="button" onClick={() => handleTxEdit(tx)}>
 					<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
 					<td>{tx.description}</td>
 					<td>{tx.budget}</td>
@@ -19,6 +21,12 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				</tr>
 			)
 		})
+
+	function handleTxEdit(tx) {
+		// TODO edit tx
+		console.log(tx)
+		setTxEdit(tx);
+	}
 
 	function handleDelete(_id) {
 		fetchJson({
@@ -36,13 +44,15 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				<CreateTransaction
 					budgetOptions={budgetOptions}
 					refreshAll={refreshAll}
+					txEdit={txEdit}
+					setTxEdit={setTxEdit}
 				/>
-				<select className="form-select w-auto" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
+
+				<select id="select-budget" className="form-select w-auto" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
 					<option value="">All bugdets</option>
 					{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
 				</select>
 			</div>
-
 
 			{ transactions.length > 0 &&
 				<table id="transaction-list" className="table table-hover table-sm">
@@ -60,7 +70,6 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 			}
 
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
-
 		</div>
 	)
 }

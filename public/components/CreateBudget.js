@@ -64,11 +64,11 @@ export default function CreateBudget({ refreshAll }) {
 						</div>
 						<div className="modal-body">
 							<div className="mb-3">
-								<label className="form-label" htmlFor="name">Name</label>
-								<input className="form-control" type="text" name="name" value={formData.name} onChange={handleChange}/>
+								<label className="form-label">Name</label>
+								<input className="form-control" type="text" name="name" value={formData.name} onChange={handleChange} autoComplete="off"/>
 							</div>
 							<div className="mb-3">
-								<label className="form-label" htmlFor="amount">Amount</label>
+								<label className="form-label">Amount</label>
 								<input className="form-control" type="text" name="amount" value={formData.amount} onChange={handleChange}/>
 							</div>
 						</div>

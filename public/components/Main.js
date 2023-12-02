@@ -5,6 +5,7 @@ import TransactionList from "./TransactionList"
 
 export default function Main({ budgets, transactions, budgetOptions, refreshAll }) {
 	const [currentBudget, setCurrentBudget] = React.useState('')
+
 	return (
 		<div className="tab-content" id="myTabContent">
 			<div className="tab-pane fade show active" id="budgets-tab-pane" role="tabpanel" aria-labelledby="budgets-tab" tabIndex="0">
