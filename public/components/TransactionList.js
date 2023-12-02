@@ -12,7 +12,7 @@ export default function TransactionList({
 		.filter(tx => !currentBudget || tx.budget === currentBudget)
 		.map((tx, i) => {
 			return (
-				<tr key={i} className="pointer" role="button" onClick={() => setTxEdit(tx)}>
+				<tr key={i} className={`pointer bg-transition ${txEdit && txEdit._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => setTxEdit(tx)}>
 					<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
 					<td>{tx.description}</td>
 					<td>{tx.budget}</td>

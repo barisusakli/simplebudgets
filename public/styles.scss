@@ -17,3 +17,17 @@ body {
 .text-md { font-size: 1.125rem!important; }
 .text-sm { font-size: 0.875rem!important; }
 .text-xs { font-size: 0.75rem!important; }
+
+
+.bg-transition {
+	> * {
+		transition: background-color 2s ease;
+	}
+}
+
+.active-tx {
+	> * {
+		background-color: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)) !important;
+		transition: background-color 0.5s ease;
+	}
+}
