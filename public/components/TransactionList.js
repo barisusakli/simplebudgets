@@ -76,7 +76,7 @@ export default function TransactionList({
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
 			<div className="d-flex justify-content-between gap-2">
-				<button className="btn btn-primary ff-secondary" onClick={handleCreate}>Add Transaction</button>
+				<button className="btn btn-primary ff-secondary text-nowrap" onClick={handleCreate}>Add Transaction</button>
 				{txData && <TransactionModal
 					budgetOptions={budgetOptions}
 					refreshAll={refreshAll}

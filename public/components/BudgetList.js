@@ -85,7 +85,7 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<button className="btn btn-primary ff-secondary align-self-start" onClick={handleCreate}>Create Budget</button>
+			<button className="btn btn-primary ff-secondary text-nowrap align-self-start" onClick={handleCreate}>Create Budget</button>
 			{!!budgetData && <BudgetModal
 				refreshAll={refreshAll}
 				budgetData={budgetData}
