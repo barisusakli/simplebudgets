@@ -15,10 +15,10 @@ export default function TransactionList({
 		.map((tx, i) => {
 			return (
 				<tr key={i} className={`bg-transition ${txData && txData._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
-					<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
+					<td className="text-nowrap">{new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short'})}</td>
 					<td>{tx.description}</td>
 					<td>{tx.budget}</td>
-					<td>{formatCentsToDollars(tx.amount)}</td>
+					<td className="text-end">{formatCentsToDollars(tx.amount)}</td>
 					<td className="text-end"><button onClick={(ev) => handleDeleteClick(ev, tx)} className="btn btn-sm btn-danger lh-1">X</button></td>
 				</tr>
 			)
@@ -111,11 +111,11 @@ export default function TransactionList({
 								<th scope="col">Date</th>
 								<th scope="col">Description</th>
 								<th scope="col">Budget</th>
-								<th scope="col">Amount</th>
+								<th scope="col" className="text-end">Amount</th>
 								<th scope="col"></th>
 							</tr>
 						</thead>
-						<tbody>{els}</tbody>
+						<tbody className="text-sm">{els}</tbody>
 					</table>
 				</div>
 			}
