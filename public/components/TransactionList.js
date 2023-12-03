@@ -14,7 +14,7 @@ export default function TransactionList({
 		.filter(tx => !currentBudget || tx.budget === currentBudget)
 		.map((tx, i) => {
 			return (
-				<tr key={i} className={`pointer bg-transition ${txData && txData._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
+				<tr key={i} className={`bg-transition ${txData && txData._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
 					<td>{new Date(tx.date).toLocaleDateString('en-GB')}</td>
 					<td>{tx.description}</td>
 					<td>{tx.budget}</td>
@@ -104,18 +104,20 @@ export default function TransactionList({
 			</div>
 
 			{ transactions.length > 0 &&
-				<table id="transaction-list" className="table table-hover table-sm">
-					<thead>
-						<tr>
-							<th scope="col">Date</th>
-							<th scope="col">Description</th>
-							<th scope="col">Budget</th>
-							<th scope="col">Amount</th>
-							<th scope="col"></th>
-						</tr>
-					</thead>
-					<tbody>{els}</tbody>
-				</table>
+				<div className="table-responsive">
+					<table id="transaction-list" className="table table-hover table-sm">
+						<thead>
+							<tr>
+								<th scope="col">Date</th>
+								<th scope="col">Description</th>
+								<th scope="col">Budget</th>
+								<th scope="col">Amount</th>
+								<th scope="col"></th>
+							</tr>
+						</thead>
+						<tbody>{els}</tbody>
+					</table>
+				</div>
 			}
 
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}

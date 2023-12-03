@@ -12,7 +12,7 @@ export default function ProfileDropdown({ user, setUser }) {
 
 	return (
 		<div className="dropdown">
-			<button className="btn btn-sm btn-light ff-secondary" data-bs-toggle="dropdown">{user.email}</button>
+			<button className="btn btn-sm btn-light ff-secondary" data-bs-toggle="dropdown">{user.email.split('@')[0]}</button>
 			<ul className="dropdown-menu dropdown-menu-end p-1">
 				<li><a className="dropdown-item rounded-1" href="#" onClick={handleLogout}>Logout</a></li>
 			</ul>
