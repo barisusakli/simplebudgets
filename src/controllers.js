@@ -3,7 +3,6 @@
 const passport = require('passport');
 const bcryptjs = require('bcryptjs');
 const mongodb = require('mongodb');
-const config = require('../config.default');
 
 const db = require('./database').db();
 
