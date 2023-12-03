@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && webpack --config webpack.dev.js",
-    "release": "rm -rf dist && webpack --config webpack.prod.js",
+    "build": "rm -rf assets/dist && webpack --config webpack.dev.js",
+    "release": "rm -rf assets/dist && webpack --config webpack.prod.js",
     "dev": "nodemon server.js"
   },
   "keywords": [],

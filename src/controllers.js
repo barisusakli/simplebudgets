@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const passport = require('passport');
 const bcryptjs = require('bcryptjs');
 const mongodb = require('mongodb');
@@ -14,6 +15,14 @@ function formatDollarsToCents(value) {
 
 	return value ? Math.round(parseFloat(value) * 100) : 0;
 }
+
+exports.serviceWorker = (req, res) => {
+	console.log('sending service worker?')
+	res.status(200)
+		.type('application/javascript')
+		.set('Service-Worker-Allowed', `/`)
+		.sendFile(path.join(__dirname, '../public/service-worker.js'));
+};
 
 exports.register = async function (req, res) {
 	if (req.user) {

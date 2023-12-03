@@ -9,8 +9,8 @@ module.exports = {
 	entry: './public/index.js',
 	output: {
 		filename: 'bundle.js',
-		path: path.resolve('dist'),
-		publicPath: '/',
+		path: path.resolve('assets/dist'),
+		publicPath: '/assets',
 	},
 	module: {
 		rules: [
@@ -38,10 +38,10 @@ module.exports = {
 		],
 	},
 	plugins: [
-		new MiniCssExtractPlugin(),
 		new HTMLWebpackPlugin({
 			template: 'index.html',
-			favicon: './public/favicon/favicon.ico',
+			favicon: './assets/favicon/favicon.ico',
 		}),
+		new MiniCssExtractPlugin(),
 	],
 };

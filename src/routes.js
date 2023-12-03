@@ -17,6 +17,8 @@ function ensureLoggedIn(req, res, next) {
 module.exports = function (app) {
 	app.get('/csrf-token', (req, res) => res.send(generateToken(req)));
 
+	app.get('/service-worker.js', controllers.serviceWorker);
+
 	app.post('/register', csrfSynchronisedProtection, controllers.register);
 	app.post('/login', csrfSynchronisedProtection, controllers.login);
 	app.post('/logout', csrfSynchronisedProtection, controllers.logout);

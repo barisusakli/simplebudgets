@@ -8,3 +8,12 @@ import App from "./App";
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(<App />);
+
+if ('serviceWorker' in navigator && navigator.serviceWorker) {
+	navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+		.then(function () {
+			console.info('ServiceWorker registration succeeded.');
+		}).catch(function (err) {
+			console.info('ServiceWorker registration failed: ', err);
+		});
+}

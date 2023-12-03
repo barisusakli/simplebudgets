@@ -17,7 +17,13 @@ const config = require('./config.default');
 
 function setupExpress() {
 	const app = express();
-	app.use(favicon(path.join(__dirname, 'public', 'favicon', 'favicon.ico')));
+	// app.use(favicon(path.join(__dirname, 'public', 'favicon', 'favicon.ico')));
+	// app.use(`/apple-touch-icon`, (req, res) => {
+	// 	const iconPath = path.join(__dirname, 'public/favicon/apple-touch-icon.png');
+	// 	res.sendFile(iconPath, {
+	// 		maxAge: req.app.enabled('cache') ? 5184000000 : 0,
+	// 	});
+	// });
 
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
@@ -45,9 +51,10 @@ function setupExpress() {
 	require('./src/passportConfig')(passport);
 	require('./src/routes')(app);
 
-	app.use(express.static('dist'));
+	app.use('/assets', express.static('assets/dist'));
+	app.use('/assets/favicon', express.static('assets/favicon'));
 
-	const DIST_DIR = path.join(__dirname, 'dist');
+	const DIST_DIR = path.join(__dirname, 'assets/dist');
 	const HTML_FILE = path.join(DIST_DIR, 'index.html');
 
 	app.get('*', (req, res) => {
