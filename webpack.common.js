@@ -2,9 +2,13 @@
 
 const path = require('path');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-	entry: './public/index.js',
+	entry: [
+		'./public/index.js',
+		'./public/styles.scss',
+	],
 	output: {
 		filename: 'bundle.js',
 		path: path.resolve('dist'),
@@ -22,11 +26,20 @@ module.exports = {
 				use: 'html-loader',
 			},
 			{
-				test: /\.scss$/,
+				// test: /\.scss$/,
+				test: /\.(scss)$/,
 				use: [
+					MiniCssExtractPlugin.loader,
 					'style-loader',
 					'css-loader',
 					'sass-loader',
+				],
+			},
+			{
+				test: /\.css$/i,
+				use: [
+					'style-loader',
+					'css-loader',
 				],
 			},
 			{
@@ -36,9 +49,13 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new MiniCssExtractPlugin({
+			filename: 'main.css',
+		}),
 		new HTMLWebpackPlugin({
 			template: 'index.html',
 			favicon: './public/favicon/favicon.ico',
 		}),
+
 	],
 };

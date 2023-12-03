@@ -1,6 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
+import formHandleChange from "../formHandleChange"
 
 export default function RegisterForm({ setUser }) {
 	const [formData, setFormData] = React.useState({
@@ -8,14 +9,6 @@ export default function RegisterForm({ setUser }) {
 		password: '',
 		passwordConfirm: '',
 	});
-
-	function handleChange(ev) {
-		const { name, value, type, checked } = ev.target;
-		setFormData(prevData => ({
-			...prevData,
-			[name]: type === 'checkbox' ? checked : value
-		}))
-	}
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -51,7 +44,7 @@ export default function RegisterForm({ setUser }) {
 									className="form-control"
 									type="email"
 									placeholder="your@email.com"
-									onChange={handleChange}
+									onChange={ev => formHandleChange(ev, setFormData)}
 									name="email"
 									value={formData.email}
 								/>
@@ -61,7 +54,7 @@ export default function RegisterForm({ setUser }) {
 								<input
 									className="form-control"
 									type="password"
-									onChange={handleChange}
+									onChange={ev => formHandleChange(ev, setFormData)}
 									name="password"
 									value={formData.pasword}
 								/>
@@ -71,7 +64,7 @@ export default function RegisterForm({ setUser }) {
 								<input
 									className="form-control"
 									type="password"
-									onChange={handleChange}
+									onChange={ev => formHandleChange(ev, setFormData)}
 									name="passwordConfirm"
 									value={formData.passwordConfirm}
 								/>
