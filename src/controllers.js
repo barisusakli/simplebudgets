@@ -144,6 +144,19 @@ exports.deleteBudget = async (req, res) => {
 	res.json('ok');
 };
 
+exports.editBudget = async (req, res) => {
+	await db.collection('budgets').updateOne({
+		_id: new mongodb.ObjectId(req.body._id),
+		uid: req.user._id,
+	}, {
+		$set: {
+			name: req.body.name,
+			amount: formatDollarsToCents(req.body.amount),
+		},
+	});
+	res.json('ok');
+};
+
 exports.getTransactions = async (req, res) => {
 	const { monthStart, monthEnd } = req.query;
 

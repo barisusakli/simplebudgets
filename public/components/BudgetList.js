@@ -1,20 +1,25 @@
 import React from "react"
 import fetchJson from "../fetchJson"
-import CreateBudget from "./CreateBudget"
+import BudgetModal from "./BudgetModal"
+import FormModal from "./FormModal"
 import formatCentsToDollars from "../format"
 import * as bootstrap from 'bootstrap'
 
 export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
-	const now = new Date();
-	const numberOfDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+	const [budgetData, setBudgetData] = React.useState(null)
+	const [deleteBugdet, setDeleteBugdet] = React.useState(null)
+
+	const now = new Date()
+	const numberOfDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
 
 	function calculateMonthProgressPercent() {
 		return Math.min(99.5, parseFloat((new Date().getDate() / numberOfDaysInMonth) * 100));
 	}
 
 	function handleFilterBudget(ev, name) {
-		ev.preventDefault();
-		setCurrentBudget(name);
+		ev.preventDefault()
+		setCurrentBudget(name)
 		const triggerEl = document.querySelector('#myTab button[data-bs-target="#transactions-tab-pane"]')
 		if (triggerEl) {
 			bootstrap.Tab.getOrCreateInstance(triggerEl).show()
@@ -43,28 +48,61 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
 					<div className="text-sm text-secondary">
 						{formatCentsToDollars(budget.current)} of {formatCentsToDollars(budget.amount)}
 					</div>
-					{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => handleDelete(budget._id)}>Delete</a>}
+					<div className="d-flex gap-2">
+						{budget._id && <a className="btn btn-sm btn-link" onClick={() => handleEdit(budget)}>Edit</a>}
+						{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => setDeleteBugdet(budget)}>Delete</a>}
+					</div>
 				</div>
 				{!budget._id && <hr/>}
 			</li>
 		)
 	})
 
-	function handleDelete(_id) {
+	function handleCreate() {
+		setBudgetData({
+			name: '',
+			amount: '',
+		})
+	}
+
+	function handleEdit(budget) {
+		setBudgetData({
+			...budget,
+			amount: (budget.amount / 100).toFixed(2),
+		});
+	}
+
+	function handleDelete(modal, _id) {
 		fetchJson({
 			url: '/budgets/delete',
 			data: { _id },
 			method: 'post',
 		}).then(() => {
 			refreshAll()
+			modal.hide()
 		})
 	}
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<CreateBudget
+			<button className="btn btn-primary ff-secondary align-self-start" onClick={handleCreate}>Create Budget</button>
+			{!!budgetData && <BudgetModal
 				refreshAll={refreshAll}
-			/>
+				budgetData={budgetData}
+				onHidden={() => setBudgetData(null)}
+			/>}
+			{deleteBugdet && <FormModal
+				id="delete-budget-confirm"
+				title="Confirm Budget Delete"
+				onSubmit={modal => handleDelete(modal, deleteBugdet._id)}
+				onHidden={() => setDeleteBugdet(null)}
+				submitTitle="Delete"
+				showCloseButton={true}
+				isOpen={true}
+				>
+					<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteBugdet.name}"</strong> budget?</div>
+				</FormModal>
+			}
 			<ul id="budgets-list" className="list-unstyled d-flex flex-column gap-3">
 				{els}
 				{budgets.length <= 1 &&	<div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}

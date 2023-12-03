@@ -49,15 +49,16 @@ export default function Dashboard(props) {
 			refreshBudgets(),
 			refreshTransactions(),
 		]);
-		console.log(b, tx);
-		setBudgets(b);
-		setBudgetOptions(b.filter(budget => !!budget._id).map(budget => budget.name));
+		console.log('budgets', b)
+		console.log('txs', tx)
+		setBudgets(b)
+		setBudgetOptions(b.filter(budget => !!budget._id).map(budget => budget.name))
 		setTransactions(tx)
-		setIsLoaded(true);
+		setIsLoaded(true)
 	}
 
 	useEffect(() => {
-		refreshAll();
+		refreshAll()
 	}, [year, month])
 
 	return (

@@ -28,6 +28,7 @@ module.exports = function (app) {
 	const middlewares = [ensureLoggedIn, csrfSynchronisedProtection];
 	app.post('/budgets/create', middlewares, controllers.createBudget);
 	app.post('/budgets/delete', middlewares, controllers.deleteBudget);
+	app.post('/budgets/edit', middlewares, controllers.editBudget);
 	app.post('/transactions/create', middlewares, controllers.createTransaction);
 	app.post('/transactions/delete', middlewares, controllers.deleteTransaction);
 	app.post('/transactions/edit', middlewares, controllers.editTransaction);
