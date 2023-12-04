@@ -96,11 +96,12 @@ export default function TransactionList({
 						<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteTransaction.description}"</strong> transaction?</div>
 					</FormModal>
 				}
-
-				<select id="select-budget" className="form-select w-auto" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
-					<option value="">All bugdets</option>
-					{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
-				</select>
+				<div>
+					<select className="form-select" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
+						<option value="">All bugdets</option>
+						{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
+					</select>
+				</div>
 			</div>
 
 			{ transactions.length > 0 &&

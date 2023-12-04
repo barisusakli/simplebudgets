@@ -51,8 +51,7 @@ function setupExpress() {
 	require('./src/passportConfig')(passport);
 	require('./src/routes')(app);
 
-	app.use('/assets', express.static('assets/dist'));
-	app.use('/assets/favicon', express.static('assets/favicon'));
+	app.use('/assets', express.static('assets'));
 
 	const DIST_DIR = path.join(__dirname, 'assets/dist');
 	const HTML_FILE = path.join(DIST_DIR, 'index.html');
