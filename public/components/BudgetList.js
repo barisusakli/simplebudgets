@@ -1,11 +1,11 @@
 import React from "react"
 import fetchJson from "../fetchJson"
 import BudgetModal from "./BudgetModal"
-import FormModal from "./FormModal"
+import ConfirmModal from "./ConfirmModal"
 import formatCentsToDollars from "../format"
 import * as bootstrap from 'bootstrap'
 
-export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
+export default function BudgetList({ budgets, refreshAll, setCurrentBudget, isCurrentMonth }) {
 
 	const [budgetData, setBudgetData] = React.useState(null)
 	const [deleteBugdet, setDeleteBugdet] = React.useState(null)
@@ -37,11 +37,11 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
 				<div>
 					<div className="progress position-relative" role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
 						<div className={`progress-bar ${budget.bgColor}`} style={{width: Math.min(100, budget.percent) + '%'}}></div>
-						<div className="position-absolute border border-black" style={{
+						{isCurrentMonth && <div className="position-absolute border border-black" style={{
 							left: `${calculateMonthProgressPercent()}%`,
 							width: '1px',
 							height: '100%'
-						}}></div>
+						}}></div>}
 					</div>
 				</div>
 				<div className="d-flex justify-content-between align-items-center">
@@ -72,14 +72,18 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
 		});
 	}
 
-	function handleDelete(modal, _id) {
+	function handleDelete(confirm, _id) {
+		if (!confirm) {
+			setDeleteBugdet(null)
+			return
+		}
 		fetchJson({
 			url: '/budgets/delete',
 			data: { _id },
 			method: 'post',
 		}).then(() => {
 			refreshAll()
-			modal.hide()
+			setDeleteBugdet(null)
 		})
 	}
 
@@ -91,18 +95,16 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget }) {
 				budgetData={budgetData}
 				onHidden={() => setBudgetData(null)}
 			/>}
-			{deleteBugdet && <FormModal
+
+			{deleteBugdet && <ConfirmModal
 				id="delete-budget-confirm"
 				title="Confirm Budget Delete"
-				onSubmit={modal => handleDelete(modal, deleteBugdet._id)}
-				onHidden={() => setDeleteBugdet(null)}
-				submitTitle="Delete"
-				showCloseButton={true}
-				isOpen={true}
+				onSubmit={confirm => handleDelete(confirm, deleteBugdet._id)}
 				>
 					<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteBugdet.name}"</strong> budget?</div>
-				</FormModal>
+				</ConfirmModal>
 			}
+
 			<ul id="budgets-list" className="list-unstyled d-flex flex-column gap-3">
 				{els}
 				{budgets.length <= 1 &&	<div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}

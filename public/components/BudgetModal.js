@@ -1,12 +1,13 @@
-import React, { useState } from "react"
-import FormModal from "./FormModal"
+import React, { useState, useRef, useEffect } from "react"
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
+import { Modal } from 'bootstrap'
 
 export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 	const [formData, setFormData] = useState({ ...budgetData });
+	const myModalEl = useRef(null)
 
-	function onSubmit(modal) {
+	function onSubmit() {
 		if (!formData.name || !formData.amount) {
 			return;
 		}
@@ -18,27 +19,51 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
+			hideModal()
 			refreshAll()
-			modal.hide();
 		})
 	}
 
+	function showModal() {
+		const myModal = Modal.getOrCreateInstance(myModalEl.current)
+		myModal.show()
+	}
+
+	function hideModal() {
+		const myModal = Modal.getOrCreateInstance(myModalEl.current)
+		myModal.hide()
+	}
+
+	useEffect(() =>{
+		showModal()
+		if (onHidden) {
+			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true })
+		}
+	}, [])
+
 	return (
-		<FormModal
-			id="budget-modal"
-			title={`${formData._id ? 'Edit Budget' : 'Create Budget'}`}
-			onSubmit={onSubmit}
-			onHidden={onHidden}
-			isOpen={true}
-		>
-			<div className="mb-3">
-				<label className="form-label">Name</label>
-				<input className="form-control" type="text" name="name" value={formData.name} onChange={ev => formHandleChange(ev, setFormData)} autoComplete="off"/>
+		<div ref={myModalEl} className="modal" tabIndex="-1">
+			<div className="modal-dialog">
+				<div className="modal-content">
+					<div className="modal-header">
+						<h5 className="modal-title">{`${formData._id ? 'Edit Budget' : 'Create Budget'}`}</h5>
+						<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div className="modal-body">
+						<div className="mb-3">
+							<label className="form-label">Name</label>
+							<input className="form-control" type="text" name="name" value={formData.name} onChange={ev => formHandleChange(ev, setFormData)} autoComplete="off"/>
+						</div>
+						<div className="mb-3">
+							<label className="form-label">Amount</label>
+							<input className="form-control" type="number" min="0" step="any" name="amount" value={formData.amount} onChange={ev => formHandleChange(ev, setFormData)}/>
+						</div>
+					</div>
+					<div className="modal-footer">
+						<button type="button" className="btn btn-primary" onClick={onSubmit}>Save</button>
+					</div>
+				</div>
 			</div>
-			<div className="mb-3">
-				<label className="form-label">Amount</label>
-				<input className="form-control" type="number" min="0" step="any" name="amount" value={formData.amount} onChange={ev => formHandleChange(ev, setFormData)}/>
-			</div>
-		</FormModal>
+		</div>
 	)
 }

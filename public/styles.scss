@@ -6,10 +6,9 @@
 body {
 	overflow-y: scroll; /* Show vertical scrollbar */
 	font-family: 'Inter', sans-serif;
-	height: 100vh;
 	background-color: #EEEEEE;
-
 }
+
 .ff-secondary {
 	font-family: 'Poppins', sans-serif;
 }
@@ -30,4 +29,10 @@ body {
 		background-color: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)) !important;
 		transition: background-color 0.5s ease;
 	}
+}
+
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
 }

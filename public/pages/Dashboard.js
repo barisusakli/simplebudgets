@@ -72,6 +72,7 @@ export default function Dashboard(props) {
 						transactions={transactions}
 						budgetOptions={budgetOptions}
 						refreshAll={refreshAll}
+						isCurrentMonth={month === date.getMonth() && year === date.getFullYear()}
 					/>}
 				</div>
 			</div>

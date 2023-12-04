@@ -24,7 +24,7 @@ export default function Navbar(props) {
 				<select id="month-select"
 					className="form-select form-select-sm w-auto"
 					value={props.month}
-					onChange={(e) => props.setMonth(e.target.value)}
+					onChange={(e) => props.setMonth(parseInt(e.target.value, 10))}
 					>
 					<option value="0">January</option>
 					<option value="1">February</option>
@@ -43,7 +43,7 @@ export default function Navbar(props) {
 				<select id="year-select"
 					className="form-select form-select-sm w-auto"
 					value={props.year}
-					onChange={(e) => props.setYear(e.target.value)}
+					onChange={(e) => props.setYear(parseInt(e.target.value, 10))}
 					>
 					{yearEls}
 				</select>
