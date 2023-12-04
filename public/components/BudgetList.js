@@ -53,7 +53,7 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget, isCu
 						{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => setDeleteBugdet(budget)}>Delete</a>}
 					</div>
 				</div>
-				{!budget._id && <hr/>}
+				{budget._id ? <hr className="d-block d-lg-none" /> : <hr/>}
 			</li>
 		)
 	})
