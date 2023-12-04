@@ -1,21 +1,23 @@
-import React from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 
 export default function RegisterForm({ setUser }) {
-	const [formData, setFormData] = React.useState({
+	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
 		passwordConfirm: '',
-	});
+	})
+
+	const [userNameTaken, setUsernameTaken] = useState('')
+	const [registerError, setRegisterError] = useState('');
+
+	const noMatch = formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm;
 
 	async function handleSubmit(event) {
 		event.preventDefault();
-		if (formData.password === formData.passwordConfirm) {
-			console.log('successully signed up');
-		} else {
-			console.log('passwords do not match');
+		if (noMatch) {
 			return;
 		}
 
@@ -27,8 +29,11 @@ export default function RegisterForm({ setUser }) {
 			})
 			setUser(user)
 		} catch (err) {
-			// TODO add error alerts
-			console.error(err.message);
+			if (err.message === 'User already exists') {
+				setUsernameTaken(err.message)
+			} else {
+				setRegisterError(err.message)
+			}
 		}
 	}
 
@@ -47,7 +52,9 @@ export default function RegisterForm({ setUser }) {
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="email"
 									value={formData.email}
+									required
 								/>
+								{userNameTaken && <p className="form-text text-danger">{userNameTaken}</p>}
 							</div>
 							<div className="mb-3">
 								<label htmlFor="password" className="form-label">Password</label>
@@ -57,6 +64,9 @@ export default function RegisterForm({ setUser }) {
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="password"
 									value={formData.pasword}
+									minLength="8"
+									maxLength="64"
+									required
 								/>
 							</div>
 							<div className="mb-3">
@@ -67,9 +77,14 @@ export default function RegisterForm({ setUser }) {
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="passwordConfirm"
 									value={formData.passwordConfirm}
+									minLength="8"
+									maxLength="64"
+									required
 								/>
+								{noMatch && <p className="form-text text-danger">Passwords do no match</p>}
 							</div>
 							<button type="submit" className="btn btn-primary fw-secondary w-100 text-center">Register</button>
+							{registerError && <p className="form-text text-danger">{registerError}</p>}
 							<hr />
 							<p className="form-text mb-0">Already have an account? <Link to="/">Login</Link></p>
 						</form>

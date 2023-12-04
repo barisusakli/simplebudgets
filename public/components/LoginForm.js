@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
@@ -9,19 +9,23 @@ export default function LoginForm({ setUser }) {
 		password: '',
 	});
 
+	const [loginError, setLoginError] = useState('');
+
 	async function handleSubmit(event) {
 		event.preventDefault();
 		if (!formData.email || !formData.password) {
 			return;
 		}
-
-		await fetchJson({
-			url: '/login',
-			data: formData,
-			method: 'post',
-		}).then((loggedInUser) => {
+		try {
+			const loggedInUser = await fetchJson({
+				url: '/login',
+				data: formData,
+				method: 'post',
+			})
 			setUser(loggedInUser)
-		})
+		} catch (err) {
+			setLoginError(err.message)
+		}
 	}
 
 	return (
@@ -29,7 +33,7 @@ export default function LoginForm({ setUser }) {
 			<div className="col-12 col-md-6">
 				<div className="card shadow-sm">
 					<div className="card-body">
-						<form onSubmit={handleSubmit} className="">
+						<form onSubmit={handleSubmit}>
 							<div className="mb-3">
 								<label htmlFor="email" className="form-label">Email</label>
 								<input
@@ -39,6 +43,7 @@ export default function LoginForm({ setUser }) {
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="email"
 									value={formData.email}
+									required
 								/>
 							</div>
 							<div className="mb-3">
@@ -49,9 +54,11 @@ export default function LoginForm({ setUser }) {
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="password"
 									value={formData.pasword}
+									required
 								/>
 							</div>
 							<button type="submit" className="btn btn-primary fw-secondary w-100 text-center">Login</button>
+							{loginError && <p className="form-text text-danger">{loginError}</p>}
 							<hr />
 							<p className="form-text mb-0">Don't have an account? <Link to="/register">Register</Link></p>
 						</form>

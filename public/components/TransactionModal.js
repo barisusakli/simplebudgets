@@ -11,6 +11,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 		...txData,
 		date: getYYYYmmdd(txData.date),
 	});
+	const [descriptionErrorMsg, setDescriptionErrorMsg] = useState('')
 	const [deleteTransaction, setDeleteTransaction] = React.useState(null)
 	const myModalEl = useRef(null);
 
@@ -33,6 +34,10 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 
 	function onSubmit() {
 		if (!formData.budget || !formData.amount || !formData.description) {
+			return
+		}
+		if (formData.description.length > 100) {
+			setDescriptionErrorMsg('Description too long')
 			return
 		}
 
@@ -97,6 +102,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 							<div className="mb-3">
 								<label className="form-label">Description</label>
 								<input className="form-control" type="text" name="description" value={formData.description} onChange={ev => formHandleChange(ev, setFormData)}/>
+								{descriptionErrorMsg && <p className="form-text text-danger">{descriptionErrorMsg}</p>}
 							</div>
 							<div className="mb-3">
 								<label className="form-label">Amount</label>

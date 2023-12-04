@@ -4,14 +4,19 @@ import formHandleChange from "../formHandleChange"
 import { Modal } from 'bootstrap'
 
 export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
-	const [formData, setFormData] = useState({ ...budgetData });
+	const [formData, setFormData] = useState({ ...budgetData })
+	const [errorMsg, setErrorMsg] = useState('')
 	const myModalEl = useRef(null)
 
 	function onSubmit() {
 		if (!formData.name || !formData.amount) {
-			return;
+			return
 		}
 
+		if (formData.name.length > 50) {
+			setErrorMsg('Budget name too long')
+			return
+		}
 		fetchJson({
 			url: formData._id ?
 				'/budgets/edit' :
@@ -53,6 +58,7 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 						<div className="mb-3">
 							<label className="form-label">Name</label>
 							<input className="form-control" type="text" name="name" value={formData.name} onChange={ev => formHandleChange(ev, setFormData)} autoComplete="off"/>
+							{errorMsg && <p className="form-text text-danger">{errorMsg}</p>}
 						</div>
 						<div className="mb-3">
 							<label className="form-label">Amount</label>

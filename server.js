@@ -58,12 +58,12 @@ function setupExpress() {
 		res.sendFile(HTML_FILE);
 	});
 
-	app.use((err, req, res, next) => {
+	app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 		if (err.code === 'EBADCSRFTOKEN') {
 			res.status(403).send('csrf-error');
 			return;
 		}
-		next(err);
+		res.status(500).json(err.message);
 	});
 
 	app.listen(config.port, () => {

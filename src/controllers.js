@@ -1,5 +1,6 @@
 'use strict';
 
+const util = require('util');
 const path = require('path');
 const passport = require('passport');
 const bcryptjs = require('bcryptjs');
@@ -27,43 +28,57 @@ exports.register = async function (req, res) {
 	if (req.user) {
 		return res.redirect('/');
 	}
-	const user = await db.collection('users').findOne({
-		email: req.body.email,
-	});
-	if (user) {
-		res.status(500).json('User already exists');
-		return;
+	const { email, password } = req.body;
+	if (!email) {
+		throw new Error('Invalid Email');
 	}
+	if (email.length > 254) {
+		throw new Error('Email too long');
+	}
+
+	if (!password) {
+		throw new Error('Invalid password');
+	}
+	if (password.length < 8) {
+		throw new Error('Password too short');
+	}
+	if (password.length > 64) {
+		throw new Error('Password too long');
+	}
+
 	const salt = await bcryptjs.genSalt();
-	const hashedPassword = await bcryptjs.hash(req.body.password, salt);
-	const result = await db.collection('users').insertOne({
-		email: req.body.email,
-		password: hashedPassword,
-	});
-
-	req.login({ _id: result.insertedId, email: req.body.email }, (err) => {
-		if (err) {
-			return res.status(500).json(err.message);
+	const hashedPassword = await bcryptjs.hash(password, salt);
+	let result;
+	try {
+		result = await db.collection('users').insertOne({
+			email: email,
+			password: hashedPassword,
+		});
+	} catch (err) {
+		if (err.code === 11000 && err.keyPattern && err.keyPattern.email === 1) {
+			throw new Error('User already exists');
 		}
-
-		res.json({ _id: req.user._id, email: req.user.email });
-	});
+		throw err;
+	}
+	const loginAsync = util.promisify(req.login).bind(req);
+	await loginAsync({ _id: result.insertedId, email: email });
+	res.json({ _id: req.user._id, email: req.user.email });
 };
 
 exports.login = function (req, res, next) {
 	if (req.user) {
 		return res.redirect('/');
 	}
-	passport.authenticate('local', (err, user /* , info */) => {
+	passport.authenticate('local', (err, user, info) => {
 		if (err) {
-			return res.status(500).send(err.message);
+			return next(err);
 		}
 		if (!user) {
-			return res.status(500).send('no user exists');
+			return next(new Error(info));
 		}
 		req.login(user, (err) => {
 			if (err) {
-				return res.status(500).json(err.message);
+				return next(err);
 			}
 			res.json({ _id: req.user._id, email: req.user.email });
 		});
@@ -138,12 +153,12 @@ exports.createBudget = async (req, res) => {
 	if (!name) {
 		throw new Error('Invalid budget name');
 	}
-	if (name > 50) {
+	if (name.length > 50) {
 		throw new Error('Budget name too long');
 	}
 	await db.collection('budgets').insertOne({
 		uid: req.user._id,
-		name: req.body.name,
+		name: name,
 		amount: formatDollarsToCents(req.body.amount),
 	});
 	res.json('ok');
@@ -189,10 +204,10 @@ exports.getTransactions = async (req, res) => {
 
 function validateBudgetDescription(body) {
 	const { budget, description } = body;
-	if (budget > 50) {
+	if (budget.length > 50) {
 		throw new Error('Budget names can not be longer than 50 characters');
 	}
-	if (description > 100) {
+	if (description.length > 100) {
 		throw new Error('Descriptions can not be longer than 100 characters');
 	}
 }

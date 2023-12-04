@@ -25,7 +25,7 @@ function tryRoute(controller) {
 		};
 	}
 	return controller;
-};
+}
 
 module.exports = function (app) {
 	app.get('/csrf-token', (req, res) => res.send(generateToken(req)));

@@ -16,12 +16,12 @@ module.exports = function (passport) {
 		});
 
 		if (!user) {
-			done(null, false, 'user does not exist');
+			done(null, false, 'User does not exist');
 			return;
 		}
 		const ok = await bcryptjs.compare(password, user.password);
 		if (!ok) {
-			done(new Error('password incorrect'));
+			done(new Error('Password incorrect'));
 			return;
 		}
 		done(null, user);

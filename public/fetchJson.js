@@ -29,7 +29,7 @@ export default async function xhrJson({ url, data, method}) {
 
 		if (!response.ok) {
 			if (result) {
-				throw new Error(isJSON ? result : result);
+				throw new Error(result);
 			}
 			throw new Error(res.statusText);
 		}
