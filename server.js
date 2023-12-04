@@ -3,7 +3,6 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const favicon = require('serve-favicon');
 
 // Login/logout requires
 const cors = require('cors');
@@ -17,13 +16,12 @@ const config = require('./config.default');
 
 function setupExpress() {
 	const app = express();
-	// app.use(favicon(path.join(__dirname, 'public', 'favicon', 'favicon.ico')));
-	// app.use(`/apple-touch-icon`, (req, res) => {
-	// 	const iconPath = path.join(__dirname, 'public/favicon/apple-touch-icon.png');
-	// 	res.sendFile(iconPath, {
-	// 		maxAge: req.app.enabled('cache') ? 5184000000 : 0,
-	// 	});
-	// });
+	app.use(`/apple-touch-icon`, (req, res) => {
+		const iconPath = path.join(__dirname, 'assets/favicon/apple-touch-icon.png');
+		res.sendFile(iconPath, {
+			maxAge: req.app.enabled('cache') ? 5184000000 : 0,
+		});
+	});
 
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
@@ -39,7 +37,7 @@ function setupExpress() {
 		resave: false,
 		saveUninitialized: false,
 		store: connectMongo.create({
-			mongoUrl: `mongodb://127.0.0.1:27017/mybudget`,
+			mongoUrl: config.dbConnectionString,
 		}),
 		cookie: config.cookie,
 	}));
