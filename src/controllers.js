@@ -17,7 +17,6 @@ function formatDollarsToCents(value) {
 }
 
 exports.serviceWorker = (req, res) => {
-	console.log('sending service worker?')
 	res.status(200)
 		.type('application/javascript')
 		.set('Service-Worker-Allowed', `/`)
@@ -26,7 +25,7 @@ exports.serviceWorker = (req, res) => {
 
 exports.register = async function (req, res) {
 	if (req.user) {
-		return res.redirec('/');
+		return res.redirect('/');
 	}
 	const user = await db.collection('users').findOne({
 		email: req.body.email,
@@ -135,10 +134,17 @@ exports.getBudgets = async (req, res) => {
 };
 
 exports.createBudget = async (req, res) => {
+	const { name } = req.body;
+	if (!name) {
+		throw new Error('Invalid budget name');
+	}
+	if (name > 50) {
+		throw new Error('Budget name too long');
+	}
 	await db.collection('budgets').insertOne({
+		uid: req.user._id,
 		name: req.body.name,
 		amount: formatDollarsToCents(req.body.amount),
-		uid: req.user._id,
 	});
 	res.json('ok');
 };
@@ -181,14 +187,22 @@ exports.getTransactions = async (req, res) => {
 	res.json(txs);
 };
 
+function validateBudgetDescription(body) {
+	const { budget, description } = body;
+	if (budget > 50) {
+		throw new Error('Budget names can not be longer than 50 characters');
+	}
+	if (description > 100) {
+		throw new Error('Descriptions can not be longer than 100 characters');
+	}
+}
+
 exports.createTransaction = async (req, res) => {
 	if (!req.body.budget || !req.body.date || !req.body.amount || !req.body.description) {
-		return res.status(500).send('invalid-data');
+		throw new Error('Invalid data');
 	}
-	// TODO: check if budget exists
-	// TODO: trim description to 100 chars
-	// TODO: check amount is number
-	// TODO: check date is actually date
+
+	validateBudgetDescription(req.body);
 
 	await db.collection('transactions').insertOne({
 		description: req.body.description,
@@ -209,6 +223,8 @@ exports.deleteTransaction = async (req, res) => {
 };
 
 exports.editTransaction = async (req, res) => {
+	validateBudgetDescription(req.body);
+
 	await db.collection('transactions').updateOne({
 		_id: new mongodb.ObjectId(req.body._id),
 		uid: req.user._id,

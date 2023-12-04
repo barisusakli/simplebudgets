@@ -14,24 +14,37 @@ function ensureLoggedIn(req, res, next) {
 	next();
 }
 
+function tryRoute(controller) {
+	if (controller && controller.constructor && controller.constructor.name === 'AsyncFunction') {
+		return async function (req, res, next) {
+			try {
+				await controller(req, res, next);
+			} catch (err) {
+				next(err);
+			}
+		};
+	}
+	return controller;
+};
+
 module.exports = function (app) {
 	app.get('/csrf-token', (req, res) => res.send(generateToken(req)));
 
 	app.get('/service-worker.js', controllers.serviceWorker);
 
-	app.post('/register', csrfSynchronisedProtection, controllers.register);
-	app.post('/login', csrfSynchronisedProtection, controllers.login);
-	app.post('/logout', csrfSynchronisedProtection, controllers.logout);
-	app.get('/user', controllers.getUser);
+	app.post('/register', csrfSynchronisedProtection, tryRoute(controllers.register));
+	app.post('/login', csrfSynchronisedProtection, tryRoute(controllers.login));
+	app.post('/logout', csrfSynchronisedProtection, tryRoute(controllers.logout));
+	app.get('/user', tryRoute(controllers.getUser));
 
-	app.get('/budgets', ensureLoggedIn, controllers.getBudgets);
-	app.get('/transactions', ensureLoggedIn, controllers.getTransactions);
+	app.get('/budgets', ensureLoggedIn, tryRoute(controllers.getBudgets));
+	app.get('/transactions', ensureLoggedIn, tryRoute(controllers.getTransactions));
 
 	const middlewares = [ensureLoggedIn, csrfSynchronisedProtection];
-	app.post('/budgets/create', middlewares, controllers.createBudget);
-	app.post('/budgets/delete', middlewares, controllers.deleteBudget);
-	app.post('/budgets/edit', middlewares, controllers.editBudget);
-	app.post('/transactions/create', middlewares, controllers.createTransaction);
-	app.post('/transactions/delete', middlewares, controllers.deleteTransaction);
-	app.post('/transactions/edit', middlewares, controllers.editTransaction);
+	app.post('/budgets/create', middlewares, tryRoute(controllers.createBudget));
+	app.post('/budgets/delete', middlewares, tryRoute(controllers.deleteBudget));
+	app.post('/budgets/edit', middlewares, tryRoute(controllers.editBudget));
+	app.post('/transactions/create', middlewares, tryRoute(controllers.createTransaction));
+	app.post('/transactions/delete', middlewares, tryRoute(controllers.deleteTransaction));
+	app.post('/transactions/edit', middlewares, tryRoute(controllers.editTransaction));
 };

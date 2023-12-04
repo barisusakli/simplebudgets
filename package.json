@@ -31,8 +31,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.2.2",
     "sass": "^1.69.5",
-    "serve-favicon": "^2.5.0",
-    "validator": "13.11.0"
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
