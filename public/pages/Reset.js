@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react"
-import { Link, useParams } from "react-router-dom"
+import React, { useState } from "react"
+import { Link, useParams, Navigate } from "react-router-dom"
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 
-export default function Reset() {
+export default function Reset({ user }) {
+	if (user) {
+		return <Navigate to="/dashboard" />
+	}
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',

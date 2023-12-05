@@ -25,6 +25,23 @@ function formatDollarsToCents(value) {
 	return value ? Math.round(parseFloat(value) * 100) : 0;
 }
 
+function validatePassword(password) {
+	if (!password) {
+		throw new Error('Invalid password');
+	}
+	if (password.length < 8) {
+		throw new Error('Password too short');
+	}
+	if (password.length > 64) {
+		throw new Error('Password too long');
+	}
+}
+
+async function hashPassword(password) {
+	const salt = await bcryptjs.genSalt();
+	return await bcryptjs.hash(password, salt);
+};
+
 exports.serviceWorker = (req, res) => {
 	res.status(200)
 		.type('application/javascript')
@@ -44,18 +61,9 @@ exports.register = async function (req, res) {
 		throw new Error('Email too long');
 	}
 
-	if (!password) {
-		throw new Error('Invalid password');
-	}
-	if (password.length < 8) {
-		throw new Error('Password too short');
-	}
-	if (password.length > 64) {
-		throw new Error('Password too long');
-	}
+	validatePassword(password);
 
-	const salt = await bcryptjs.genSalt();
-	const hashedPassword = await bcryptjs.hash(password, salt);
+	const hashedPassword = await hashPassword(password);
 	let result;
 	try {
 		result = await db.collection('users').insertOne({
@@ -121,39 +129,61 @@ exports.resetSend = async function (req, res, next) {
 	const resetObj = await resetColl.findOne({
 		email: email,
 	});
+	console.log(resetObj)
 	const oneMinuteMs = 60000;
 	if (resetObj && resetObj.code && Date.now() < resetObj.expireAt.getTime()) {
 		return next(new Error('Reset email already sent, please wait 10 minutes to send another one!'));
 	}
 	const code = crypto.randomBytes(16).toString('hex');
 
-	await sgMail.send({
-		to: email,
-		from: sendgrid.from,
-		subject: 'Password reset request from SimpleBudgets.ca',
-		html: `
-			<p>Hello from Simple Budgets!</p>
-			<p>We have received a password reset request for your account. If you didn't make this request please ignore this email.</p>
-			<p>If you want to reset your password follow the link below.</p>
-			<a href="${config.url}/reset/${code}">Reset my password</a>
-			<p>Thank you!</p>
-			<hr/>
-			<a href="${config.url}">SimpleBudgets.ca</a>
-		`,
-	});
+	// await sgMail.send({
+	// 	to: email,
+	// 	from: sendgrid.from,
+	// 	subject: 'Password reset request from SimpleBudgets.ca',
+	// 	html: `
+	// 		<p>Hello from Simple Budgets!</p>
+	// 		<p>We have received a password reset request for your account. If you didn't make this request please ignore this email.</p>
+	// 		<p>If you want to reset your password follow the link below.</p>
+	// 		<a href="${config.url}/reset/${code}">Reset my password</a>
+	// 		<p>Thank you!</p>
+	// 		<hr/>
+	// 		<a href="${config.url}">SimpleBudgets.ca</a>
+	// 	`,
+	// });
+	console.log(code);
+	await resetColl.updateOne({
+		email: email,
+	}, {
+		$set: {
+			code,
+			expireAt: new Date(Date.now() + (10 * oneMinuteMs)),
+		},
+	}, { upsert: true });
 
-	await resetColl.insertOne({
-		code,
-		email,
-		expireAt: new Date(Date.now() + (10 * oneMinuteMs)),
-	});
 	res.json('ok');
 };
 
-exports.resetConfirm = function (req, res, next) {
+exports.resetConfirm = async function (req, res, next) {
 	// TODO: confirm code to user reset code and change pwd if the match
-	const { code } = req.body;
+	const { code, password } = req.body;
 	console.log('RESET PASSWORD UISING CODE', req.body);
+	const userColl = db.collection('users');
+	const resetColl = db.collection('passwordresets');
+	const { email, expireAt } = (await resetColl.findOne({ code }) || {});
+	const isCodeValid = email && code && expireAt.getTime() > Date.now();
+	if (!isCodeValid) {
+		return next(new Error('Invalid reset code'));
+	}
+	validatePassword(password);
+	const hashedPassword = await hashPassword(password);
+	await userColl.updateOne({
+		email: email,
+	}, {
+		$set: {
+			password: hashedPassword,
+		},
+	});
+	await resetColl.deleteOne({ code });
 	res.json('ok');
 };
 
