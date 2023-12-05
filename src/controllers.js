@@ -1,10 +1,18 @@
 'use strict';
 
+const validator = require('validator');
 const util = require('util');
 const path = require('path');
 const passport = require('passport');
 const bcryptjs = require('bcryptjs');
 const mongodb = require('mongodb');
+const crypto = require('crypto');
+const sgMail = require('@sendgrid/mail');
+const config = require('../config');
+
+const { sendgrid } = config;
+
+sgMail.setApiKey(sendgrid.key);
 
 const db = require('./database').db();
 
@@ -92,6 +100,61 @@ exports.logout = function (req, res, next) {
 		}
 		res.json('ok');
 	});
+};
+
+exports.resetSend = async function (req, res, next) {
+	const { email } = req.body;
+	if (!email || !validator.isEmail(req.body.email)) {
+		return next(new Error('Invalid email'));
+	}
+	const userColl = db.collection('users');
+	const resetColl = db.collection('passwordresets');
+	const user = await userColl.findOne({
+		email: email,
+	});
+	if (!user) {
+		setTimeout(() => {
+			res.json('ok');
+		}, Math.round((Math.random() * 100) + 100));
+		return;
+	}
+	const resetObj = await resetColl.findOne({
+		email: email,
+	});
+	const oneMinuteMs = 60000;
+	if (resetObj && resetObj.code && Date.now() < resetObj.expireAt.getTime()) {
+		return next(new Error('Reset email already sent, please wait 10 minutes to send another one!'));
+	}
+	const code = crypto.randomBytes(16).toString('hex');
+
+	await sgMail.send({
+		to: email,
+		from: sendgrid.from,
+		subject: 'Password reset request from SimpleBudgets.ca',
+		html: `
+			<p>Hello from Simple Budgets!</p>
+			<p>We have received a request for a password request for your account. If you didn't make this request please ignore this email.</p>
+			<p>If you want to reset your password follow the below link.</p>
+			<a href="${config.url}/reset/${code}">Reset my password</a>
+			<p>Thank you!</p>
+			<hr/>
+			<a href="${config.url}">SimpleBudgets.ca</a>
+		`,
+	});
+
+	await resetColl.insertOne({
+		code,
+		email,
+		expireAt: new Date(Date.now() + (10 * oneMinuteMs)),
+	});
+	res.json('ok');
+};
+
+exports.resetConfirm = function (req, res, next) {
+	// TODO: confirm code to user reset code and change pwd if the match
+	const { code } = req.body;
+	console.log('RESET PASSWORD UISING CODE', req.body);
+	res.json('ok');
 };
 
 exports.getUser = (req, res) => {

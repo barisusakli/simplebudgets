@@ -47,7 +47,10 @@ export default function LoginForm({ setUser }) {
 								/>
 							</div>
 							<div className="mb-3">
-								<label htmlFor="password" className="form-label">Password</label>
+								<div className="d-flex justify-content-between align-items-center">
+									<label htmlFor="password" className="form-label">Password</label>
+									<Link to="/reset" className="text-sm mb-2">Forgot password?</Link>
+								</div>
 								<input
 									className="form-control"
 									type="password"

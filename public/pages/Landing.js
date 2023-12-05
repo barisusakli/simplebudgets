@@ -28,7 +28,7 @@ export default function Landing({ user, setUser }) {
 		<div className={`pt-4 d-flex flex-column gap-4 ${loading ? 'd-none' : ''}`}>
 			<div>
 				<h1 className="fs-2 text-secondary fw-semibold text-center m-0">Welcome to</h1>
-				<h1 className="fw-semibold text-center m-0">Simple Budget!</h1>
+				<h1 className="fw-semibold text-center m-0">Simple Budgets!</h1>
 			</div>
 			<LoginForm setUser={setUser}/>
 		</div>

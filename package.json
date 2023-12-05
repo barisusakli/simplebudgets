@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@popperjs/core": "2.11.8",
+    "@sendgrid/mail": "^8.0.0",
     "bcryptjs": "2.4.3",
     "body-parser": "1.20.2",
     "bootbox": "6.0.0",
@@ -30,7 +31,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.2.2",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",

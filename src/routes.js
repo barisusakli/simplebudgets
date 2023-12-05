@@ -35,6 +35,8 @@ module.exports = function (app) {
 	app.post('/register', csrfSynchronisedProtection, tryRoute(controllers.register));
 	app.post('/login', csrfSynchronisedProtection, tryRoute(controllers.login));
 	app.post('/logout', csrfSynchronisedProtection, tryRoute(controllers.logout));
+	app.post('/reset/send', csrfSynchronisedProtection, tryRoute(controllers.resetSend));
+	app.post('/reset/confirm', csrfSynchronisedProtection, tryRoute(controllers.resetConfirm));
 	app.get('/user', tryRoute(controllers.getUser));
 
 	app.get('/budgets', ensureLoggedIn, tryRoute(controllers.getBudgets));

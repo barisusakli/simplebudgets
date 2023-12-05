@@ -12,7 +12,7 @@ const session = require('express-session');
 const connectMongo = require('connect-mongo');
 const database = require('./src/database');
 
-const config = require('./config.default');
+const config = require('./config');
 
 function setupExpress() {
 	const app = express();
@@ -26,7 +26,7 @@ function setupExpress() {
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
 	app.use(cors({
-		origin: 'http://127.0.0.1:3000',
+		origin: config.url,
 		credentials: true,
 	}));
 
