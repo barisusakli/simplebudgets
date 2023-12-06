@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import fetchJson from "../fetchJson"
 import ChangePasswordModal from "./ChangePasswordModal";
+import ChangeEmailModal from "./ChangeEmailModal";
 
 export default function ProfileDropdown({ user, setUser }) {
 	const [showChangeEmail, setShowChangeEmail] = useState(false)
@@ -25,6 +26,12 @@ export default function ProfileDropdown({ user, setUser }) {
 					<li><a className="dropdown-item rounded-1" href="#" onClick={handleLogout}>Logout</a></li>
 				</ul>
 			</div>
+			{
+				showChangeEmail &&
+				<ChangeEmailModal
+					setUser={setUser}
+					onHidden={() => setShowChangeEmail(false)}/>
+			}
 			{
 				showChangePassword &&
 				<ChangePasswordModal

@@ -37,9 +37,26 @@ function validatePassword(password) {
 	}
 }
 
+function validateEmail(email) {
+	if (!email || !validator.isEmail(email)) {
+		throw new Error('Invalid Email');
+	}
+	if (email.length > 254) {
+		throw new Error('Email too long');
+	}
+}
+
 async function hashPassword(password) {
 	const salt = await bcryptjs.genSalt();
 	return await bcryptjs.hash(password, salt);
+}
+
+async function destroySessions(uid) {
+	const sids = await db.collection('userSessions').find({ uid }).toArray();
+	await db.collection('sessions').deleteMany({
+		_id: { $in: sids },
+	});
+	await db.collection('userSessions').deleteMany({ uid });
 }
 
 exports.serviceWorker = (req, res) => {
@@ -54,13 +71,8 @@ exports.register = async function (req, res) {
 		return res.redirect('/');
 	}
 	const { email, password } = req.body;
-	if (!email) {
-		throw new Error('Invalid Email');
-	}
-	if (email.length > 254) {
-		throw new Error('Email too long');
-	}
 
+	validateEmail(email);
 	validatePassword(password);
 
 	const hashedPassword = await hashPassword(password);
@@ -114,6 +126,40 @@ exports.logout = async function (req, res) {
 	res.json('ok');
 };
 
+exports.changeEmail = async function (req, res) {
+	const { password, email } = req.body;
+	validateEmail(email);
+
+	const user = await db.collection('users').findOne({
+		_id: req.user._id,
+	});
+
+	if (!user) {
+		throw new Error('No user');
+	}
+
+	const ok = await bcryptjs.compare(password, user.password);
+	if (!ok) {
+		throw new Error('Incorrect current password');
+	}
+	try {
+		await db.collection('users').updateOne({
+			_id: req.user._id,
+		}, {
+			$set: {
+				email: email,
+			},
+		});
+	} catch (err) {
+		if (err.code === 11000 && err.keyPattern && err.keyPattern.email === 1) {
+			throw new Error('Email already taken');
+		}
+		throw err;
+	}
+	await destroySessions(req.user._id);
+	exports.logout(req, res);
+};
+
 exports.changePassword = async function (req, res) {
 	const { password, newpassword } = req.body;
 
@@ -137,7 +183,7 @@ exports.changePassword = async function (req, res) {
 			password: hashedPassword,
 		},
 	});
-	await db.collection('userSessions').deleteMany({ uid: req.user._id });
+	await destroySessions(req.user._id);
 	exports.logout(req, res);
 };
 
@@ -229,7 +275,7 @@ exports.getUser = (req, res) => {
 exports.getBudgets = async (req, res) => {
 	const budgets = await db.collection('budgets').find({
 		uid: req.user._id,
-	}).sort({ name: 1 }).toArray();
+	}).sort({ _id: 1 }).toArray();
 
 	const { monthStart, monthEnd } = req.query;
 	const txs = await db.collection('transactions').find({

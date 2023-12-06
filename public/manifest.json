@@ -1,6 +1,6 @@
 {
-	"name": "Simple Budget",
-	"short_name": "Simple Budget",
+	"name": "Simple Budgets",
+	"short_name": "Simple Budgets",
 	"start_url": "/",
 	"display": "standalone",
 	"orientation": "portrait",
