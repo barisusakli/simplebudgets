@@ -59,7 +59,7 @@ export default function LoginForm({ setUser }) {
 									type="password"
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="password"
-									value={formData.pasword}
+									value={formData.password}
 									required
 									autoComplete="on"
 								/>

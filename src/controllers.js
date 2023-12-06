@@ -114,7 +114,34 @@ exports.logout = async function (req, res) {
 	res.json('ok');
 };
 
-exports.resetSend = async function (req, res, next) {
+exports.changePassword = async function (req, res) {
+	const { password, newpassword } = req.body;
+
+	const user = await db.collection('users').findOne({
+		_id: req.user._id,
+	});
+
+	if (!user) {
+		throw new Error('No user');
+	}
+	const ok = await bcryptjs.compare(password, user.password);
+	if (!ok) {
+		throw new Error('Incorrect current password');
+	}
+	validatePassword(newpassword);
+	const hashedPassword = await hashPassword(newpassword);
+	await db.collection('users').updateOne({
+		_id: req.user._id,
+	}, {
+		$set: {
+			password: hashedPassword,
+		},
+	});
+	await db.collection('userSessions').deleteMany({ uid: req.user._id });
+	exports.logout(req, res);
+};
+
+exports.passwordResetSend = async function (req, res, next) {
 	const { email } = req.body;
 	if (!email || !validator.isEmail(req.body.email)) {
 		return next(new Error('Invalid email'));
@@ -168,7 +195,7 @@ exports.resetSend = async function (req, res, next) {
 	res.json('ok');
 };
 
-exports.resetConfirm = async function (req, res, next) {
+exports.passwordResetCommit = async function (req, res, next) {
 	const { code, password } = req.body;
 	const userColl = db.collection('users');
 	const resetColl = db.collection('passwordresets');

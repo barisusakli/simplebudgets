@@ -27,7 +27,7 @@ export default function Reset({ user }) {
 		try {
 			setError('')
 			await fetchJson({
-				url: '/reset/send',
+				url: '/password/reset/send',
 				data: formData,
 				method: 'post',
 			})
@@ -37,7 +37,7 @@ export default function Reset({ user }) {
 		}
 	}
 
-	async function handleResetConfirm(event) {
+	async function handleResetCommit(event) {
 		event.preventDefault();
 		if (noMatch || !formData.password) {
 			return;
@@ -45,7 +45,7 @@ export default function Reset({ user }) {
 		try {
 			setError('')
 			await fetchJson({
-				url: '/reset/confirm',
+				url: '/password/reset/commit',
 				data: {
 					code: code,
 					password: formData.password
@@ -87,7 +87,7 @@ export default function Reset({ user }) {
 
 
 	const changeForm = (
-		<form onSubmit={handleResetConfirm}>
+		<form onSubmit={handleResetCommit}>
 			<div className="mb-3">
 				<label htmlFor="password" className="form-label">Password</label>
 				<input

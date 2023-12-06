@@ -66,7 +66,7 @@ export default function RegisterForm({ setUser }) {
 									type="password"
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="password"
-									value={formData.pasword}
+									value={formData.password}
 									minLength="8"
 									maxLength="64"
 									required
