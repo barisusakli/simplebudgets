@@ -32,14 +32,14 @@ export default function Dashboard(props) {
 
 	async function refreshBudgets() {
 		return await fetchJson({
-			url: '/budgets?' + new URLSearchParams(getStartEnd()),
+			url: '/api/budgets?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
 		})
 	}
 
 	async function refreshTransactions() {
 		return await fetchJson({
-			url: '/transactions?' + new URLSearchParams(getStartEnd()),
+			url: '/api/transactions?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
 		});
 	}

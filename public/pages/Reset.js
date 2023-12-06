@@ -27,7 +27,7 @@ export default function Reset({ user }) {
 		try {
 			setError('')
 			await fetchJson({
-				url: '/password/reset/send',
+				url: '/api/password/reset/send',
 				data: formData,
 				method: 'post',
 			})
@@ -45,7 +45,7 @@ export default function Reset({ user }) {
 		try {
 			setError('')
 			await fetchJson({
-				url: '/password/reset/commit',
+				url: '/api/password/reset/commit',
 				data: {
 					code: code,
 					password: formData.password

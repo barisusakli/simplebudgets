@@ -19,8 +19,8 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 		}
 		fetchJson({
 			url: formData._id ?
-				'/budgets/edit' :
-				'/budgets/create',
+				'/api/budgets/edit' :
+				'/api/budgets/create',
 			data: formData,
 			method: 'post',
 		}).then(() => {

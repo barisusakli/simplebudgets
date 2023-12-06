@@ -22,7 +22,7 @@ export default function ChangePasswordModal({ setUser, onHidden }) {
 		}
 
 		fetchJson({
-			url: '/password/change',
+			url: '/api/password/change',
 			data: formData,
 			method: 'post',
 		}).then(() => {

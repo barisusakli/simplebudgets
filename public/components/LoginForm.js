@@ -18,7 +18,7 @@ export default function LoginForm({ setUser }) {
 		}
 		try {
 			const loggedInUser = await fetchJson({
-				url: '/login',
+				url: '/api/login',
 				data: formData,
 				method: 'post',
 			})

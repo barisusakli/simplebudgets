@@ -9,7 +9,7 @@ export default function ProfileDropdown({ user, setUser }) {
 
 	async function handleLogout() {
 		await fetchJson({
-			url: '/logout',
+			url: '/api/logout',
 			method: 'post',
 		});
 		setUser(null);

@@ -7,7 +7,7 @@ export default async function xhrJson({ url, data, method}) {
 		};
 		method = method || 'get'
 		if (['post', 'put', 'delete'].includes(method.toLowerCase())) {
-			headers['x-csrf-token'] = await (await fetch('/csrf-token')).text()
+			headers['x-csrf-token'] = await (await fetch('/api/csrf-token')).text()
 		}
 		const response = await fetch(url, {
 			method: method,

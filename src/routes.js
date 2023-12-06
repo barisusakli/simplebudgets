@@ -1,6 +1,6 @@
 'use strict';
 
-
+const express = require('express');
 const { csrfSync } = require('csrf-sync');
 const controllers = require('./controllers');
 
@@ -30,27 +30,29 @@ function tryRoute(controller) {
 }
 
 module.exports = function (app) {
-	app.get('/csrf-token', (req, res) => res.send(generateToken(req)));
+	const router = express.Router();
+	router.get('/csrf-token', (req, res) => res.send(generateToken(req)));
 
 	app.get('/service-worker.js', controllers.serviceWorker);
 
-	app.post('/register', csrfSynchronisedProtection, tryRoute(controllers.register));
-	app.post('/login', csrfSynchronisedProtection, tryRoute(controllers.login));
-	app.post('/logout', csrfSynchronisedProtection, tryRoute(controllers.logout));
-	app.post('/email/change', [ensureLoggedIn, csrfSynchronisedProtection], tryRoute(controllers.changeEmail));
-	app.post('/password/change', [ensureLoggedIn, csrfSynchronisedProtection], tryRoute(controllers.changePassword));
-	app.post('/password/reset/send', csrfSynchronisedProtection, tryRoute(controllers.passwordResetSend));
-	app.post('/password/reset/commit', csrfSynchronisedProtection, tryRoute(controllers.passwordResetCommit));
-	app.get('/user', tryRoute(controllers.getUser));
+	router.post('/register', csrfSynchronisedProtection, tryRoute(controllers.register));
+	router.post('/login', csrfSynchronisedProtection, tryRoute(controllers.login));
+	router.post('/logout', csrfSynchronisedProtection, tryRoute(controllers.logout));
+	router.post('/email/change', [ensureLoggedIn, csrfSynchronisedProtection], tryRoute(controllers.changeEmail));
+	router.post('/password/change', [ensureLoggedIn, csrfSynchronisedProtection], tryRoute(controllers.changePassword));
+	router.post('/password/reset/send', csrfSynchronisedProtection, tryRoute(controllers.passwordResetSend));
+	router.post('/password/reset/commit', csrfSynchronisedProtection, tryRoute(controllers.passwordResetCommit));
+	router.get('/user', tryRoute(controllers.getUser));
 
-	app.get('/budgets', ensureLoggedIn, tryRoute(controllers.getBudgets));
-	app.get('/transactions', ensureLoggedIn, tryRoute(controllers.getTransactions));
+	router.get('/budgets', ensureLoggedIn, tryRoute(controllers.getBudgets));
+	router.get('/transactions', ensureLoggedIn, tryRoute(controllers.getTransactions));
 
 	const middlewares = [ensureLoggedIn, csrfSynchronisedProtection];
-	app.post('/budgets/create', middlewares, tryRoute(controllers.createBudget));
-	app.post('/budgets/delete', middlewares, tryRoute(controllers.deleteBudget));
-	app.post('/budgets/edit', middlewares, tryRoute(controllers.editBudget));
-	app.post('/transactions/create', middlewares, tryRoute(controllers.createTransaction));
-	app.post('/transactions/delete', middlewares, tryRoute(controllers.deleteTransaction));
-	app.post('/transactions/edit', middlewares, tryRoute(controllers.editTransaction));
+	router.post('/budgets/create', middlewares, tryRoute(controllers.createBudget));
+	router.post('/budgets/delete', middlewares, tryRoute(controllers.deleteBudget));
+	router.post('/budgets/edit', middlewares, tryRoute(controllers.editBudget));
+	router.post('/transactions/create', middlewares, tryRoute(controllers.createTransaction));
+	router.post('/transactions/delete', middlewares, tryRoute(controllers.deleteTransaction));
+	router.post('/transactions/edit', middlewares, tryRoute(controllers.editTransaction));
+	app.use('/api', router);
 };

@@ -78,7 +78,7 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget, isCu
 			return
 		}
 		fetchJson({
-			url: '/budgets/delete',
+			url: '/api/budgets/delete',
 			data: { _id },
 			method: 'post',
 		}).then(() => {

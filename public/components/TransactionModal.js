@@ -52,8 +52,8 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 
 		fetchJson({
 			url: submitData._id ?
-				'/transactions/edit' :
-				'/transactions/create',
+				'/api/transactions/edit' :
+				'/api/transactions/create',
 			data: submitData,
 			method: 'post',
 		}).then(() => {
@@ -73,7 +73,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			return
 		}
 		fetchJson({
-			url: '/transactions/delete',
+			url: '/api/transactions/delete',
 			data: { _id },
 			method: 'post',
 		}).then(() => {

@@ -19,7 +19,7 @@ export default function ChangeEmailModal({ setUser, onHidden }) {
 		}
 
 		fetchJson({
-			url: '/email/change',
+			url: '/api/email/change',
 			data: formData,
 			method: 'post',
 		}).then(() => {

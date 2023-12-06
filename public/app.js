@@ -18,7 +18,7 @@ export default function App() {
 
 	useEffect(() => {
 		fetchJson({
-			url: '/user',
+			url: '/api/user',
 		}).then((result) => {
 			if (result) {
 				console.log(result);

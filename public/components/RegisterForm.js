@@ -23,7 +23,7 @@ export default function RegisterForm({ setUser }) {
 
 		try {
 			const user = await fetchJson({
-				url: '/register',
+				url: '/api/register',
 				data: formData,
 				method: 'post',
 			})
