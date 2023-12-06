@@ -2,15 +2,16 @@ import React, { useState } from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
-import useScript from "../hooks/useScript";
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 export default function RegisterForm({ setUser }) {
-	useScript('https://js.hcaptcha.com/1/api.js')
+	const captchaRef = useRef(null);
 
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
 		passwordConfirm: '',
+		hcaptchaToken: ''
 	})
 
 	const [userNameTaken, setUsernameTaken] = useState('')
@@ -37,7 +38,16 @@ export default function RegisterForm({ setUser }) {
 			} else {
 				setRegisterError(err.message)
 			}
+		} finally {
+			captchaRef.current.resetCaptcha()
 		}
+	}
+
+	function handleVerificationSuccess(token, ekey) {
+		setFormData(prevData => ({
+			...prevData,
+			hcaptchaToken: token,
+		}))
 	}
 
 	return (
@@ -92,10 +102,15 @@ export default function RegisterForm({ setUser }) {
 								/>
 								{noMatch && <p className="form-text text-danger">Passwords do no match</p>}
 							</div>
-							<div className="mb-3">
-								<div className="h-captcha" data-sitekey="d76f5317-946c-48e0-90aa-931c916c1d7d"></div>
 
+							<div className="mb-3">
+								<HCaptcha
+									ref={captchaRef}
+									sitekey="d76f5317-946c-48e0-90aa-931c916c1d7d"
+									onVerify={(token, ekey) => handleVerificationSuccess(token, ekey)}
+    							/>
 							</div>
+
 							<button type="submit" className="btn btn-primary fw-secondary w-100 text-center">Register</button>
 							{registerError && <p className="form-text text-danger">{registerError}</p>}
 							<hr />

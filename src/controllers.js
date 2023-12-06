@@ -81,8 +81,8 @@ exports.register = async function (req, res) {
 		return res.redirect('/');
 	}
 
-	console.log(req.body['h-captcha-response']);
-	await validateCaptcha(req.body['h-captcha-response']);
+	console.log(req.body.hcaptchaToken);
+	await validateCaptcha(req.body.hcaptchaToken);
 
 	const { email, password } = req.body;
 
@@ -123,8 +123,8 @@ exports.login = async function (req, res) {
 		return res.redirect('/');
 	}
 
-	console.log(req.body['h-captcha-response']);
-	await validateCaptcha(req.body['h-captcha-response']);
+	console.log(req.body.hcaptchaToken);
+	await validateCaptcha(req.body.hcaptchaToken);
 
 	const user = await authenticate(req, res);
 	const loginAsync = util.promisify(req.login).bind(req);

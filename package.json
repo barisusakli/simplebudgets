@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hcaptcha/react-hcaptcha": "^1.9.2",
     "@popperjs/core": "2.11.8",
     "@sendgrid/mail": "^8.0.0",
     "bcryptjs": "2.4.3",
