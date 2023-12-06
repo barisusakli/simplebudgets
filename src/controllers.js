@@ -81,7 +81,6 @@ exports.register = async function (req, res) {
 		return res.redirect('/');
 	}
 
-	console.log(req.body.hcaptchaToken);
 	await validateCaptcha(req.body.hcaptchaToken);
 
 	const { email, password } = req.body;
@@ -123,7 +122,6 @@ exports.login = async function (req, res) {
 		return res.redirect('/');
 	}
 
-	console.log(req.body.hcaptchaToken);
 	await validateCaptcha(req.body.hcaptchaToken);
 
 	const user = await authenticate(req, res);
