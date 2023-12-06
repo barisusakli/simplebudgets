@@ -1,11 +1,13 @@
 'use strict';
 
+
+const { csrfSync } = require('csrf-sync');
 const controllers = require('./controllers');
 
 const {
 	generateToken,
 	csrfSynchronisedProtection,
-} = require('./csrf');
+} = csrfSync();
 
 function ensureLoggedIn(req, res, next) {
 	if (!req.user) {

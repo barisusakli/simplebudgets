@@ -40,7 +40,7 @@ function validatePassword(password) {
 async function hashPassword(password) {
 	const salt = await bcryptjs.genSalt();
 	return await bcryptjs.hash(password, salt);
-};
+}
 
 exports.serviceWorker = (req, res) => {
 	res.status(200)
@@ -81,33 +81,37 @@ exports.register = async function (req, res) {
 	res.json({ _id: req.user._id, email: req.user.email });
 };
 
-exports.login = function (req, res, next) {
+
+function authenticate(req, res) {
+	return new Promise((resolve, reject) => {
+		passport.authenticate('local', (err, user, info) => {
+			if (err) reject(new Error(err));
+			else if (!user) reject(new Error(info));
+			resolve(user);
+		})(req, res);
+	});
+}
+
+exports.login = async function (req, res) {
 	if (req.user) {
 		return res.redirect('/');
 	}
-	passport.authenticate('local', (err, user, info) => {
-		if (err) {
-			return next(err);
-		}
-		if (!user) {
-			return next(new Error(info));
-		}
-		req.login(user, (err) => {
-			if (err) {
-				return next(err);
-			}
-			res.json({ _id: req.user._id, email: req.user.email });
-		});
-	})(req, res, next);
+	const user = await authenticate(req, res);
+	const loginAsync = util.promisify(req.login).bind(req);
+	await loginAsync({ _id: user._id, email: user.email });
+	await db.collection('userSessions').insertOne({
+		uid: req.user._id,
+		sid: req.sessionID,
+	});
+	res.json({ _id: req.user._id, email: req.user.email });
 };
 
-exports.logout = function (req, res, next) {
-	req.logout((err) => {
-		if (err) {
-			return next(err);
-		}
-		res.json('ok');
-	});
+exports.logout = async function (req, res) {
+	const sid = req.sessionID;
+	const logoutAsync = util.promisify(req.logout).bind(req);
+	await logoutAsync();
+	await db.collection('userSessions').deleteOne({ sid });
+	res.json('ok');
 };
 
 exports.resetSend = async function (req, res, next) {
@@ -129,7 +133,7 @@ exports.resetSend = async function (req, res, next) {
 	const resetObj = await resetColl.findOne({
 		email: email,
 	});
-	console.log(resetObj)
+
 	const oneMinuteMs = 60000;
 	if (resetObj && resetObj.code && Date.now() < resetObj.expireAt.getTime()) {
 		return next(new Error('Reset email already sent, please wait 10 minutes to send another one!'));
@@ -150,11 +154,12 @@ exports.resetSend = async function (req, res, next) {
 	// 		<a href="${config.url}">SimpleBudgets.ca</a>
 	// 	`,
 	// });
-	console.log(code);
+
 	await resetColl.updateOne({
 		email: email,
 	}, {
 		$set: {
+			uid: user._id,
 			code,
 			expireAt: new Date(Date.now() + (10 * oneMinuteMs)),
 		},
@@ -164,13 +169,11 @@ exports.resetSend = async function (req, res, next) {
 };
 
 exports.resetConfirm = async function (req, res, next) {
-	// TODO: confirm code to user reset code and change pwd if the match
 	const { code, password } = req.body;
-	console.log('RESET PASSWORD UISING CODE', req.body);
 	const userColl = db.collection('users');
 	const resetColl = db.collection('passwordresets');
-	const { email, expireAt } = (await resetColl.findOne({ code }) || {});
-	const isCodeValid = email && code && expireAt.getTime() > Date.now();
+	const { email, uid, expireAt } = (await resetColl.findOne({ code }) || {});
+	const isCodeValid = email && code && uid && expireAt.getTime() > Date.now();
 	if (!isCodeValid) {
 		return next(new Error('Invalid reset code'));
 	}
@@ -184,6 +187,7 @@ exports.resetConfirm = async function (req, res, next) {
 		},
 	});
 	await resetColl.deleteOne({ code });
+	await db.collection('userSessions').deleteMany({ uid });
 	res.json('ok');
 };
 
@@ -198,7 +202,7 @@ exports.getUser = (req, res) => {
 exports.getBudgets = async (req, res) => {
 	const budgets = await db.collection('budgets').find({
 		uid: req.user._id,
-	}).toArray();
+	}).sort({ name: 1 }).toArray();
 
 	const { monthStart, monthEnd } = req.query;
 	const txs = await db.collection('transactions').find({

@@ -63,6 +63,7 @@ export default function Reset({ user }) {
 			<div className="mb-3">
 				<label htmlFor="email" className="form-label">Email</label>
 				<input
+					id="email"
 					className="form-control"
 					type="email"
 					placeholder="your@email.com"
@@ -70,6 +71,7 @@ export default function Reset({ user }) {
 					name="email"
 					value={formData.email}
 					required
+					autoComplete="off"
 				/>
 				<p className="form-text">
 					Enter the email address you registered with and we will send an email with instructions on how to reset your password.
@@ -89,6 +91,7 @@ export default function Reset({ user }) {
 			<div className="mb-3">
 				<label htmlFor="password" className="form-label">Password</label>
 				<input
+					id="password"
 					className="form-control"
 					type="password"
 					onChange={ev => formHandleChange(ev, setFormData)}
@@ -97,11 +100,13 @@ export default function Reset({ user }) {
 					minLength="8"
 					maxLength="64"
 					required
+					autoComplete="off"
 				/>
 			</div>
 			<div className="mb-3">
 				<label htmlFor="passwordConfirm" className="form-label">Confirm Password</label>
 				<input
+					id="passwordConfirm"
 					className="form-control"
 					type="password"
 					onChange={ev => formHandleChange(ev, setFormData)}
@@ -110,6 +115,7 @@ export default function Reset({ user }) {
 					minLength="8"
 					maxLength="64"
 					required
+					autoComplete="off"
 				/>
 				{noMatch && <p className="form-text text-danger">Passwords do no match</p>}
 			</div>

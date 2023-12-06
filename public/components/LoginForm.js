@@ -37,6 +37,7 @@ export default function LoginForm({ setUser }) {
 							<div className="mb-3">
 								<label htmlFor="email" className="form-label">Email</label>
 								<input
+									id="email"
 									className="form-control"
 									type="email"
 									placeholder="your@email.com"
@@ -44,6 +45,7 @@ export default function LoginForm({ setUser }) {
 									name="email"
 									value={formData.email}
 									required
+									autoComplete="on"
 								/>
 							</div>
 							<div className="mb-3">
@@ -52,12 +54,14 @@ export default function LoginForm({ setUser }) {
 									<Link to="/reset" className="text-sm mb-2">Forgot password?</Link>
 								</div>
 								<input
+									id="password"
 									className="form-control"
 									type="password"
 									onChange={ev => formHandleChange(ev, setFormData)}
 									name="password"
 									value={formData.pasword}
 									required
+									autoComplete="on"
 								/>
 							</div>
 							<button type="submit" className="btn btn-primary fw-secondary w-100 text-center">Login</button>
