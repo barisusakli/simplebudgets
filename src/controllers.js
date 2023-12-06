@@ -8,6 +8,7 @@ const bcryptjs = require('bcryptjs');
 const mongodb = require('mongodb');
 const crypto = require('crypto');
 const sgMail = require('@sendgrid/mail');
+const hcaptcha = require('hcaptcha');
 const config = require('../config');
 
 const { sendgrid } = config;
@@ -46,6 +47,15 @@ function validateEmail(email) {
 	}
 }
 
+async function validateCaptcha(token) {
+	if (config.hcaptcha.secret) {
+		const result = await hcaptcha.verify(config.hcaptcha.secret, token);
+		if (!result.success) {
+			throw new Error('hCaptcha Verification failed!');
+		}
+	}
+}
+
 async function hashPassword(password) {
 	const salt = await bcryptjs.genSalt();
 	return await bcryptjs.hash(password, salt);
@@ -70,6 +80,10 @@ exports.register = async function (req, res) {
 	if (req.user) {
 		return res.redirect('/');
 	}
+
+	console.log(req.body['h-captcha-response']);
+	await validateCaptcha(req.body['h-captcha-response']);
+
 	const { email, password } = req.body;
 
 	validateEmail(email);
@@ -108,6 +122,10 @@ exports.login = async function (req, res) {
 	if (req.user) {
 		return res.redirect('/');
 	}
+
+	console.log(req.body['h-captcha-response']);
+	await validateCaptcha(req.body['h-captcha-response']);
+
 	const user = await authenticate(req, res);
 	const loginAsync = util.promisify(req.login).bind(req);
 	await loginAsync({ _id: user._id, email: user.email });

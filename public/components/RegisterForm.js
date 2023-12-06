@@ -89,6 +89,10 @@ export default function RegisterForm({ setUser }) {
 								/>
 								{noMatch && <p className="form-text text-danger">Passwords do no match</p>}
 							</div>
+							<div className="mb-3">
+								<div className="h-captcha" data-sitekey="d76f5317-946c-48e0-90aa-931c916c1d7d"></div>
+								<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+							</div>
 							<button type="submit" className="btn btn-primary fw-secondary w-100 text-center">Register</button>
 							{registerError && <p className="form-text text-danger">{registerError}</p>}
 							<hr />

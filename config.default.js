@@ -19,4 +19,8 @@ module.exports = {
 		},
 		key: 'add sendgrid key',
 	},
+	hcaptcha: {
+		sitekey: 'enter hcatpcha site key',
+		secret: 'enter hcatpcha secret',
+	},
 };
