@@ -41,6 +41,7 @@ module.exports = {
 		new HTMLWebpackPlugin({
 			template: 'index.html',
 			favicon: './assets/favicon/favicon.ico',
+			hash: true,
 		}),
 		new MiniCssExtractPlugin(),
 	],
