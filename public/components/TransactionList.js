@@ -14,7 +14,7 @@ export default function TransactionList({
 			return (
 				<tr key={tx._id} className={`bg-transition ${txData && txData._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
 					<td className="text-nowrap fit">{new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short'})}</td>
-					<td style={{maxWidth: '100px'}}  className="text-truncate">{tx.description}</td>
+					<td style={{maxWidth: '100px'}}  className="text-truncate">beige corolla</td>
 					<td style={{maxWidth: '50px'}} className="text-truncate">{tx.budget}</td>
 					<td className="text-end fit">{formatCentsToDollars(tx.amount)}</td>
 				</tr>
