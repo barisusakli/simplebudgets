@@ -1,5 +1,5 @@
 {
-  "name": "simplebudget",
+  "name": "simplebudgets",
   "version": "1.0.0",
   "description": "A simple budgeting app",
   "main": "server.js",

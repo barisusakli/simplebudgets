@@ -213,20 +213,20 @@ exports.passwordResetSend = async function (req, res, next) {
 	}
 	const code = crypto.randomBytes(16).toString('hex');
 
-	// await sgMail.send({
-	// 	to: email,
-	// 	from: sendgrid.from,
-	// 	subject: 'Password reset request from SimpleBudgets.ca',
-	// 	html: `
-	// 		<p>Hello from Simple Budgets!</p>
-	// 		<p>We have received a password reset request for your account. If you didn't make this request please ignore this email.</p>
-	// 		<p>If you want to reset your password follow the link below.</p>
-	// 		<a href="${config.url}/reset/${code}">Reset my password</a>
-	// 		<p>Thank you!</p>
-	// 		<hr/>
-	// 		<a href="${config.url}">SimpleBudgets.ca</a>
-	// 	`,
-	// });
+	await sgMail.send({
+		to: email,
+		from: sendgrid.from,
+		subject: 'Password reset request from SimpleBudgets.ca',
+		html: `
+			<p>Hello from Simple Budgets!</p>
+			<p>We have received a password reset request for your account. If you didn't make this request please ignore this email.</p>
+			<p>If you want to reset your password follow the link below.</p>
+			<a href="${config.url}/reset/${code}">Reset my password</a>
+			<p>Thank you!</p>
+			<hr/>
+			<a href="${config.url}">SimpleBudgets.ca</a>
+		`,
+	});
 
 	await resetColl.updateOne({
 		email: email,
