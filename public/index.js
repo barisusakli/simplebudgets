@@ -2,12 +2,16 @@ import React from "react";
 import { createRoot } from 'react-dom/client';
 
 import "./styles.scss";
-// import * as bootstrap from "bootstrap"
 import App from "./app";
+import { AlertProvider } from "./contexts/AlertContext";
 
 const container = document.getElementById('root');
 const root = createRoot(container);
-root.render(<App />);
+root.render(
+	<AlertProvider >
+		<App />
+	</AlertProvider>
+);
 
 if ('serviceWorker' in navigator && navigator.serviceWorker) {
 	navigator.serviceWorker.register('/service-worker.js', { scope: '/' })

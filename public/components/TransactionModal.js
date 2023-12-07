@@ -4,9 +4,10 @@ import formHandleChange from "../formHandleChange"
 import ConfirmModal from "./ConfirmModal"
 import { Modal } from 'bootstrap'
 import { getYYYYmmdd } from "../format"
-
+import useAlert from "../hooks/useAlert"
 
 export default function TransactionModal({ budgetOptions, refreshAll, txData, onHidden }) {
+	const { setAlert } = useAlert()
 	const [formData, setFormData] = useState({
 		...txData,
 		date: getYYYYmmdd(txData.date),
@@ -59,7 +60,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 		}).then(() => {
 			hideModal()
 			refreshAll()
-		})
+		}).catch(err => setAlert(err.message, 'danger'))
 	}
 
 	function onDeleteClick() {
@@ -80,7 +81,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			refreshAll()
 			setDeleteTransaction(null)
 			hideModal()
-		})
+		}).catch(err => setAlert(err.message, 'danger'))
 	}
 
 	return (

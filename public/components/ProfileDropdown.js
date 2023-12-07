@@ -1,17 +1,20 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import fetchJson from "../fetchJson"
 import ChangePasswordModal from "./ChangePasswordModal";
 import ChangeEmailModal from "./ChangeEmailModal";
+import UserContext from "../contexts/UserContext";
+import useAlert from "../hooks/useAlert";
 
-export default function ProfileDropdown({ user, setUser }) {
+export default function ProfileDropdown() {
+	const { user, setUser } = useContext(UserContext);
 	const [showChangeEmail, setShowChangeEmail] = useState(false)
 	const [showChangePassword, setShowChangePassword] = useState(false)
-
+	const { setAlert } = useAlert()
 	async function handleLogout() {
 		await fetchJson({
 			url: '/api/logout',
 			method: 'post',
-		});
+		}).catch(err => setAlert(err.message, 'danger'));
 		setUser(null);
 	}
 
@@ -29,13 +32,13 @@ export default function ProfileDropdown({ user, setUser }) {
 			{
 				showChangeEmail &&
 				<ChangeEmailModal
-					setUser={setUser}
+					onEmailChanged={() => setUser(null)}
 					onHidden={() => setShowChangeEmail(false)}/>
 			}
 			{
 				showChangePassword &&
 				<ChangePasswordModal
-					setUser={setUser}
+					onPasswordChanged={() => setUser(null)}
 					onHidden={() => setShowChangePassword(false)}/>
 			}
 		</>

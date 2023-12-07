@@ -12,9 +12,14 @@ import Reset from "./pages/Reset"
 
 import fetchJson from "./fetchJson"
 
+import UserContext from "./contexts/UserContext"
+import AlertPopup from "./components/AlertPopup"
+import useAlert from "./hooks/useAlert"
+
 export default function App() {
 	const [user, setUser] = React.useState(null)
 	const [isLoading, setIsLoading] = React.useState(true)
+	const { setAlert } = useAlert()
 
 	useEffect(() => {
 		fetchJson({
@@ -24,28 +29,33 @@ export default function App() {
 				setUser({ email: result.email })
 			}
 		}).catch(err => {
-			console.log(err);
+			setAlert(err.message, 'danger')
 		}).finally(() => {
 			setIsLoading(false);
 		})
 	}, [])
 
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<SharedLayout />}>
-					<Route index element={<Landing user={user} setUser={setUser} isLoading={isLoading} />} />
-					<Route path="register" element={<Register user={user} setUser={setUser} />} />
-					<Route path="reset" element={<Reset user={user} />} />
-					<Route path="reset/:code" element={<Reset user={user} />} />
-					<Route path="dashboard" element={
-						<ProtectedRoute user={user}>
-							<Dashboard user={user} setUser={setUser} />
-						</ProtectedRoute>
-					} />
-					<Route path="*" element={<Error />} />
-				</Route>
-			</Routes>
-		</BrowserRouter>
+		<div className="container-lg">
+			<BrowserRouter>
+				<UserContext.Provider value={{ user, setUser }}>
+					<Routes>
+						<Route path="/" element={<SharedLayout />}>
+							<Route index element={<Landing isLoading={isLoading} />} />
+							<Route path="register" element={<Register />} />
+							<Route path="reset" element={<Reset />} />
+							<Route path="reset/:code" element={<Reset />} />
+							<Route path="dashboard" element={
+								<ProtectedRoute user={user}>
+									<Dashboard />
+								</ProtectedRoute>
+							} />
+							<Route path="*" element={<Error />} />
+						</Route>
+					</Routes>
+				</UserContext.Provider>
+			</BrowserRouter>
+			<AlertPopup />
+		</div>
 	)
 }

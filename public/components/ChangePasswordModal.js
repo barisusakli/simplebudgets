@@ -3,7 +3,7 @@ import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 import { Modal } from 'bootstrap'
 
-export default function ChangePasswordModal({ setUser, onHidden }) {
+export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 	const [formData, setFormData] = useState({
 		password: '',
 		newpassword: '',
@@ -27,7 +27,7 @@ export default function ChangePasswordModal({ setUser, onHidden }) {
 			method: 'post',
 		}).then(() => {
 			hideModal()
-			setUser(null)
+			onPasswordChanged()
 		}).catch((err) => {
 			setErrorMsg(err.message)
 		})

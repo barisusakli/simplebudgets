@@ -1,10 +1,12 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useContext } from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 import HCaptcha from '@hcaptcha/react-hcaptcha';
+import UserContext from "../contexts/UserContext";
 
-export default function RegisterForm({ setUser }) {
+export default function RegisterForm() {
+	const { setUser } = useContext(UserContext);
 	const captchaRef = useRef(null);
 
 	const [formData, setFormData] = useState({

@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from "react"
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 import { Modal } from 'bootstrap'
+import useAlert from "../hooks/useAlert"
 
 export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 	const [formData, setFormData] = useState({ ...budgetData })
 	const [errorMsg, setErrorMsg] = useState('')
 	const myModalEl = useRef(null)
+	const { setAlert } = useAlert()
 
 	function onSubmit() {
 		if (!formData.name || !formData.amount) {
@@ -26,7 +28,7 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 		}).then(() => {
 			hideModal()
 			refreshAll()
-		})
+		}).catch(err => setAlert(err.message, 'danger'))
 	}
 
 	function showModal() {

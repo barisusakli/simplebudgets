@@ -1,9 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import { Link, useParams, Navigate } from "react-router-dom"
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
+import UserContext from "../contexts/UserContext"
 
-export default function Reset({ user }) {
+export default function Reset() {
+	const { user } = useContext(UserContext)
 	if (user) {
 		return <Navigate to="/dashboard" />
 	}

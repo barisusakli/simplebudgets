@@ -3,7 +3,7 @@ import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 import { Modal } from 'bootstrap'
 
-export default function ChangeEmailModal({ setUser, onHidden }) {
+export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 	const [formData, setFormData] = useState({
 		password: '',
 		email: '',
@@ -24,7 +24,7 @@ export default function ChangeEmailModal({ setUser, onHidden }) {
 			method: 'post',
 		}).then(() => {
 			hideModal()
-			setUser(null)
+			onEmailChanged()
 		}).catch((err) => {
 			setErrorMsg(err.message)
 		})

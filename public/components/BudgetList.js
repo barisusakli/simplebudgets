@@ -4,9 +4,10 @@ import BudgetModal from "./BudgetModal"
 import ConfirmModal from "./ConfirmModal"
 import formatCentsToDollars from "../format"
 import * as bootstrap from 'bootstrap'
+import useAlert from "../hooks/useAlert"
 
 export default function BudgetList({ budgets, refreshAll, setCurrentBudget, isCurrentMonth }) {
-
+	const { setAlert } = useAlert()
 	const [budgetData, setBudgetData] = React.useState(null)
 	const [deleteBugdet, setDeleteBugdet] = React.useState(null)
 
@@ -84,7 +85,7 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget, isCu
 		}).then(() => {
 			refreshAll()
 			setDeleteBugdet(null)
-		})
+		}).catch(err => setAlert(err.message, 'danger'))
 	}
 
 	return (

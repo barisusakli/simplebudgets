@@ -4,12 +4,14 @@ import Header from "../components/Header"
 import Navbar from "../components/Navbar"
 import Main from "../components/Main"
 import fetchJson from "../fetchJson"
+import useAlert from "../hooks/useAlert"
 
-export default function Dashboard(props) {
+export default function Dashboard() {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [budgets, setBudgets] = useState([]);
 	const [transactions, setTransactions] = useState([]);
 	const [budgetOptions, setBudgetOptions] = useState([]);
+	const { setAlert } = useAlert()
 
 	const date = new Date();
 	const [year, setYear] = useState(date.getFullYear())
@@ -30,30 +32,30 @@ export default function Dashboard(props) {
 		};
 	}
 
-	async function loadBudgets() {
-		return await fetchJson({
+	function loadBudgets() {
+		return fetchJson({
 			url: '/api/budgets?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
 		})
 	}
 
-	async function loadTransactions() {
-		return await fetchJson({
+	function loadTransactions() {
+		return fetchJson({
 			url: '/api/transactions?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
 		});
 	}
 
-	async function refreshAll() {
-		const [budgetData, txData] = await Promise.all([
+	function refreshAll() {
+		Promise.all([
 			loadBudgets(),
 			loadTransactions(),
-		]);
-
-		setBudgets(budgetData)
-		setBudgetOptions(budgetData.filter(budget => !!budget._id).map(budget => budget.name))
-		setTransactions(txData)
-		setIsLoaded(true)
+		]).then(([budgetData, txData]) => {
+			setBudgets(budgetData)
+			setBudgetOptions(budgetData.filter(budget => !!budget._id).map(budget => budget.name))
+			setTransactions(txData)
+			setIsLoaded(true)
+		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
 	useEffect(() => {
@@ -62,7 +64,7 @@ export default function Dashboard(props) {
 
 	return (
 		<section className="section d-flex flex-column gap-3 pb-5">
-			<Header user={props.user} setUser={props.setUser} />
+			<Header />
 			<div className="card shadow-sm">
 				<div className="card-body">
 					<Navbar year={year} setYear={setYear} month={month} setMonth={setMonth} />
