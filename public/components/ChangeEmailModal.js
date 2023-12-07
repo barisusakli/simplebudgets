@@ -69,7 +69,7 @@ export default function ChangeEmailModal({ setUser, onHidden }) {
 									minLength="8"
 									maxLength="64"
 									required
-									autoComplete="off"
+									autoComplete="current-password"
 								/>
 							</div>
 							<div className="mb-3">
@@ -83,7 +83,7 @@ export default function ChangeEmailModal({ setUser, onHidden }) {
 									name="email"
 									value={formData.email}
 									required
-									autoComplete="off"
+									autoComplete="new-email"
 								/>
 							</div>
 							{ errorMsg && <div><hr/><p className="text-danger">{errorMsg}</p></div>}
