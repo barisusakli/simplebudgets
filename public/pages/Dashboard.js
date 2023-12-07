@@ -30,14 +30,14 @@ export default function Dashboard(props) {
 		};
 	}
 
-	async function refreshBudgets() {
+	async function loadBudgets() {
 		return await fetchJson({
 			url: '/api/budgets?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
 		})
 	}
 
-	async function refreshTransactions() {
+	async function loadTransactions() {
 		return await fetchJson({
 			url: '/api/transactions?' + new URLSearchParams(getStartEnd()),
 			method: 'get',
@@ -45,15 +45,14 @@ export default function Dashboard(props) {
 	}
 
 	async function refreshAll() {
-		const [b, tx] = await Promise.all([
-			refreshBudgets(),
-			refreshTransactions(),
+		const [budgetData, txData] = await Promise.all([
+			loadBudgets(),
+			loadTransactions(),
 		]);
-		console.log('budgets', b)
-		console.log('txs', tx)
-		setBudgets(b)
-		setBudgetOptions(b.filter(budget => !!budget._id).map(budget => budget.name))
-		setTransactions(tx)
+
+		setBudgets(budgetData)
+		setBudgetOptions(budgetData.filter(budget => !!budget._id).map(budget => budget.name))
+		setTransactions(txData)
 		setIsLoaded(true)
 	}
 
