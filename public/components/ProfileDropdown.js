@@ -1,12 +1,12 @@
-import React, { useState, useContext } from "react"
+import React, { useState } from "react"
 import fetchJson from "../fetchJson"
 import ChangePasswordModal from "./ChangePasswordModal";
 import ChangeEmailModal from "./ChangeEmailModal";
-import UserContext from "../contexts/UserContext";
 import useAlert from "../hooks/useAlert";
+import useUser from "../hooks/useUser";
 
 export default function ProfileDropdown() {
-	const { user, setUser } = useContext(UserContext);
+	const { user, setUser } = useUser();
 	const [showChangeEmail, setShowChangeEmail] = useState(false)
 	const [showChangePassword, setShowChangePassword] = useState(false)
 	const { setAlert } = useAlert()

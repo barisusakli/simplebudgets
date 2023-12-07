@@ -2,10 +2,10 @@
 import React from "react"
 import { Navigate } from "react-router-dom"
 import RegisterForm from "../components/RegisterForm"
-import UserContext from "../contexts/UserContext";
+import useUser from "../hooks/useUser";
 
 export default function Register() {
-	const { user } = useContext(UserContext);
+	const { user } = useUser();
 	if (user) {
 		return <Navigate to="/dashboard" />
 	}

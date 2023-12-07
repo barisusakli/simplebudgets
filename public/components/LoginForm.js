@@ -1,12 +1,12 @@
-import React, { useState, useRef, useContext } from "react"
+import React, { useState, useRef } from "react"
 import { Link } from "react-router-dom";
 import fetchJson from "../fetchJson"
 import formHandleChange from "../formHandleChange"
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import UserContext from "../contexts/UserContext"
+import useUser from "../hooks/useUser";
 
 export default function LoginForm() {
-	const { setUser } = useContext(UserContext);
+	const { setUser } = useUser();
 	const captchaRef = useRef(null);
 
 	const [formData, setFormData] = React.useState({
@@ -60,12 +60,13 @@ export default function LoginForm() {
 								value={formData.email}
 								required
 								autoComplete="on"
+								tabIndex="1"
 							/>
 						</div>
 						<div className="mb-3">
 							<div className="d-flex justify-content-between align-items-center">
 								<label htmlFor="password" className="form-label">Password</label>
-								<Link to="/reset" className="text-sm mb-2">Forgot password?</Link>
+								<Link to="/reset" className="text-sm mb-2" tabIndex="3">Forgot password?</Link>
 							</div>
 							<input
 								id="password"
@@ -76,6 +77,7 @@ export default function LoginForm() {
 								value={formData.password}
 								required
 								autoComplete="on"
+								tabIndex="2"
 							/>
 						</div>
 
