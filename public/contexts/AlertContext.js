@@ -1,7 +1,7 @@
 import React from 'react';
 import { createContext, useState } from 'react';
 
-const ALERT_TIME = 50000;
+const ALERT_TIME = 5000;
 const initialState = {
 	text: '',
 	type: '',
