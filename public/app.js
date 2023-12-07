@@ -21,7 +21,6 @@ export default function App() {
 			url: '/api/user',
 		}).then((result) => {
 			if (result) {
-				console.log(result);
 				setUser({ email: result.email })
 			}
 		}).catch(err => {
@@ -35,7 +34,7 @@ export default function App() {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/" element={<SharedLayout />}>
-					<Route index element={<Landing user={user} setUser={setUser} />} />
+					<Route index element={<Landing user={user} setUser={setUser} isLoading={isLoading} />} />
 					<Route path="register" element={<Register user={user} setUser={setUser} />} />
 					<Route path="reset" element={<Reset user={user} />} />
 					<Route path="reset/:code" element={<Reset user={user} />} />
