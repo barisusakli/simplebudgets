@@ -1,12 +1,16 @@
 import React from "react"
 
+import useUser from "../hooks/useUser";
+
 export default function Navbar(props) {
-	const date = new Date();
+	const { user } = useUser();
+
+	const currentYear = new Date().getFullYear();
+	const joinedYear = new Date(user.joined).getFullYear();
 
 	const yearEls = [];
-	for (let i = 0; i < 10; i++) {
-		const currentYear = date.getUTCFullYear() - i;
-		yearEls.push(<option key={i} value={currentYear}>{currentYear}</option>)
+	for (let i = currentYear; i >= joinedYear; --i) {
+	 	yearEls.push(<option key={i} value={i}>{i}</option>)
 	}
 
 	return (

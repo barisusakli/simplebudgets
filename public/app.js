@@ -26,7 +26,7 @@ export default function App() {
 			url: '/api/user',
 		}).then((result) => {
 			if (result) {
-				setUser({ email: result.email })
+				setUser({ email: result.email, joined: result.joined })
 			}
 		}).catch(err => {
 			setAlert(err.message, 'danger')

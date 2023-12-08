@@ -282,7 +282,10 @@ exports.passwordResetCommit = async function (req, res, next) {
 
 exports.getUser = (req, res) => {
 	if (req.user) {
-		res.json({ _id: req.user._id, email: req.user.email });
+		res.json({
+			email: req.user.email,
+			joined: req.user._id.getTimestamp(),
+		});
 	} else {
 		res.json(null);
 	}
