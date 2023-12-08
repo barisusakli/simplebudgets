@@ -50,8 +50,8 @@ export default function BudgetList({ budgets, refreshAll, setCurrentBudget, isCu
 						{formatCentsToDollars(budget.current)} of {formatCentsToDollars(budget.amount)}
 					</div>
 					<div className="d-flex gap-2">
-						{budget._id && <a className="btn btn-sm btn-link" onClick={() => handleEdit(budget)}>Edit</a>}
 						{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => setDeleteBugdet(budget)}>Delete</a>}
+						{budget._id && <a className="btn btn-sm btn-link" onClick={() => handleEdit(budget)}>Edit</a>}
 					</div>
 				</div>
 				{budget._id ? <hr className="d-block d-lg-none" /> : <hr/>}

@@ -77,6 +77,7 @@ export default function Dashboard() {
 					/>}
 				</div>
 			</div>
+			<p className="text-sm text-secondary text-center">Bug Reports & Contact: <a href="mailto:support@simplebudgets.ca">support@simplebudgets.ca</a></p>
 		</section>
 	)
 }
