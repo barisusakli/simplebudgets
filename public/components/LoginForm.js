@@ -54,7 +54,6 @@ export default function LoginForm() {
 								id="email"
 								className="form-control"
 								type="email"
-								placeholder="your@email.com"
 								onChange={ev => formHandleChange(ev, setFormData)}
 								name="email"
 								value={formData.email}
