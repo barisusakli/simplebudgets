@@ -5,6 +5,7 @@ import React, { useEffect } from "react"
 import SharedLayout from "./pages/SharedLayout"
 import Landing from "./pages/Landing"
 import ProtectedRoute from "./pages/ProtectedRoute"
+import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import Error from "./pages/Error"
@@ -42,6 +43,7 @@ export default function App() {
 					<Routes>
 						<Route path="/" element={<SharedLayout />}>
 							<Route index element={<Landing isLoading={isLoading} />} />
+							<Route path="login" element={<Login />} />
 							<Route path="register" element={<Register />} />
 							<Route path="reset" element={<Reset />} />
 							<Route path="reset/:code" element={<Reset />} />
