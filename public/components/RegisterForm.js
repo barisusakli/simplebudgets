@@ -115,7 +115,7 @@ export default function RegisterForm() {
 						<button type="submit" className="btn btn-primary fw-secondary w-100 text-center">Register</button>
 						{registerError && <p className="form-text text-danger">{registerError}</p>}
 						<hr />
-						<p className="form-text mb-0">Already have an account? <Link to="/login">Login</Link></p>
+						<p className="form-text mb-0">Already have an account? <Link to="/">Login</Link></p>
 					</form>
 				</div>
 			</div>
