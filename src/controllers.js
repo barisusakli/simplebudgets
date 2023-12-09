@@ -103,7 +103,10 @@ exports.register = async function (req, res) {
 	}
 	const loginAsync = util.promisify(req.login).bind(req);
 	await loginAsync({ _id: result.insertedId, email: email });
-	res.json({ _id: req.user._id, email: req.user.email });
+	res.json({
+		email: req.user.email,
+		joined: req.user._id.getTimestamp(),
+	});
 };
 
 
@@ -131,7 +134,10 @@ exports.login = async function (req, res) {
 		uid: req.user._id,
 		sid: req.sessionID,
 	});
-	res.json({ _id: req.user._id, email: req.user.email });
+	res.json({
+		email: req.user.email,
+		joined: req.user._id.getTimestamp(),
+	});
 };
 
 exports.logout = async function (req, res) {

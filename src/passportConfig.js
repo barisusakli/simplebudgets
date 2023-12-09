@@ -38,7 +38,10 @@ module.exports = function (passport) {
 			if (!result) {
 				return cb(new Error('cant find user to deserialize'));
 			}
-			cb(null, { _id: result._id, email: result.email });
+			cb(null, {
+				_id: result._id,
+				email: result.email,
+			});
 		});
 	});
 };
