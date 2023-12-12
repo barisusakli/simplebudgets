@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 
 import Header from "../components/Header"
-import Navbar from "../components/Navbar"
 import Main from "../components/Main"
 import fetchJson from "../fetchJson"
 import useAlert from "../hooks/useAlert"
@@ -63,21 +62,23 @@ export default function Dashboard() {
 	}, [year, month])
 
 	return (
-		<section className="section d-flex flex-column gap-3 pb-5">
+		<section className="section d-flex flex-column gap-3 pb-5 mb-5 mb-lg-0">
 			<Header />
 			<div className="card shadow-sm">
 				<div className="card-body">
-					<Navbar year={year} setYear={setYear} month={month} setMonth={setMonth} />
 					{isLoaded && <Main
 						budgets={budgets}
 						transactions={transactions}
 						budgetOptions={budgetOptions}
 						refreshAll={refreshAll}
-						isCurrentMonth={month === date.getMonth() && year === date.getFullYear()}
+						month={month}
+						year={year}
+						setYear={setYear}
+						setMonth={setMonth}
 					/>}
 				</div>
 			</div>
-			<p className="text-sm text-secondary text-center">Bug Reports & Contact: <a href="mailto:support@simplebudgets.ca">support@simplebudgets.ca</a></p>
+			<p className="text-sm text-secondary text-center pb-5 pb-lg-0">Bug Reports & Contact: <a href="mailto:support@simplebudgets.ca">support@simplebudgets.ca</a></p>
 		</section>
 	)
 }

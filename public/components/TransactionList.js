@@ -2,15 +2,17 @@ import React from "react"
 import fetchJson from "../fetchJson"
 import TransactionModal from "./TransactionModal"
 import formatCentsToDollars from "../format"
+import BottomBar from "./BottomBar"
 
 export default function TransactionList({
-	transactions, budgetOptions, refreshAll, currentBudget, setCurrentBudget
+	transactions, budgetOptions, refreshAll, currentBudget,
+	activeTab, setActiveTab
 }) {
 	const [txData, setTxData] = React.useState(null)
 
 	const els = transactions
 		.filter(tx => !currentBudget || tx.budget === currentBudget)
-		.map((tx, i) => {
+		.map((tx) => {
 			return (
 				<tr key={tx._id} className={`bg-transition ${txData && txData._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
 					<td className="text-nowrap fit">{new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short'})}</td>
@@ -42,7 +44,8 @@ export default function TransactionList({
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
 			<div className="d-flex justify-content-between gap-2">
-				<button className="btn btn-primary ff-secondary text-nowrap" onClick={handleCreate}>Add Transaction</button>
+				<button className="btn btn-primary ff-secondary text-nowrap d-none d-lg-block" onClick={handleCreate}>Add Transaction</button>
+
 				{txData && <TransactionModal
 					budgetOptions={budgetOptions}
 					refreshAll={refreshAll}
@@ -50,12 +53,7 @@ export default function TransactionList({
 					onHidden={() => setTxData(null)}
 				/>}
 
-				<div>
-					<select className="form-select" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
-						<option value="">All bugdets</option>
-						{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
-					</select>
-				</div>
+
 			</div>
 
 			{ transactions.length > 0 &&
@@ -75,6 +73,12 @@ export default function TransactionList({
 			}
 
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
+
+			<BottomBar
+				createButton={<button onClick={handleCreate} className="btn btn-primary">Add Transaction</button>}
+				activeTab={activeTab}
+				setActiveTab={setActiveTab}
+			/>
 		</div>
 	)
 }
