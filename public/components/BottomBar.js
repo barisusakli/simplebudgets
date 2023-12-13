@@ -1,11 +1,15 @@
 import React, { useState } from "react"
 
-export default function BottomBar({ activeTab, setActiveTab, createButton }) {
+export default function BottomBar({ activeTab, setActiveTab, onCreateClicked }) {
 
 	return (
 		<div className="fixed-bottom d-flex d-lg-none flex-column gap-2">
 			<div className="d-flex justify-content-end px-3">
-				{createButton}
+				{
+					activeTab === 'budgets' ?
+					<button onClick={onCreateClicked} className="btn btn-primary shadow">Create Budget</button>:
+					<button onClick={onCreateClicked} className="btn btn-primary shadow">Add Transaction</button>
+				}
 			</div>
 			<div className="bg-white border-top p-3 shadow">
 				<div className="container-lg">

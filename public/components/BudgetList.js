@@ -1,14 +1,23 @@
-import React from "react"
+import React, { forwardRef, useImperativeHandle } from "react"
 import fetchJson from "../fetchJson"
 import BudgetModal from "./BudgetModal"
 import ConfirmModal from "./ConfirmModal"
-import BottomBar from "./BottomBar"
 import formatCentsToDollars from "../format"
 import useAlert from "../hooks/useAlert"
 
-export default function BudgetList({
+const BudgetList = forwardRef(function ({
 	budgets, refreshAll, currentBudget, setCurrentBudget, activeTab, setActiveTab, isCurrentMonth,
-}) {
+}, ref) {
+
+	useImperativeHandle(ref, () => {
+		return {
+			openCreate() {
+				handleCreate()
+			},
+		};
+	}, []);
+
+
 	const { setAlert } = useAlert()
 	const [budgetData, setBudgetData] = React.useState(null)
 	const [deleteBugdet, setDeleteBugdet] = React.useState(null)
@@ -113,11 +122,8 @@ export default function BudgetList({
 				{budgets.length <= 1 &&	<div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
 			</ul>
 
-			<BottomBar
-				createButton={<button onClick={handleCreate} className="btn btn-primary shadow">Create Budget</button>}
-				activeTab={activeTab}
-				setActiveTab={setActiveTab}
-			/>
 		</div>
 	)
-}
+});
+
+export default BudgetList

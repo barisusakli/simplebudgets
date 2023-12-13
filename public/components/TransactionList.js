@@ -1,13 +1,21 @@
-import React from "react"
-import fetchJson from "../fetchJson"
+import React, { forwardRef, useImperativeHandle} from "react"
+
 import TransactionModal from "./TransactionModal"
 import formatCentsToDollars from "../format"
-import BottomBar from "./BottomBar"
 
-export default function TransactionList({
+
+const TransactionList = forwardRef(function({
 	transactions, budgetOptions, refreshAll, currentBudget,
-	activeTab, setActiveTab
-}) {
+}, ref) {
+
+	useImperativeHandle(ref, () => {
+		return {
+			openCreate() {
+				handleCreate()
+			},
+		};
+	}, []);
+
 	const [txData, setTxData] = React.useState(null)
 
 	const els = transactions
@@ -52,8 +60,6 @@ export default function TransactionList({
 					txData={txData}
 					onHidden={() => setTxData(null)}
 				/>}
-
-
 			</div>
 
 			{ transactions.length > 0 &&
@@ -73,12 +79,8 @@ export default function TransactionList({
 			}
 
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
-
-			<BottomBar
-				createButton={<button onClick={handleCreate} className="btn btn-primary shadow">Add Transaction</button>}
-				activeTab={activeTab}
-				setActiveTab={setActiveTab}
-			/>
 		</div>
 	)
-}
+})
+
+export default TransactionList
