@@ -75,7 +75,7 @@ export default function TransactionList({
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
 
 			<BottomBar
-				createButton={<button onClick={handleCreate} className="btn btn-primary">Add Transaction</button>}
+				createButton={<button onClick={handleCreate} className="btn btn-primary shadow">Add Transaction</button>}
 				activeTab={activeTab}
 				setActiveTab={setActiveTab}
 			/>

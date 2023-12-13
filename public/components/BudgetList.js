@@ -114,7 +114,7 @@ export default function BudgetList({
 			</ul>
 
 			<BottomBar
-				createButton={<button onClick={handleCreate} className="btn btn-primary">Create Budget</button>}
+				createButton={<button onClick={handleCreate} className="btn btn-primary shadow">Create Budget</button>}
 				activeTab={activeTab}
 				setActiveTab={setActiveTab}
 			/>
