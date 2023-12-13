@@ -51,16 +51,14 @@ const TransactionList = forwardRef(function({
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<div className="d-flex justify-content-between gap-2">
-				<button className="btn btn-primary ff-secondary text-nowrap d-none d-lg-block" onClick={handleCreate}>Add Transaction</button>
+			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={handleCreate}>Add Transaction</button>
 
-				{txData && <TransactionModal
-					budgetOptions={budgetOptions}
-					refreshAll={refreshAll}
-					txData={txData}
-					onHidden={() => setTxData(null)}
-				/>}
-			</div>
+			{txData && <TransactionModal
+				budgetOptions={budgetOptions}
+				refreshAll={refreshAll}
+				txData={txData}
+				onHidden={() => setTxData(null)}
+			/>}
 
 			{ transactions.length > 0 &&
 				<div className="table-responsive">
