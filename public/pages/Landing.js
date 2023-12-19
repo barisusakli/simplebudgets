@@ -19,12 +19,14 @@ export default function Landing({ isLoading }) {
 					<h1 className="fw-semibold text-center m-0">Simple Budgets!</h1>
 				</div>
 				<div className="d-flex flex-column justify-content-lg-center flex-lg-row flex-column-reverse gap-5">
-					<ul className="fs-5 text-secondary d-flex flex-column gap-4 my-auto mx-auto mx-lg-0">
-						<li>Quickly create budgets & add transactions</li>
-						<li>Track your monthly spending in one place.</li>
-						<li>Filter your spending by different budget categories.</li>
-						<li>100% <span className="text-decoration-underline">free</span> and mobile-friendly!</li>
-					</ul>
+					<div class="px-5 px-lg-0 my-auto">
+						<ul className="fs-5 text-secondary d-flex flex-column gap-4 mx-auto mx-lg-0">
+							<li>Quickly create budgets & add transactions</li>
+							<li>Track your monthly spending in one place.</li>
+							<li>Filter your spending by different budget categories.</li>
+							<li>100% <span className="text-decoration-underline">free</span> and mobile-friendly!</li>
+						</ul>
+					</div>
 					<LoginForm/>
 				</div>
 				<hr/>
