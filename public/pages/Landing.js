@@ -15,11 +15,13 @@ export default function Landing({ isLoading }) {
 			!isLoading &&
 			<div className="py-4 d-flex flex-column gap-4">
 				<div>
-					<h1 className="fs-2 text-secondary fw-semibold text-center m-0">Welcome to</h1>
-					<h1 className="fw-semibold text-center m-0">Simple Budgets!</h1>
+					<h1 className="text-center fw-semibold m-0">
+						<span className="text-secondary fs-2">Welcome to</span><br/>
+						<span className="">Simple Budgets!</span>
+					</h1>
 				</div>
 				<div className="d-flex flex-column justify-content-lg-center flex-lg-row flex-column-reverse gap-5">
-					<div class="px-5 px-lg-0 my-auto">
+					<div class="px-0 px-lg-4 my-auto">
 						<ul className="fs-5 text-secondary d-flex flex-column gap-4 mx-auto mx-lg-0">
 							<li>Quickly create budgets & add transactions</li>
 							<li>Track your monthly spending in one place.</li>
