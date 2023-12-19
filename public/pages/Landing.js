@@ -20,8 +20,8 @@ export default function Landing({ isLoading }) {
 						<span className="">Simple Budgets!</span>
 					</h1>
 				</div>
-				<div className="d-flex flex-column justify-content-lg-center flex-lg-row flex-column-reverse gap-5">
-					<div class="px-0 px-lg-4 my-auto">
+				<div className="d-flex flex-column justify-content-lg-center align-items-center flex-lg-row flex-column-reverse gap-5">
+					<div class="px-0 px-xl-4 my-auto">
 						<ul className="fs-5 text-secondary d-flex flex-column gap-4 mx-auto mx-lg-0">
 							<li>Quickly create budgets & add transactions</li>
 							<li>Track your monthly spending in one place.</li>
