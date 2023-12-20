@@ -46,7 +46,6 @@ export default function Main({ budgets, transactions, budgetOptions, refreshAll,
 						currentBudget={currentBudget}
 						setCurrentBudget={setCurrentBudget}
 						isCurrentMonth={isCurrentMonth}
-						activeTab={activeTab}
 						setActiveTab={setActiveTab}
 					/>
 				</div>
@@ -57,10 +56,7 @@ export default function Main({ budgets, transactions, budgetOptions, refreshAll,
 						transactions={transactions}
 						budgetOptions={budgetOptions}
 						refreshAll={refreshAll}
-						setCurrentBudget={setCurrentBudget}
 						currentBudget={currentBudget}
-						activeTab={activeTab}
-						setActiveTab={setActiveTab}
 						/>
 				</div>
 			</div>

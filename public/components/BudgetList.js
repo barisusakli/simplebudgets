@@ -6,7 +6,7 @@ import formatCentsToDollars from "../format"
 import useAlert from "../hooks/useAlert"
 
 const BudgetList = forwardRef(function ({
-	budgets, refreshAll, currentBudget, setCurrentBudget, activeTab, setActiveTab, isCurrentMonth,
+	budgets, refreshAll, currentBudget, setCurrentBudget, setActiveTab, isCurrentMonth,
 }, ref) {
 
 	useImperativeHandle(ref, () => {
