@@ -1,55 +1,55 @@
-import React, { useState, useEffect, useRef } from "react"
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
-import ConfirmModal from "./ConfirmModal"
-import { Modal } from 'bootstrap'
-import { getYYYYmmdd } from "../format"
-import useAlert from "../hooks/useAlert"
+import React, { useState, useEffect, useRef } from 'react';
+import { Modal } from 'bootstrap';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
+import ConfirmModal from './ConfirmModal';
+import { getYYYYmmdd } from '../format';
+import useAlert from '../hooks/useAlert';
 
 export default function TransactionModal({ budgetOptions, refreshAll, txData, onHidden }) {
-	const { setAlert } = useAlert()
+	const { setAlert } = useAlert();
 	const [formData, setFormData] = useState({
 		...txData,
 		date: getYYYYmmdd(txData.date),
 	});
-	const [descriptionErrorMsg, setDescriptionErrorMsg] = useState('')
-	const [deleteTransaction, setDeleteTransaction] = React.useState(null)
+	const [descriptionErrorMsg, setDescriptionErrorMsg] = useState('');
+	const [deleteTransaction, setDeleteTransaction] = React.useState(null);
 	const myModalEl = useRef(null);
 
 	function showModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.show()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.show();
 	}
 
 	function hideModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.hide()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.hide();
 	}
 
-	useEffect(() =>{
-		showModal()
+	useEffect(() => {
+		showModal();
 		if (onHidden) {
-			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true })
+			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true });
 		}
-	}, [])
+	});
 
 	function onSubmit() {
 		if (!formData.budget || !formData.amount || !formData.description) {
-			return
+			return;
 		}
 		if (formData.description.length > 100) {
-			setDescriptionErrorMsg('Description too long')
-			return
+			setDescriptionErrorMsg('Description too long');
+			return;
 		}
 
-		const newDate = new Date(txData.date)
-		const parts = formData.date.split('-')
-		newDate.setFullYear(parts[0], parts[1] - 1, parts[2])
+		const newDate = new Date(txData.date);
+		const parts = formData.date.split('-');
+		newDate.setFullYear(parts[0], parts[1] - 1, parts[2]);
 
 		const submitData = {
 			...formData,
 			date: newDate.getTime(),
-		}
+		};
 
 		fetchJson({
 			url: submitData._id ?
@@ -58,9 +58,9 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			data: submitData,
 			method: 'post',
 		}).then(() => {
-			hideModal()
-			refreshAll()
-		}).catch(err => setAlert(err.message, 'danger'))
+			hideModal();
+			refreshAll();
+		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
 	function onDeleteClick() {
@@ -70,18 +70,18 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 
 	function handleDelete(confirm, _id) {
 		if (!confirm) {
-			setDeleteTransaction(null)
-			return
+			setDeleteTransaction(null);
+			return;
 		}
 		fetchJson({
 			url: '/api/transactions/delete',
 			data: { _id },
 			method: 'post',
 		}).then(() => {
-			refreshAll()
-			setDeleteTransaction(null)
-			hideModal()
-		}).catch(err => setAlert(err.message, 'danger'))
+			refreshAll();
+			setDeleteTransaction(null);
+			hideModal();
+		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
 	return (
@@ -124,13 +124,14 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 				</div>
 			</div>
 
-			{deleteTransaction && <ConfirmModal
+			{deleteTransaction &&
+			<ConfirmModal
 				title="Confirm Transaction Delete"
 				onSubmit={confirm => handleDelete(confirm, deleteTransaction._id)}
-				>
-					<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteTransaction.description}"</strong> transaction?</div>
-				</ConfirmModal>
+			>
+				<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteTransaction.description}"</strong> transaction?</div>
+			</ConfirmModal>
 			}
 		</>
-	)
+	);
 }

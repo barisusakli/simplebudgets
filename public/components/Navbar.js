@@ -1,10 +1,10 @@
-import React from "react"
+import React from 'react';
 
-import useUser from "../hooks/useUser";
+import useUser from '../hooks/useUser';
 
 export default function Navbar({
 	month, year, setMonth, setYear, activeTab, setActiveTab,
-	currentBudget, setCurrentBudget, budgetOptions
+	currentBudget, setCurrentBudget, budgetOptions,
 }) {
 	const { user } = useUser();
 
@@ -13,7 +13,7 @@ export default function Navbar({
 
 	const yearEls = [];
 	for (let i = currentYear; i >= joinedYear; --i) {
-	 	yearEls.push(<option key={i} value={i}>{i}</option>)
+		yearEls.push(<option key={i} value={i}>{i}</option>);
 	}
 
 	return (
@@ -29,7 +29,7 @@ export default function Navbar({
 
 			<div className="d-flex gap-1">
 
-				<select className="form-select form-select-sm flex-shrink-1" value={currentBudget} onChange={(ev) => setCurrentBudget(ev.target.value)}>
+				<select className="form-select form-select-sm flex-shrink-1" value={currentBudget} onChange={ev => setCurrentBudget(ev.target.value)}>
 					<option value="">All bugdets</option>
 					{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
 				</select>
@@ -37,8 +37,8 @@ export default function Navbar({
 				<select id="month-select"
 					className="form-select form-select-sm w-auto"
 					value={month}
-					onChange={(e) => setMonth(parseInt(e.target.value, 10))}
-					>
+					onChange={e => setMonth(parseInt(e.target.value, 10))}
+				>
 					<option value="0">January</option>
 					<option value="1">February</option>
 					<option value="2">March</option>
@@ -56,11 +56,11 @@ export default function Navbar({
 				<select id="year-select"
 					className="form-select form-select-sm w-auto"
 					value={year}
-					onChange={(e) => setYear(parseInt(e.target.value, 10))}
-					>
+					onChange={e => setYear(parseInt(e.target.value, 10))}
+				>
 					{yearEls}
 				</select>
 			</div>
 		</div>
-	)
+	);
 }

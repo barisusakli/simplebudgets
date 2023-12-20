@@ -1,21 +1,22 @@
-import React, { useState, useRef, useEffect } from "react"
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
-import { Modal } from 'bootstrap'
+import React, { useState, useRef, useEffect } from 'react';
+import { Modal } from 'bootstrap';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
+
 
 export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 	const [formData, setFormData] = useState({
 		password: '',
 		email: '',
-	})
-	const [errorMsg, setErrorMsg] = useState('')
-	const myModalEl = useRef(null)
+	});
+	const [errorMsg, setErrorMsg] = useState('');
+	const myModalEl = useRef(null);
 
 	function handleSubmit(ev) {
-		ev.preventDefault()
+		ev.preventDefault();
 
 		if (!formData.password || !formData.email) {
-			return
+			return;
 		}
 
 		fetchJson({
@@ -23,29 +24,29 @@ export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
-			hideModal()
-			onEmailChanged()
+			hideModal();
+			onEmailChanged();
 		}).catch((err) => {
-			setErrorMsg(err.message)
-		})
+			setErrorMsg(err.message);
+		});
 	}
 
 	function showModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.show()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.show();
 	}
 
 	function hideModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.hide()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.hide();
 	}
 
-	useEffect(() =>{
-		showModal()
+	useEffect(() => {
+		showModal();
 		if (onHidden) {
-			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true })
+			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true });
 		}
-	}, [])
+	});
 
 	return (
 		<div ref={myModalEl} className="modal" tabIndex="-1">
@@ -96,5 +97,5 @@ export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

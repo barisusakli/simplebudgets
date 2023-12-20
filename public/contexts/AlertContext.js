@@ -1,5 +1,4 @@
-import React from 'react';
-import { createContext, useState } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
 
 const ALERT_TIME = 5000;
 const initialState = {
@@ -16,7 +15,7 @@ export const AlertProvider = ({ children }) => {
 	const [text, setText] = useState('');
 	const [type, setType] = useState('');
 
-	const setAlert = (text, type) => {
+	const setAlert = useCallback((text, type) => {
 		setText(text);
 		setType(type);
 
@@ -24,15 +23,17 @@ export const AlertProvider = ({ children }) => {
 			setText('');
 			setType('');
 		}, ALERT_TIME);
-	};
+	}, []);
+
+	const alertCtx = useMemo(() => ({
+		text,
+		type,
+		setAlert,
+	}), [text, type, setAlert]);
 
 	return (
 		<AlertContext.Provider
-			value={{
-				text,
-				type,
-				setAlert,
-			}}
+			value={alertCtx}
 		>
 			{children}
 		</AlertContext.Provider>

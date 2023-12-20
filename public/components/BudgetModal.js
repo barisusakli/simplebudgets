@@ -1,23 +1,23 @@
-import React, { useState, useRef, useEffect } from "react"
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
-import { Modal } from 'bootstrap'
-import useAlert from "../hooks/useAlert"
+import React, { useState, useRef, useEffect } from 'react';
+import { Modal } from 'bootstrap';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
+import useAlert from '../hooks/useAlert';
 
 export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
-	const [formData, setFormData] = useState({ ...budgetData })
-	const [errorMsg, setErrorMsg] = useState('')
-	const myModalEl = useRef(null)
-	const { setAlert } = useAlert()
+	const [formData, setFormData] = useState({ ...budgetData });
+	const [errorMsg, setErrorMsg] = useState('');
+	const myModalEl = useRef(null);
+	const { setAlert } = useAlert();
 
 	function onSubmit() {
 		if (!formData.name || !formData.amount) {
-			return
+			return;
 		}
 
 		if (formData.name.length > 50) {
-			setErrorMsg('Budget name too long')
-			return
+			setErrorMsg('Budget name too long');
+			return;
 		}
 		fetchJson({
 			url: formData._id ?
@@ -26,27 +26,27 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
-			hideModal()
-			refreshAll()
-		}).catch(err => setAlert(err.message, 'danger'))
+			hideModal();
+			refreshAll();
+		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
 	function showModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.show()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.show();
 	}
 
 	function hideModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.hide()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.hide();
 	}
 
-	useEffect(() =>{
-		showModal()
+	useEffect(() => {
+		showModal();
 		if (onHidden) {
-			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true })
+			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true });
 		}
-	}, [])
+	});
 
 	return (
 		<div ref={myModalEl} className="modal" tabIndex="-1">
@@ -73,5 +73,5 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

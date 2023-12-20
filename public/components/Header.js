@@ -1,6 +1,6 @@
-import React from "react"
+import React from 'react';
 
-import ProfileDropdown from "./ProfileDropdown"
+import ProfileDropdown from './ProfileDropdown';
 
 export default function Header() {
 	return (
@@ -8,5 +8,5 @@ export default function Header() {
 			<h1 className="fs-2 fw-semibold m-0 text-nowrap">💰Simple Budgets</h1>
 			<ProfileDropdown />
 		</nav>
-	)
+	);
 }

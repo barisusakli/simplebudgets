@@ -1,5 +1,5 @@
 export default function formatCentsToDollars(value) {
-	return (value / 100).toLocaleString('en-CA', { style: 'currency', currency: 'CAD' })
+	return (value / 100).toLocaleString('en-CA', { style: 'currency', currency: 'CAD' });
 }
 
 export function centsToDollars(value) {
@@ -9,15 +9,15 @@ export function centsToDollars(value) {
 }
 
 export function getYYYYmmdd(date) {
-	let month = '' + (date.getMonth() + 1);
-	let day = '' + date.getDate();
-	let year = date.getFullYear();
+	let month = String(date.getMonth() + 1);
+	let day = String(date.getDate());
+	const year = date.getFullYear();
 
 	if (month.length < 2) {
-		month = '0' + month;
+		month = `0${month}`;
 	}
 	if (day.length < 2) {
-		day = '0' + day;
+		day = `0${day}`;
 	}
 
 	return [year, month, day].join('-');

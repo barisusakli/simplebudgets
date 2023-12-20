@@ -1,24 +1,24 @@
-import React, { useEffect, useRef } from "react"
-import { Modal } from 'bootstrap'
+import React, { useEffect, useRef } from 'react';
+import { Modal } from 'bootstrap';
 
 export default function ConfirmModal({
 	title, onSubmit, children,
 }) {
-	const confirm = useRef(false)
-	const myModalEl = useRef(null)
+	const confirm = useRef(false);
+	const myModalEl = useRef(null);
 
 	useEffect(() => {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.show()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.show();
 		myModalEl.current.addEventListener('hidden.bs.modal', () => {
 			onSubmit(confirm.current);
-		}, { once: true })
-	}, [])
+		}, { once: true });
+	});
 
 	function handleConfirm() {
-		confirm.current = true
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.hide()
+		confirm.current = true;
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.hide();
 	}
 
 	return (
@@ -40,5 +40,5 @@ export default function ConfirmModal({
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

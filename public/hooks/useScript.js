@@ -11,6 +11,6 @@ export default function useScript(url) {
 
 		return () => {
 			document.body.removeChild(script);
-		}
+		};
 	}, [url]);
 }

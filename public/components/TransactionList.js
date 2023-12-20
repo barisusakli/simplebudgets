@@ -1,35 +1,30 @@
-import React, { forwardRef, useImperativeHandle} from "react"
+import React, { forwardRef, useImperativeHandle } from 'react';
 
-import TransactionModal from "./TransactionModal"
-import formatCentsToDollars from "../format"
+import TransactionModal from './TransactionModal';
+import formatCentsToDollars from '../format';
 
 
-const TransactionList = forwardRef(function({
+const TransactionList = forwardRef(({
 	transactions, budgetOptions, refreshAll, currentBudget,
-}, ref) {
+}, ref) => {
+	useImperativeHandle(ref, () => ({
+		openCreate() {
+			handleCreate();
+		},
+	}));
 
-	useImperativeHandle(ref, () => {
-		return {
-			openCreate() {
-				handleCreate()
-			},
-		};
-	}, []);
-
-	const [txData, setTxData] = React.useState(null)
+	const [txData, setTxData] = React.useState(null);
 
 	const els = transactions
 		.filter(tx => !currentBudget || tx.budget === currentBudget)
-		.map((tx) => {
-			return (
-				<tr key={tx._id} className={`bg-transition ${txData && txData._id == tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
-					<td className="text-nowrap fit">{new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short'})}</td>
-					<td style={{maxWidth: '100px'}}  className="text-truncate">{tx.description}</td>
-					<td style={{maxWidth: '50px'}} className="text-truncate">{tx.budget}</td>
-					<td className="text-end fit">{formatCentsToDollars(tx.amount)}</td>
-				</tr>
-			)
-		})
+		.map(tx => (
+			<tr key={tx._id} className={`bg-transition ${txData && txData._id === tx._id ? 'active-tx' : ''}`} role="button" onClick={() => handleEdit(tx)}>
+				<td className="text-nowrap fit">{new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</td>
+				<td style={{ maxWidth: '100px' }} className="text-truncate">{tx.description}</td>
+				<td style={{ maxWidth: '50px' }} className="text-truncate">{tx.budget}</td>
+				<td className="text-end fit">{formatCentsToDollars(tx.amount)}</td>
+			</tr>
+		));
 
 
 	function handleCreate() {
@@ -38,7 +33,7 @@ const TransactionList = forwardRef(function({
 			description: '',
 			amount: '',
 			date: new Date(),
-		})
+		});
 	}
 
 	function handleEdit(tx) {
@@ -78,7 +73,9 @@ const TransactionList = forwardRef(function({
 
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
 		</div>
-	)
-})
+	);
+});
 
-export default TransactionList
+TransactionList.displayName = 'Transaction List';
+
+export default TransactionList;

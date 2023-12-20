@@ -1,22 +1,22 @@
-import React, { useState, useRef } from "react"
-import { Link } from "react-router-dom"
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
-import HCaptcha from '@hcaptcha/react-hcaptcha'
-import useUser from "../hooks/useUser"
+import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
+import useUser from '../hooks/useUser';
 
 export default function RegisterForm() {
-	const { setUser } = useUser()
-	const captchaRef = useRef(null)
+	const { setUser } = useUser();
+	const captchaRef = useRef(null);
 
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
 		passwordConfirm: '',
-		hcaptchaToken: ''
-	})
+		hcaptchaToken: '',
+	});
 
-	const [userNameTaken, setUsernameTaken] = useState('')
+	const [userNameTaken, setUsernameTaken] = useState('');
 	const [registerError, setRegisterError] = useState('');
 
 	const noMatch = formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm;
@@ -32,24 +32,24 @@ export default function RegisterForm() {
 				url: '/api/register',
 				data: formData,
 				method: 'post',
-			})
-			setUser(user)
+			});
+			setUser(user);
 		} catch (err) {
 			if (err.message === 'User already exists') {
-				setUsernameTaken(err.message)
+				setUsernameTaken(err.message);
 			} else {
-				setRegisterError(err.message)
+				setRegisterError(err.message);
 			}
 		} finally {
-			captchaRef.current.resetCaptcha()
+			captchaRef.current.resetCaptcha();
 		}
 	}
 
-	function handleVerificationSuccess(token, ekey) {
+	function handleVerificationSuccess(token) {
 		setFormData(prevData => ({
 			...prevData,
 			hcaptchaToken: token,
-		}))
+		}));
 	}
 
 	return (
@@ -119,5 +119,5 @@ export default function RegisterForm() {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

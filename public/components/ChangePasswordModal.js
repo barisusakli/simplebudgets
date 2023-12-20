@@ -1,24 +1,25 @@
-import React, { useState, useRef, useEffect } from "react"
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
-import { Modal } from 'bootstrap'
+import React, { useState, useRef, useEffect } from 'react';
+import { Modal } from 'bootstrap';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
+
 
 export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 	const [formData, setFormData] = useState({
 		password: '',
 		newpassword: '',
 		passwordConfirm: '',
-	})
-	const [errorMsg, setErrorMsg] = useState('')
-	const myModalEl = useRef(null)
+	});
+	const [errorMsg, setErrorMsg] = useState('');
+	const myModalEl = useRef(null);
 
 	const noMatch = formData.newpassword && formData.passwordConfirm && formData.newpassword !== formData.passwordConfirm;
 
 	function handleSubmit(ev) {
-		ev.preventDefault()
+		ev.preventDefault();
 
 		if (!formData.password || !formData.passwordConfirm || noMatch) {
-			return
+			return;
 		}
 
 		fetchJson({
@@ -26,29 +27,29 @@ export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
-			hideModal()
-			onPasswordChanged()
+			hideModal();
+			onPasswordChanged();
 		}).catch((err) => {
-			setErrorMsg(err.message)
-		})
+			setErrorMsg(err.message);
+		});
 	}
 
 	function showModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.show()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.show();
 	}
 
 	function hideModal() {
-		const myModal = Modal.getOrCreateInstance(myModalEl.current)
-		myModal.hide()
+		const myModal = Modal.getOrCreateInstance(myModalEl.current);
+		myModal.hide();
 	}
 
-	useEffect(() =>{
-		showModal()
+	useEffect(() => {
+		showModal();
 		if (onHidden) {
-			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true })
+			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true });
 		}
-	}, [])
+	});
 
 	return (
 		<div ref={myModalEl} className="modal" tabIndex="-1">
@@ -116,5 +117,5 @@ export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

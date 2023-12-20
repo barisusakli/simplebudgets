@@ -1,23 +1,23 @@
-import React, { useState } from "react"
-import { Link, useParams, Navigate } from "react-router-dom"
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
-import useUser from "../hooks/useUser"
+import React, { useState } from 'react';
+import { Link, useParams, Navigate } from 'react-router-dom';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
+import useUser from '../hooks/useUser';
 
 export default function Reset() {
-	const { user } = useUser()
-	if (user) {
-		return <Navigate to="/dashboard" />
-	}
+	const { user } = useUser();
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
-		passwordConfirm: ''
+		passwordConfirm: '',
 	});
-
 	const { code } = useParams();
-	const [error, setError] = useState('')
+	const [error, setError] = useState('');
 	const [success, setSuccess] = useState(false);
+
+	if (user) {
+		return <Navigate to="/dashboard" />;
+	}
 
 	const noMatch = formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm;
 
@@ -27,15 +27,15 @@ export default function Reset() {
 			return;
 		}
 		try {
-			setError('')
+			setError('');
 			await fetchJson({
 				url: '/api/password/reset/send',
 				data: formData,
 				method: 'post',
-			})
-			setSuccess(true)
+			});
+			setSuccess(true);
 		} catch (err) {
-			setError(err.message)
+			setError(err.message);
 		}
 	}
 
@@ -45,18 +45,18 @@ export default function Reset() {
 			return;
 		}
 		try {
-			setError('')
+			setError('');
 			await fetchJson({
 				url: '/api/password/reset/commit',
 				data: {
 					code: code,
-					password: formData.password
+					password: formData.password,
 				},
 				method: 'post',
-			})
-			setSuccess(true)
+			});
+			setSuccess(true);
 		} catch (err) {
-			setError(err.message)
+			setError(err.message);
 		}
 	}
 
@@ -76,7 +76,8 @@ export default function Reset() {
 					autoComplete="off"
 				/>
 				<p className="form-text">
-					Enter the email address you registered with and we will send an email with instructions on how to reset your password.
+					Enter the email address you registered with and
+					we will send an email with instructions on how to reset your password.
 				</p>
 			</div>
 
@@ -85,8 +86,7 @@ export default function Reset() {
 			<hr />
 			{success && <div className="alert alert-success">Password reset email sent!</div>}
 		</form>
-	)
-
+	);
 
 	const changeForm = (
 		<form onSubmit={handleResetCommit}>
@@ -126,7 +126,7 @@ export default function Reset() {
 			<hr />
 			{success && <div className="alert alert-success">Password changed! <Link to="/" className="alert-link">Login</Link></div>}
 		</form>
-	)
+	);
 
 	return (
 		<div className="pt-4 d-flex flex-column gap-4">
@@ -135,12 +135,11 @@ export default function Reset() {
 				<div className="col-12 col-md-6">
 					<div className="card shadow-sm">
 						<div className="card-body">
-						{code ? changeForm : sendForm}
+							{code ? changeForm : sendForm}
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-
-	)
+	);
 }

@@ -1,39 +1,39 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import React, { useEffect } from "react"
+import React, { useEffect } from 'react';
 
-import SharedLayout from "./pages/SharedLayout"
-import Landing from "./pages/Landing"
-import ProtectedRoute from "./pages/ProtectedRoute"
-import Register from "./pages/Register"
-import Dashboard from "./pages/Dashboard"
-import Error from "./pages/Error"
-import Reset from "./pages/Reset"
+import SharedLayout from './pages/SharedLayout';
+import Landing from './pages/Landing';
+import ProtectedRoute from './pages/ProtectedRoute';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Error from './pages/Error';
+import Reset from './pages/Reset';
 
-import fetchJson from "./fetchJson"
+import fetchJson from './fetchJson';
 
-import UserContext from "./contexts/UserContext"
-import AlertPopup from "./components/AlertPopup"
-import useAlert from "./hooks/useAlert"
+import UserContext from './contexts/UserContext';
+import AlertPopup from './components/AlertPopup';
+import useAlert from './hooks/useAlert';
 
 export default function App() {
-	const [user, setUser] = React.useState(null)
-	const [isLoading, setIsLoading] = React.useState(true)
-	const { setAlert } = useAlert()
+	const [user, setUser] = React.useState(null);
+	const [isLoading, setIsLoading] = React.useState(true);
+	const { setAlert } = useAlert();
 
 	useEffect(() => {
 		fetchJson({
 			url: '/api/user',
 		}).then((result) => {
 			if (result) {
-				setUser({ email: result.email, joined: result.joined })
+				setUser({ email: result.email, joined: result.joined });
 			}
-		}).catch(err => {
-			setAlert(err.message, 'danger')
+		}).catch((err) => {
+			setAlert(err.message, 'danger');
 		}).finally(() => {
 			setIsLoading(false);
-		})
-	}, [])
+		});
+	}, [setAlert]);
 
 	return (
 		<div className="container-lg">
@@ -57,5 +57,5 @@ export default function App() {
 			</BrowserRouter>
 			<AlertPopup />
 		</div>
-	)
+	);
 }

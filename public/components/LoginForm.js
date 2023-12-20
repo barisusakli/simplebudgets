@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react"
-import { Link } from "react-router-dom";
-import fetchJson from "../fetchJson"
-import formHandleChange from "../formHandleChange"
+import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
-import useUser from "../hooks/useUser";
+import useUser from '../hooks/useUser';
+import fetchJson from '../fetchJson';
+import formHandleChange from '../formHandleChange';
 
 export default function LoginForm() {
 	const { setUser } = useUser();
@@ -12,7 +12,7 @@ export default function LoginForm() {
 	const [formData, setFormData] = React.useState({
 		email: '',
 		password: '',
-		hcaptchaToken: ''
+		hcaptchaToken: '',
 	});
 
 	const [loginError, setLoginError] = useState('');
@@ -27,20 +27,20 @@ export default function LoginForm() {
 				url: '/api/login',
 				data: formData,
 				method: 'post',
-			})
-			setUser(loggedInUser)
+			});
+			setUser(loggedInUser);
 		} catch (err) {
-			setLoginError(err.message)
+			setLoginError(err.message);
 		} finally {
-			captchaRef.current.resetCaptcha()
+			captchaRef.current.resetCaptcha();
 		}
 	}
 
-	function handleVerificationSuccess(token, ekey) {
+	function handleVerificationSuccess(token) {
 		setFormData(prevData => ({
 			...prevData,
 			hcaptchaToken: token,
-		}))
+		}));
 	}
 
 	return (
@@ -96,5 +96,5 @@ export default function LoginForm() {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

@@ -1,19 +1,19 @@
-import React, { useRef } from "react"
+import React, { useRef } from 'react';
 
-import BottomBar from "./BottomBar"
-import BudgetList from "./BudgetList"
-import TransactionList from "./TransactionList"
-import Navbar from "./Navbar"
+import BottomBar from './BottomBar';
+import BudgetList from './BudgetList';
+import TransactionList from './TransactionList';
+import Navbar from './Navbar';
 
 export default function Main({ budgets, transactions, budgetOptions, refreshAll, setYear, setMonth, year, month }) {
-	const [currentBudget, setCurrentBudget] = React.useState('')
-	const [activeTab, setActiveTab] = React.useState('budgets')
+	const [currentBudget, setCurrentBudget] = React.useState('');
+	const [activeTab, setActiveTab] = React.useState('budgets');
 
-	const budgetListRef = useRef(null)
-	const txListRef = useRef(null)
+	const budgetListRef = useRef(null);
+	const txListRef = useRef(null);
 
 	const date = new Date();
-	const isCurrentMonth = month === date.getMonth() && year === date.getFullYear()
+	const isCurrentMonth = month === date.getMonth() && year === date.getFullYear();
 
 	function handleBottombarCreate() {
 		if (activeTab === 'budgets') {
@@ -50,14 +50,14 @@ export default function Main({ budgets, transactions, budgetOptions, refreshAll,
 					/>
 				</div>
 
-				<div className={`tab-pane fade ${activeTab === 'transactions' ? 'show active' : ''}`}  id="transactions-tab-pane" role="tabpanel" aria-labelledby="transactions-tab" tabIndex="0">
+				<div className={`tab-pane fade ${activeTab === 'transactions' ? 'show active' : ''}`}id="transactions-tab-pane" role="tabpanel" aria-labelledby="transactions-tab" tabIndex="0">
 					<TransactionList
 						ref={txListRef}
 						transactions={transactions}
 						budgetOptions={budgetOptions}
 						refreshAll={refreshAll}
 						currentBudget={currentBudget}
-						/>
+					/>
 				</div>
 			</div>
 
@@ -67,5 +67,5 @@ export default function Main({ budgets, transactions, budgetOptions, refreshAll,
 				setActiveTab={setActiveTab}
 			/>
 		</>
-	)
+	);
 }
