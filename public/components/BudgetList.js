@@ -105,7 +105,6 @@ const BudgetList = forwardRef(({
 
 			{deleteBugdet &&
 				<ConfirmModal
-					id="delete-budget-confirm"
 					title="Confirm Budget Delete"
 					onSubmit={confirm => handleDelete(confirm, deleteBugdet._id)}
 				>

@@ -49,7 +49,7 @@ export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 		if (onHidden) {
 			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true });
 		}
-	});
+	}, [onHidden]);
 
 	return (
 		<div ref={myModalEl} className="modal" tabIndex="-1">

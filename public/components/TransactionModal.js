@@ -31,7 +31,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 		if (onHidden) {
 			myModalEl.current.addEventListener('hidden.bs.modal', onHidden, { once: true });
 		}
-	});
+	}, [onHidden]);
 
 	function onSubmit() {
 		if (!formData.budget || !formData.amount || !formData.description) {
