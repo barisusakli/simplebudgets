@@ -1,13 +1,13 @@
 
 
-export default async function xhrJson({ url, data, method}) {
+export default async function xhrJson({ url, data, method }) {
 	try {
 		const headers = {
-			"Content-Type": "application/json",
+			'Content-Type': 'application/json',
 		};
-		method = method || 'get'
+		method = method || 'get';
 		if (['post', 'put', 'delete'].includes(method.toLowerCase())) {
-			headers['x-csrf-token'] = await (await fetch('/api/csrf-token')).text()
+			headers['x-csrf-token'] = await (await fetch('/api/csrf-token')).text();
 		}
 		const response = await fetch(url, {
 			method: method,
@@ -32,11 +32,11 @@ export default async function xhrJson({ url, data, method}) {
 			if (result) {
 				throw new Error(result);
 			}
-			throw new Error(res.statusText);
+			throw new Error(response.statusText);
 		}
 		return result;
 	} catch (error) {
-		console.error("Error:", error);
+		console.error('Error:', error);
 		throw error;
 	}
 }
