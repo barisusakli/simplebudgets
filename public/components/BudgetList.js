@@ -117,7 +117,6 @@ const BudgetList = forwardRef(({
 				{els}
 				{budgets.length <= 1 && <div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
 			</ul>
-
 		</div>
 	);
 });
