@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import SharedLayout from './pages/SharedLayout';
 import Landing from './pages/Landing';
@@ -10,35 +10,18 @@ import Dashboard from './pages/Dashboard';
 import Error from './pages/Error';
 import Reset from './pages/Reset';
 
-import fetchJson from './fetchJson';
-
+import useData from './hooks/useData';
 import UserContext from './contexts/UserContext';
 import AlertPopup from './components/AlertPopup';
-import useAlert from './hooks/useAlert';
 
 export default function App() {
-	const [user, setUser] = React.useState(null);
-	const [isLoading, setIsLoading] = React.useState(true);
-	const { setAlert } = useAlert();
-
-	useEffect(() => {
-		fetchJson({
-			url: '/api/user',
-		}).then((result) => {
-			if (result) {
-				setUser({ email: result.email, joined: result.joined });
-			}
-		}).catch((err) => {
-			setAlert(err.message, 'danger');
-		}).finally(() => {
-			setIsLoading(false);
-		});
-	}, [setAlert]);
+	const [{ data: user, state }, { setData }] = useData('/api/user', null);
+	const isLoading = state !== 'success';
 
 	return (
 		<div className="container-lg">
 			<BrowserRouter>
-				<UserContext.Provider value={{ user, setUser }}>
+				<UserContext.Provider value={{ user, setUser: setData }}>
 					<Routes>
 						<Route path="/" element={<SharedLayout />}>
 							<Route index element={<Landing isLoading={isLoading} />} />
