@@ -1,20 +1,13 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React from 'react';
 import fetchJson from '../fetchJson';
 import BudgetModal from './BudgetModal';
 import ConfirmModal from './ConfirmModal';
 import formatCentsToDollars from '../format';
 import useAlert from '../hooks/useAlert';
 
-const BudgetList = forwardRef(({
-	budgets, refreshAll, currentBudget, setCurrentBudget, setActiveTab, isCurrentMonth,
-}, ref) => {
-	useImperativeHandle(ref, () => ({
-		openCreate() {
-			handleCreate();
-		},
-	}), []);
-
-
+export default function BudgetList({
+	budgets, refreshAll, currentBudget, setCurrentBudget, setActiveTab, isCurrentMonth, handleCreate,
+}) {
 	const { setAlert } = useAlert();
 	const [budgetData, setBudgetData] = React.useState(null);
 	const [deleteBugdet, setDeleteBugdet] = React.useState(null);
@@ -64,13 +57,6 @@ const BudgetList = forwardRef(({
 			</li>
 		));
 
-	function handleCreate() {
-		setBudgetData({
-			name: '',
-			amount: '',
-		});
-	}
-
 	function handleEdit(budget) {
 		setBudgetData({
 			...budget,
@@ -95,7 +81,7 @@ const BudgetList = forwardRef(({
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={handleCreate}>Create Budget</button>
+			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={() => handleCreate(setBudgetData)}>Create Budget</button>
 
 			{!!budgetData && <BudgetModal
 				refreshAll={refreshAll}
@@ -118,8 +104,4 @@ const BudgetList = forwardRef(({
 			</ul>
 		</div>
 	);
-});
-
-BudgetList.displayName = 'Budget List';
-
-export default BudgetList;
+}

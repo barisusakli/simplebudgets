@@ -1,18 +1,10 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React from 'react';
 
 import TransactionModal from './TransactionModal';
 import formatCentsToDollars from '../format';
 
 
-const TransactionList = forwardRef(({
-	transactions, budgetOptions, refreshAll, currentBudget,
-}, ref) => {
-	useImperativeHandle(ref, () => ({
-		openCreate() {
-			handleCreate();
-		},
-	}));
-
+export default function TransactionList({ transactions, budgetOptions, refreshAll, currentBudget, handleCreate }) {
 	const [txData, setTxData] = React.useState(null);
 
 	const els = transactions
@@ -26,16 +18,6 @@ const TransactionList = forwardRef(({
 			</tr>
 		));
 
-
-	function handleCreate() {
-		setTxData({
-			budget: budgetOptions.length > 0 ? budgetOptions[0] : '',
-			description: '',
-			amount: '',
-			date: new Date(),
-		});
-	}
-
 	function handleEdit(tx) {
 		setTxData({
 			...tx,
@@ -46,7 +28,7 @@ const TransactionList = forwardRef(({
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={handleCreate}>Add Transaction</button>
+			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={() => handleCreate(setTxData)}>Add Transaction</button>
 
 			{txData && <TransactionModal
 				budgetOptions={budgetOptions}
@@ -74,8 +56,4 @@ const TransactionList = forwardRef(({
 			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
 		</div>
 	);
-});
-
-TransactionList.displayName = 'Transaction List';
-
-export default TransactionList;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import Header from '../components/Header';
 import fetchJson from '../fetchJson';
@@ -12,9 +12,6 @@ export default function Dashboard() {
 	const [currentBudget, setCurrentBudget] = React.useState('');
 	const [activeTab, setActiveTab] = React.useState('budgets');
 
-	const budgetListRef = useRef(null);
-	const txListRef = useRef(null);
-
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [budgets, setBudgets] = useState([]);
 	const [transactions, setTransactions] = useState([]);
@@ -25,14 +22,6 @@ export default function Dashboard() {
 	const [year, setYear] = useState(date.getFullYear());
 	const [month, setMonth] = useState(date.getMonth());
 	const isCurrentMonth = month === date.getMonth() && year === date.getFullYear();
-
-	function handleBottombarCreate() {
-		if (activeTab === 'budgets') {
-			budgetListRef?.current?.openCreate();
-		} else if (activeTab === 'transactions') {
-			txListRef?.current?.openCreate();
-		}
-	}
 
 	const refreshAll = useCallback(() => {
 		function getStartEnd() {
@@ -79,6 +68,22 @@ export default function Dashboard() {
 		refreshAll();
 	}, [year, month, refreshAll]);
 
+	function handleBudgetCreate(setBudgetData) {
+		setBudgetData({
+			name: '',
+			amount: '',
+		});
+	}
+
+	function handleTxCreate(setTxData) {
+		setTxData({
+			budget: budgetOptions.length > 0 ? budgetOptions[0] : '',
+			description: '',
+			amount: '',
+			date: new Date(),
+		});
+	}
+
 	return (
 		<section className="section d-flex flex-column gap-3 pb-5 mb-5 mb-lg-0">
 			<Header />
@@ -101,9 +106,9 @@ export default function Dashboard() {
 						<div className="tab-content" id="myTabContent">
 							<div className={`tab-pane fade ${activeTab === 'budgets' ? 'show active' : ''}`} id="budgets-tab-pane" role="tabpanel" aria-labelledby="budgets-tab" tabIndex="0">
 								<BudgetList
-									ref={budgetListRef}
 									budgets={budgets}
 									refreshAll={refreshAll}
+									handleCreate={handleBudgetCreate}
 									currentBudget={currentBudget}
 									setCurrentBudget={setCurrentBudget}
 									isCurrentMonth={isCurrentMonth}
@@ -113,19 +118,22 @@ export default function Dashboard() {
 
 							<div className={`tab-pane fade ${activeTab === 'transactions' ? 'show active' : ''}`}id="transactions-tab-pane" role="tabpanel" aria-labelledby="transactions-tab" tabIndex="0">
 								<TransactionList
-									ref={txListRef}
 									transactions={transactions}
-									budgetOptions={budgetOptions}
 									refreshAll={refreshAll}
+									handleCreate={handleTxCreate}
+									budgetOptions={budgetOptions}
 									currentBudget={currentBudget}
 								/>
 							</div>
 						</div>
 
 						<BottomBar
-							onCreateClicked={handleBottombarCreate}
 							activeTab={activeTab}
 							setActiveTab={setActiveTab}
+							budgetOptions={budgetOptions}
+							refreshAll={refreshAll}
+							handleBudgetCreate={handleBudgetCreate}
+							handleTxCreate={handleTxCreate}
 						/>
 
 					</div>
