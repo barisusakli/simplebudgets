@@ -30,7 +30,7 @@ export default function Navbar({
 			<div className="d-flex gap-1">
 
 				<select className="form-select form-select-sm flex-shrink-1" value={currentBudget} onChange={ev => setCurrentBudget(ev.target.value)}>
-					<option value="">All bugdets</option>
+					<option value="">All budgets</option>
 					{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
 				</select>
 

@@ -10,7 +10,7 @@ export default function BudgetList({
 }) {
 	const { setAlert } = useAlert();
 	const [budgetData, setBudgetData] = React.useState(null);
-	const [deleteBugdet, setDeleteBugdet] = React.useState(null);
+	const [deleteBudget, setDeleteBudget] = React.useState(null);
 
 	const now = new Date();
 	const numberOfDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -49,7 +49,7 @@ export default function BudgetList({
 						{formatCentsToDollars(budget.current)} of {formatCentsToDollars(budget.amount)}
 					</div>
 					<div className="d-flex gap-2">
-						{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => setDeleteBugdet(budget)}>Delete</a>}
+						{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => setDeleteBudget(budget)}>Delete</a>}
 						{budget._id && <a className="btn btn-sm btn-link" onClick={() => handleEdit(budget)}>Edit</a>}
 					</div>
 				</div>
@@ -66,7 +66,7 @@ export default function BudgetList({
 
 	function handleDelete(confirm, _id) {
 		if (!confirm) {
-			setDeleteBugdet(null);
+			setDeleteBudget(null);
 			return;
 		}
 		fetchJson({
@@ -75,7 +75,7 @@ export default function BudgetList({
 			method: 'post',
 		}).then(() => {
 			refreshAll();
-			setDeleteBugdet(null);
+			setDeleteBudget(null);
 		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
@@ -89,12 +89,12 @@ export default function BudgetList({
 				onHidden={() => setBudgetData(null)}
 			/>}
 
-			{deleteBugdet &&
+			{deleteBudget &&
 				<ConfirmModal
 					title="Confirm Budget Delete"
-					onSubmit={confirm => handleDelete(confirm, deleteBugdet._id)}
+					onSubmit={confirm => handleDelete(confirm, deleteBudget._id)}
 				>
-					<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteBugdet.name}"</strong> budget?</div>
+					<div className="alert alert-danger">Do you really want to delete the <strong>"{deleteBudget.name}"</strong> budget?</div>
 				</ConfirmModal>
 			}
 
