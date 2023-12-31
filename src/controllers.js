@@ -297,10 +297,11 @@ exports.getUser = (req, res) => {
 	}
 };
 
-function calculateCarryOverAmounts(budget) {
+function calculateCarryOverAmounts(budget, monthEndDate) {
 	budget.amountAvailable = budget.amount;
 	if (budget.carryover) {
-		const now = new Date();
+		const now = new Date(monthEndDate.getTime());
+		now.setMonth(now.getMonth() - 1);
 		const budgetCreateDate = new Date(budget._id.getTimestamp());
 		let monthsToUse = now.getMonth();
 		if (budgetCreateDate.getFullYear() === now.getFullYear()) {
@@ -335,8 +336,6 @@ exports.getBudgets = async (req, res) => {
 		uid: req.user._id,
 	}).sort({ _id: 1 }).toArray();
 
-	budgets.forEach(calculateCarryOverAmounts);
-
 	const carryOverBudgets = budgets.filter(b => b.carryover);
 	const monthlyBudgets = budgets.filter(b => !b.carryover);
 
@@ -344,6 +343,9 @@ exports.getBudgets = async (req, res) => {
 	const monthStartDate = new Date(parseInt(monthStart, 10));
 	const monthEndDate = new Date(parseInt(monthEnd, 10));
 	const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
+
+	budgets.forEach(b => calculateCarryOverAmounts(b, monthEndDate));
+
 	const [monthlyTxs, carryOverTxs, allMonthTxs] = await Promise.all([
 		getTxsForBudgets(req.user._id, monthStartDate, monthEndDate, monthlyBudgets),
 		getTxsForBudgets(req.user._id, yearStartDate, monthEndDate, carryOverBudgets),
