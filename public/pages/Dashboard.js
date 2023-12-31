@@ -130,6 +130,7 @@ export default function Dashboard() {
 						<BottomBar
 							activeTab={activeTab}
 							setActiveTab={setActiveTab}
+							setCurrentBudget={setCurrentBudget}
 							budgetOptions={budgetOptions}
 							refreshAll={refreshAll}
 							handleBudgetCreate={handleBudgetCreate}

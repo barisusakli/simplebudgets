@@ -4,10 +4,15 @@ import TransactionModal from './TransactionModal';
 
 
 export default function BottomBar({
-	activeTab, setActiveTab, budgetOptions, refreshAll, handleBudgetCreate, handleTxCreate,
+	activeTab, setActiveTab, setCurrentBudget, budgetOptions, refreshAll, handleBudgetCreate, handleTxCreate,
 }) {
 	const [budgetData, setBudgetData] = useState(null);
 	const [txData, setTxData] = useState(null);
+
+	function changeTabToBudgets() {
+		setActiveTab('budgets');
+		setCurrentBudget('');
+	}
 
 	return (
 		<>
@@ -23,7 +28,7 @@ export default function BottomBar({
 					<div className="container-lg">
 						<ul className="nav nav-underline justify-content-around" id={`bottom-bar-tab-${activeTab}`} role="tablist">
 							<li className="nav-item" role="presentation">
-								<button onClick={() => setActiveTab('budgets')} className={`nav-link ${activeTab === 'budgets' ? 'active' : ''}`} data-bs-toggle="tab" data-bs-target="#budgets-tab-pane" type="button" role="tab" aria-controls="budgets-tab-pane" aria-selected="true">Budgets</button>
+								<button onClick={() => changeTabToBudgets()} className={`nav-link ${activeTab === 'budgets' ? 'active' : ''}`} data-bs-toggle="tab" data-bs-target="#budgets-tab-pane" type="button" role="tab" aria-controls="budgets-tab-pane" aria-selected="true">Budgets</button>
 							</li>
 							<li className="nav-item" role="presentation">
 								<button onClick={() => setActiveTab('transactions')} className={`nav-link ${activeTab === 'transactions' ? 'active' : ''}`} data-bs-toggle="tab" data-bs-target="#transactions-tab-pane" type="button" role="tab" aria-controls="transactions-tab-pane" aria-selected="false">Transactions</button>

@@ -16,11 +16,16 @@ export default function Navbar({
 		yearEls.push(<option key={i} value={i}>{i}</option>);
 	}
 
+	function changeTabToBudgets() {
+		setActiveTab('budgets');
+		setCurrentBudget('');
+	}
+
 	return (
 		<div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
 			<ul className="nav nav-underline d-none d-lg-flex" id="myTab" role="tablist">
 				<li className="nav-item" role="presentation">
-					<button onClick={() => setActiveTab('budgets')} className={`nav-link ${activeTab === 'budgets' ? 'active' : ''}`} id="budgets-tab" data-bs-toggle="tab" data-bs-target="#budgets-tab-pane" type="button" role="tab" aria-controls="budgets-tab-pane" aria-selected="true">Budgets</button>
+					<button onClick={() => changeTabToBudgets()} className={`nav-link ${activeTab === 'budgets' ? 'active' : ''}`} id="budgets-tab" data-bs-toggle="tab" data-bs-target="#budgets-tab-pane" type="button" role="tab" aria-controls="budgets-tab-pane" aria-selected="true">Budgets</button>
 				</li>
 				<li className="nav-item" role="presentation">
 					<button onClick={() => setActiveTab('transactions')} className={`nav-link ${activeTab === 'transactions' ? 'active' : ''}`} id="transactions-tab" data-bs-toggle="tab" data-bs-target="#transactions-tab-pane" type="button" role="tab" aria-controls="transactions-tab-pane" aria-selected="false">Transactions</button>
