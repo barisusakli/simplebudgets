@@ -14,7 +14,7 @@ exports.connect = async function (uri) {
 
 	db = mongodb.db();
 	db.collection('budgets').createIndex({ uid: 1, name: 1 }, { unique: true, background: true });
-	db.collection('transactions').createIndex({ uid: 1, date: 1 }, { background: true });
+	db.collection('transactions').createIndex({ uid: 1, date: 1, budget: 1 }, { background: true });
 	db.collection('users').createIndex({ email: 1 }, { unique: true, background: true });
 	db.collection('userSessions').createIndex({ uid: 1 }, { background: true });
 	db.collection('userSessions').createIndex({ sid: 1 }, { background: true });

@@ -48,6 +48,12 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 					<label className="form-label">Amount</label>
 					<input className="form-control" type="number" min="0" step="any" name="amount" value={formData.amount} onChange={ev => formHandleChange(ev, setFormData)}/>
 				</div>
+				<div className="mb-3">
+					<select className="form-select" name="carryover" defaultValue={formData.carryover ? 1 : 0} onChange={ev => formHandleChange(ev, setFormData)}>
+						<option value={0}>Same amount each month</option>
+						<option value={1}>Carry over unused amounts</option>
+					</select>
+				</div>
 			</div>
 			<div className="modal-footer">
 				<button type="button" className="btn btn-primary" onClick={onSubmit}>Save</button>

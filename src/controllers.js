@@ -297,20 +297,58 @@ exports.getUser = (req, res) => {
 	}
 };
 
+function calculateCarryOverAmounts(budget) {
+	if (budget.carryover) {
+		const now = new Date();
+		const budgetCreateDate = new Date(budget._id.getTimestamp());
+		let monthsToUse = now.getMonth();
+		if (budgetCreateDate.getFullYear() === now.getFullYear()) {
+			// if budget was created this year only use available months,
+			// ie, if budget is created in october and we are in december we have we months
+			monthsToUse -= budgetCreateDate.getMonth();
+		}
+		monthsToUse += 1; // jan is 0, dec is 11, add 1 to get actual month count
+		budget.amount *= monthsToUse;
+	}
+}
+
+async function getTxsForBudgets(uid, start, end, budgets) {
+	if (!budgets.length) {
+		return [];
+	}
+	const txs = await db.collection('transactions').find({
+		uid,
+		date: {
+			$gte: start,
+			$lt: end,
+		},
+		budget: {
+			$in: budgets.map(b => b.name),
+		},
+	}).toArray();
+	return txs;
+}
+
 exports.getBudgets = async (req, res) => {
 	const budgets = await db.collection('budgets').find({
 		uid: req.user._id,
 	}).sort({ _id: 1 }).toArray();
 
-	const { monthStart, monthEnd } = req.query;
-	const txs = await db.collection('transactions').find({
-		uid: req.user._id,
-		date: {
-			$gte: new Date(parseInt(monthStart, 10)),
-			$lt: new Date(parseInt(monthEnd, 10)),
-		},
-	}).toArray();
+	budgets.forEach(calculateCarryOverAmounts);
 
+	const carryOverBudgets = budgets.filter(b => b.carryover);
+	const monthlyBudgets = budgets.filter(b => !b.carryover);
+
+	const { monthStart, monthEnd } = req.query;
+	const monthStartDate = new Date(parseInt(monthStart, 10));
+	const monthEndDate = new Date(parseInt(monthEnd, 10));
+	const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
+	const [monthlyTxs, carryOverTxs] = await Promise.all([
+		getTxsForBudgets(req.user._id, monthStartDate, monthEndDate, monthlyBudgets),
+		getTxsForBudgets(req.user._id, yearStartDate, monthEndDate, carryOverBudgets),
+	]);
+
+	const txs = monthlyTxs.concat(carryOverTxs);
 	let totalSpent = 0;
 
 	txs.forEach((tx) => {
@@ -355,6 +393,7 @@ exports.createBudget = async (req, res) => {
 		uid: req.user._id,
 		name: name,
 		amount: formatDollarsToCents(req.body.amount),
+		carryover: parseInt(req.body.carryover, 10) || 0,
 	});
 	res.json('ok');
 };
@@ -376,6 +415,7 @@ exports.editBudget = async (req, res) => {
 		$set: {
 			name: req.body.name,
 			amount: formatDollarsToCents(req.body.amount),
+			carryover: parseInt(req.body.carryover, 10) || 0,
 		},
 	});
 	res.json('ok');
