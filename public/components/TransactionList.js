@@ -14,7 +14,9 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				<td className="text-nowrap fit">{new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</td>
 				<td style={{ maxWidth: '100px' }} className="text-truncate">{tx.description}</td>
 				<td style={{ maxWidth: '50px' }} className="text-truncate">{tx.budget}</td>
-				<td className="text-end fit">{formatCentsToDollars(tx.amount)}</td>
+				<td className={`text-end fit ${tx.type === 'income' ? 'text-success' : ''}`}>
+					{tx.type === 'expense' && '-'}{formatCentsToDollars(tx.amount)}
+				</td>
 			</tr>
 		));
 

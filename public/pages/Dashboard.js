@@ -13,8 +13,7 @@ export default function Dashboard() {
 	const [activeTab, setActiveTab] = React.useState('budgets');
 
 	const [isLoaded, setIsLoaded] = useState(false);
-	const [budgets, setBudgets] = useState([]);
-	const [transactions, setTransactions] = useState([]);
+	const [budgetData, setBudgetData] = useState([]);
 	const [budgetOptions, setBudgetOptions] = useState([]);
 	const { setAlert } = useAlert();
 
@@ -39,27 +38,13 @@ export default function Dashboard() {
 			};
 		}
 
-		function loadBudgets() {
-			return fetchJson({
-				url: `/api/budgets?${new URLSearchParams(getStartEnd())}`,
-				method: 'get',
-			});
-		}
+		fetchJson({
+			url: `/api/budgets?${new URLSearchParams(getStartEnd())}`,
+			method: 'get',
+		}).then((budgetData) => {
+			setBudgetData(budgetData);
+			setBudgetOptions(budgetData.budgets.filter(budget => !!budget._id).map(budget => budget.name));
 
-		function loadTransactions() {
-			return fetchJson({
-				url: `/api/transactions?${new URLSearchParams(getStartEnd())}`,
-				method: 'get',
-			});
-		}
-
-		Promise.all([
-			loadBudgets(),
-			loadTransactions(),
-		]).then(([budgetData, txData]) => {
-			setBudgets(budgetData);
-			setBudgetOptions(budgetData.filter(budget => !!budget._id).map(budget => budget.name));
-			setTransactions(txData);
 			setIsLoaded(true);
 		}).catch(err => setAlert(err.message, 'danger'));
 	}, [month, year, setAlert]);
@@ -106,7 +91,7 @@ export default function Dashboard() {
 						<div className="tab-content" id="myTabContent">
 							<div className={`tab-pane fade ${activeTab === 'budgets' ? 'show active' : ''}`} id="budgets-tab-pane" role="tabpanel" aria-labelledby="budgets-tab" tabIndex="0">
 								<BudgetList
-									budgets={budgets}
+									budgetData={budgetData}
 									refreshAll={refreshAll}
 									handleCreate={handleBudgetCreate}
 									currentBudget={currentBudget}
@@ -118,7 +103,7 @@ export default function Dashboard() {
 
 							<div className={`tab-pane fade ${activeTab === 'transactions' ? 'show active' : ''}`}id="transactions-tab-pane" role="tabpanel" aria-labelledby="transactions-tab" tabIndex="0">
 								<TransactionList
-									transactions={transactions}
+									transactions={budgetData.transactions}
 									refreshAll={refreshAll}
 									handleCreate={handleTxCreate}
 									budgetOptions={budgetOptions}

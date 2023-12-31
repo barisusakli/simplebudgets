@@ -6,10 +6,10 @@ import formatCentsToDollars from '../format';
 import useAlert from '../hooks/useAlert';
 
 export default function BudgetList({
-	budgets, refreshAll, currentBudget, setCurrentBudget, setActiveTab, isCurrentMonth, handleCreate,
+	budgetData, refreshAll, currentBudget, setCurrentBudget, setActiveTab, isCurrentMonth, handleCreate,
 }) {
 	const { setAlert } = useAlert();
-	const [budgetData, setBudgetData] = React.useState(null);
+	const [currentBudgetData, setCurrentBudgetData] = React.useState(null);
 	const [deleteBudget, setDeleteBudget] = React.useState(null);
 
 	const now = new Date();
@@ -25,10 +25,9 @@ export default function BudgetList({
 		setActiveTab('transactions');
 	}
 
-	const els = budgets
-		.filter(budget => !currentBudget || budget.name === currentBudget)
-		.map(budget => (
-			<li key={budget._id || budget.name} className="d-flex flex-column gap-2">
+	function budgetToJsx(budget) {
+		return (
+			<div key={budget._id || budget.name} className="d-flex flex-column gap-2">
 				<div className="d-flex justify-content-between"><a href="#" className="fw-bold text-reset link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover" onClick={ev => handleFilterBudget(ev, budget._id ? budget.name : '')}>{budget.name}</a><span className="text-sm">{
 					budget.leftOrOver >= 0 ?
 						`${formatCentsToDollars(budget.leftOrOver)} left` :
@@ -54,11 +53,18 @@ export default function BudgetList({
 					</div>
 				</div>
 				{budget._id ? <hr className="d-block d-lg-none" /> : <hr/>}
-			</li>
-		));
+			</div>
+		);
+	}
+
+	const allBudgets = budgetData.budgets
+		.filter(budget => !currentBudget || budget.name === currentBudget);
+
+	const incomeBudgets = allBudgets.filter(b => b.type === 'income');
+	const expenseBudgets = allBudgets.filter(b => b.type === 'expense');
 
 	function handleEdit(budget) {
-		setBudgetData({
+		setCurrentBudgetData({
 			...budget,
 			amount: (budget.amount / 100).toFixed(2),
 		});
@@ -81,12 +87,12 @@ export default function BudgetList({
 
 	return (
 		<div className="mt-3 d-flex flex-column gap-3">
-			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={() => handleCreate(setBudgetData)}>Create Budget</button>
+			<button className="btn btn-primary ff-secondary text-nowrap align-self-start d-none d-lg-block" onClick={() => handleCreate(setCurrentBudgetData)}>Create Budget</button>
 
-			{!!budgetData && <BudgetModal
+			{!!currentBudgetData && <BudgetModal
 				refreshAll={refreshAll}
-				budgetData={budgetData}
-				onHidden={() => setBudgetData(null)}
+				budgetData={currentBudgetData}
+				onHidden={() => setCurrentBudgetData(null)}
 			/>}
 
 			{deleteBudget &&
@@ -98,10 +104,33 @@ export default function BudgetList({
 				</ConfirmModal>
 			}
 
-			<ul id="budgets-list" className="list-unstyled d-flex flex-column gap-3">
-				{els}
-				{budgets.length <= 1 && <div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
-			</ul>
+			<div className="d-flex flex-column gap-5">
+				{incomeBudgets.length > 0 &&
+					<div>
+						<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
+							<h5 className="fw-semibold mb-0">Income</h5>
+							<div className="fs-6">
+								<span className="fw-semibold">{formatCentsToDollars(budgetData.currentIncome)}</span> of {formatCentsToDollars(budgetData.totalIncome)}
+							</div>
+						</div>
+						<div className="d-flex flex-column gap-3 ms-0 ms-lg-1">
+							{incomeBudgets.map(budgetToJsx)}
+						</div>
+					</div>
+				}
+				<div>
+					<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
+						<h5 className="fw-semibold mb-0">Spending</h5>
+						<div className="fs-6">
+							<span className="fw-semibold">{formatCentsToDollars(budgetData.currentSpending)}</span> of {formatCentsToDollars(budgetData.totalSpending)}
+						</div>
+					</div>
+					<div className="d-flex flex-column gap-3 ms-0 ms-lg-1">
+						{expenseBudgets.map(budgetToJsx)}
+					</div>
+				</div>
+				{budgetData.budgets.length <= 1 && <div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
+			</div>
 		</div>
 	);
 }

@@ -344,28 +344,45 @@ exports.getBudgets = async (req, res) => {
 	const monthStartDate = new Date(parseInt(monthStart, 10));
 	const monthEndDate = new Date(parseInt(monthEnd, 10));
 	const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
-	const [monthlyTxs, carryOverTxs] = await Promise.all([
+	const [monthlyTxs, carryOverTxs, allMonthTxs] = await Promise.all([
 		getTxsForBudgets(req.user._id, monthStartDate, monthEndDate, monthlyBudgets),
 		getTxsForBudgets(req.user._id, yearStartDate, monthEndDate, carryOverBudgets),
+		db.collection('transactions').find({
+			uid: req.user._id,
+			date: {
+				$gte: new Date(parseInt(monthStart, 10)),
+				$lt: new Date(parseInt(monthEnd, 10)),
+			},
+		}).sort({
+			date: -1,
+		}).toArray(),
 	]);
 
-	const txs = monthlyTxs.concat(carryOverTxs);
-	let totalSpent = 0;
+	allMonthTxs.forEach((tx) => {
+		const budget = budgets.find(b => b.name === tx.budget);
+		if (budget && budget.type) {
+			tx.type = budget.type;
+		}
+	});
 
+	const txs = monthlyTxs.concat(carryOverTxs);
+
+	let currentSpending = 0;
+	let currentIncome = 0;
 	txs.forEach((tx) => {
 		const budget = budgets.find(b => b.name === tx.budget);
 		if (budget) {
 			budget.current = budget.current || 0;
 			budget.current += tx.amount;
+			if (budget.type === 'expense') {
+				currentSpending += tx.amount;
+			} else if (budget.type === 'income') {
+				currentIncome += tx.amount;
+			}
 		}
-		totalSpent += tx.amount;
 	});
-
-	budgets.unshift({
-		name: 'Total',
-		amount: budgets.reduce((curr, b) => curr + parseInt(b.amount, 10), 0),
-		current: totalSpent,
-	});
+	const totalSpending = budgets.filter(b => b.type === 'expense').reduce((acc, b) => acc + parseInt(b.amount, 10), 0);
+	const totalIncome = budgets.filter(b => b.type === 'income').reduce((acc, b) => acc + parseInt(b.amount, 10), 0);
 
 	budgets.forEach((budget) => {
 		if (budget) {
@@ -379,22 +396,33 @@ exports.getBudgets = async (req, res) => {
 		}
 	});
 
-	res.json(budgets);
+	res.json({
+		currentIncome,
+		totalIncome,
+		currentSpending,
+		totalSpending,
+		budgets,
+		transactions: allMonthTxs,
+	});
 };
 
 exports.createBudget = async (req, res) => {
-	const { name } = req.body;
+	const { name, type } = req.body;
 	if (!name) {
 		throw new Error('Invalid budget name');
 	}
 	if (name.length > 50) {
 		throw new Error('Budget name too long');
 	}
+	if (type !== 'income' && type !== 'expense') {
+		throw new Error('Invalid budget type, must be expense or income');
+	}
 	await db.collection('budgets').insertOne({
 		uid: req.user._id,
 		name: name,
 		amount: formatDollarsToCents(req.body.amount),
 		carryover: parseInt(req.body.carryover, 10) || 0,
+		type: req.body.type,
 	});
 	res.json('ok');
 };
@@ -417,6 +445,7 @@ exports.editBudget = async (req, res) => {
 			name: req.body.name,
 			amount: formatDollarsToCents(req.body.amount),
 			carryover: parseInt(req.body.carryover, 10) || 0,
+			type: req.body.type,
 		},
 	});
 	res.json('ok');

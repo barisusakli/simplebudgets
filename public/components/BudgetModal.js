@@ -54,6 +54,12 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 						<option value={1}>Carry over unused amounts</option>
 					</select>
 				</div>
+				<div className="mb-3">
+					<select className="form-select" name="type" defaultValue={formData.type} onChange={ev => formHandleChange(ev, setFormData)}>
+						<option value="expense">Expense</option>
+						<option value="income">Income</option>
+					</select>
+				</div>
 			</div>
 			<div className="modal-footer">
 				<button type="button" className="btn btn-primary" onClick={onSubmit}>Save</button>
