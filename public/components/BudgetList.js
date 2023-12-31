@@ -46,7 +46,7 @@ export default function BudgetList({
 				</div>
 				<div className="d-flex justify-content-between align-items-center">
 					<div className="text-sm text-secondary">
-						{formatCentsToDollars(budget.current)} of {formatCentsToDollars(budget.amount)}
+						{formatCentsToDollars(budget.current)} of {formatCentsToDollars(budget.amountAvailable)}
 					</div>
 					<div className="d-flex gap-2">
 						{budget._id && <a className="btn btn-sm btn-link text-danger" onClick={() => setDeleteBudget(budget)}>Delete</a>}

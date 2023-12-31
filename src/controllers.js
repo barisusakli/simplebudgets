@@ -298,6 +298,7 @@ exports.getUser = (req, res) => {
 };
 
 function calculateCarryOverAmounts(budget) {
+	budget.amountAvailable = budget.amount;
 	if (budget.carryover) {
 		const now = new Date();
 		const budgetCreateDate = new Date(budget._id.getTimestamp());
@@ -308,7 +309,7 @@ function calculateCarryOverAmounts(budget) {
 			monthsToUse -= budgetCreateDate.getMonth();
 		}
 		monthsToUse += 1; // jan is 0, dec is 11, add 1 to get actual month count
-		budget.amount *= monthsToUse;
+		budget.amountAvailable *= monthsToUse;
 	}
 }
 
@@ -369,8 +370,8 @@ exports.getBudgets = async (req, res) => {
 	budgets.forEach((budget) => {
 		if (budget) {
 			budget.current = budget.current || 0;
-			budget.percent = parseFloat(((budget.current / budget.amount) * 100));
-			budget.leftOrOver = (budget.amount - budget.current);
+			budget.percent = parseFloat(((budget.current / budget.amountAvailable) * 100));
+			budget.leftOrOver = (budget.amountAvailable - budget.current);
 			budget.bgColor = budget.percent < 100 ? 'bg-success' : 'bg-danger';
 			if (budget.percent > 95 && budget.percent < 100) {
 				budget.bgColor = 'bg-warning';
