@@ -42,6 +42,7 @@ module.exports = {
 			template: 'index.html',
 			favicon: './assets/favicon/favicon.ico',
 			hash: true,
+			inject: 'body',
 		}),
 		new MiniCssExtractPlugin(),
 	],
