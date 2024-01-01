@@ -57,6 +57,8 @@ export default function Dashboard() {
 		setBudgetData({
 			name: '',
 			amount: '',
+			type: 'expense',
+			carryover: 0,
 		});
 	}
 

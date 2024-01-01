@@ -105,7 +105,7 @@ export default function BudgetList({
 			}
 
 			<div className="d-flex flex-column gap-5">
-				{incomeBudgets.length > 0 &&
+				{ incomeBudgets.length > 0 &&
 					<div>
 						<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
 							<h5 className="fw-semibold mb-0">Income</h5>
@@ -118,17 +118,19 @@ export default function BudgetList({
 						</div>
 					</div>
 				}
-				<div>
-					<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
-						<h5 className="fw-semibold mb-0">Spending</h5>
-						<div className="fs-6">
-							<span className="fw-semibold">{formatCentsToDollars(budgetData.currentSpending)}</span> of {formatCentsToDollars(budgetData.totalSpending)}
+				{ expenseBudgets.length > 0 &&
+					<div>
+						<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
+							<h5 className="fw-semibold mb-0">Spending</h5>
+							<div className="fs-6">
+								<span className="fw-semibold">{formatCentsToDollars(budgetData.currentSpending)}</span> of {formatCentsToDollars(budgetData.totalSpending)}
+							</div>
+						</div>
+						<div className="d-flex flex-column gap-3 ms-0 ms-lg-1">
+							{expenseBudgets.map(budgetToJsx)}
 						</div>
 					</div>
-					<div className="d-flex flex-column gap-3 ms-0 ms-lg-1">
-						{expenseBudgets.map(budgetToJsx)}
-					</div>
-				</div>
+				}
 				{budgetData.budgets.length <= 1 && <div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
 			</div>
 		</div>
