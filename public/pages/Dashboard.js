@@ -43,7 +43,7 @@ export default function Dashboard() {
 			method: 'get',
 		}).then((budgetData) => {
 			setBudgetData(budgetData);
-			setBudgetOptions(budgetData.budgets.filter(budget => !!budget._id).map(budget => budget.name));
+			setBudgetOptions(budgetData.budgets.filter(budget => !!budget._id));
 
 			setIsLoaded(true);
 		}).catch(err => setAlert(err.message, 'danger'));

@@ -36,7 +36,7 @@ export default function Navbar({
 
 				<select className="form-select form-select-sm flex-shrink-1" value={currentBudget} onChange={ev => setCurrentBudget(ev.target.value)}>
 					<option value="">All budgets</option>
-					{budgetOptions.map((b, i) => <option key={i} value={b}>{b}</option>)}
+					{budgetOptions.map((b, i) => <option key={i} value={b._id}>{b.name}</option>)}
 				</select>
 
 				<select id="month-select"

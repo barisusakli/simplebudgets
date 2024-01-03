@@ -77,7 +77,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 					<div className="mb-3">
 						<label className="form-label">Budget</label>
 						<select className="form-select" name="budget" id="budget" value={formData.budget} onChange={ev => formHandleChange(ev, setFormData)}>
-							${budgetOptions.map((opt, i) => <option key={i}>{opt}</option>)}
+							${budgetOptions.map((opt, i) => <option key={i} value={opt._id}>{opt.name}</option>)}
 						</select>
 					</div>
 					<div className="mb-3">

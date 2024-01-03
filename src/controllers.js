@@ -325,7 +325,7 @@ async function getTxsForBudgets(uid, start, end, budgets) {
 			$lt: end,
 		},
 		budget: {
-			$in: budgets.map(b => b.name),
+			$in: budgets.map(b => b._id),
 		},
 	}).toArray();
 	return txs;
@@ -361,9 +361,10 @@ exports.getBudgets = async (req, res) => {
 	]);
 
 	allMonthTxs.forEach((tx) => {
-		const budget = budgets.find(b => b.name === tx.budget);
+		const budget = budgets.find(b => tx.budget.equals(b._id));
 		if (budget && budget.type) {
 			tx.type = budget.type;
+			tx.budgetName = budget.name;
 		}
 	});
 
@@ -372,7 +373,7 @@ exports.getBudgets = async (req, res) => {
 	let currentSpending = 0;
 	let currentIncome = 0;
 	txs.forEach((tx) => {
-		const budget = budgets.find(b => b.name === tx.budget);
+		const budget = budgets.find(b => tx.budget.equals(b._id));
 		if (budget) {
 			budget.current = budget.current || 0;
 			budget.current += tx.amount;
@@ -488,7 +489,7 @@ exports.createTransaction = async (req, res) => {
 
 	await db.collection('transactions').insertOne({
 		description: req.body.description,
-		budget: req.body.budget,
+		budget: new mongodb.ObjectId(req.body.budget),
 		amount: formatDollarsToCents(req.body.amount),
 		date: new Date(req.body.date),
 		uid: req.user._id,
@@ -513,7 +514,7 @@ exports.editTransaction = async (req, res) => {
 	}, {
 		$set: {
 			description: req.body.description,
-			budget: req.body.budget,
+			budget: new mongodb.ObjectId(req.body.budget),
 			amount: formatDollarsToCents(req.body.amount),
 			date: new Date(req.body.date),
 		},
