@@ -19,16 +19,16 @@ export default function BudgetList({
 		return Math.min(99.5, parseFloat((new Date().getDate() / numberOfDaysInMonth) * 100));
 	}
 
-	function handleFilterBudget(ev, name) {
+	function handleFilterBudget(ev, _id) {
 		ev.preventDefault();
-		setCurrentBudget(name);
+		setCurrentBudget(_id);
 		setActiveTab('transactions');
 	}
 
 	function budgetToJsx(budget) {
 		return (
 			<div key={budget._id || budget.name} className="d-flex flex-column gap-2">
-				<div className="d-flex justify-content-between"><a href="#" className="fw-bold text-reset link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover" onClick={ev => handleFilterBudget(ev, budget._id ? budget.name : '')}>{budget.name}</a><span className="text-sm">{
+				<div className="d-flex justify-content-between"><a href="#" className="fw-bold text-reset link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover" onClick={ev => handleFilterBudget(ev, budget._id ? budget._id : '')}>{budget.name}</a><span className="text-sm">{
 					budget.leftOrOver >= 0 ?
 						`${formatCentsToDollars(budget.leftOrOver)} left` :
 						`${formatCentsToDollars(Math.abs(budget.leftOrOver))} over`
