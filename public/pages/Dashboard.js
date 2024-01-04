@@ -64,7 +64,7 @@ export default function Dashboard() {
 
 	function handleTxCreate(setTxData) {
 		setTxData({
-			budget: budgetOptions.length > 0 ? budgetOptions[0] : '',
+			budget: budgetOptions.length > 0 ? budgetOptions[0]._id : '',
 			description: '',
 			amount: '',
 			date: new Date(),
