@@ -8,6 +8,7 @@ import Modal from './Modal';
 export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 	const [formData, setFormData] = useState({ ...budgetData });
 	const [errorMsg, setErrorMsg] = useState('');
+	const [carryOverVisibility, setCarryOverVisibility] = useState(true);
 	const myModalEl = useRef(null);
 	const { setAlert } = useAlert();
 
@@ -32,6 +33,11 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
+	function onChangeType(ev) {
+		formHandleChange(ev, setFormData);
+		setCarryOverVisibility(ev.target.value === 'expense');
+	}
+
 	return (
 		<Modal ref={myModalEl} onHidden={onHidden}>
 			<div className="modal-header">
@@ -45,21 +51,24 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 					{errorMsg && <p className="form-text text-danger">{errorMsg}</p>}
 				</div>
 				<div className="mb-3">
-					<label className="form-label">Amount</label>
-					<input className="form-control" type="number" min="0" step="any" name="amount" value={formData.amount} onChange={ev => formHandleChange(ev, setFormData)}/>
-				</div>
-				<div className="mb-3">
-					<select className="form-select" name="carryover" defaultValue={formData.carryover} onChange={ev => formHandleChange(ev, setFormData)}>
-						<option value={0}>Same amount each month</option>
-						<option value={1}>Carry over unused amounts</option>
-					</select>
-				</div>
-				<div className="mb-3">
-					<select className="form-select" name="type" defaultValue={formData.type} onChange={ev => formHandleChange(ev, setFormData)}>
+					<label className="form-label">Type</label>
+					<select className="form-select" name="type" defaultValue={formData.type} onChange={ev => onChangeType(ev)}>
 						<option value="expense">Expense</option>
 						<option value="income">Income</option>
 					</select>
 				</div>
+				<div className="mb-3">
+					<label className="form-label">Amount</label>
+					<input className="form-control" type="number" min="0" step="any" name="amount" value={formData.amount} onChange={ev => formHandleChange(ev, setFormData)}/>
+				</div>
+				{ carryOverVisibility &&
+					<div className="">
+						<select className="form-select" name="carryover" defaultValue={formData.carryover} onChange={ev => formHandleChange(ev, setFormData)}>
+							<option value={0}>Same amount each month</option>
+							<option value={1}>Carry over unused amounts</option>
+						</select>
+					</div>
+				}
 			</div>
 			<div className="modal-footer">
 				<button type="button" className="btn btn-primary" onClick={onSubmit}>Save</button>
