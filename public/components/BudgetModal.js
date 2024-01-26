@@ -8,7 +8,7 @@ import Modal from './Modal';
 export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 	const [formData, setFormData] = useState({ ...budgetData });
 	const [errorMsg, setErrorMsg] = useState('');
-	const [carryOverVisibility, setCarryOverVisibility] = useState(true);
+	const [carryOverVisibility, setCarryOverVisibility] = useState(formData.type === 'expense');
 	const myModalEl = useRef(null);
 	const { setAlert } = useAlert();
 
