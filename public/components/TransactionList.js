@@ -39,7 +39,7 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				onHidden={() => setTxData(null)}
 			/>}
 
-			{ transactions.length > 0 &&
+			{ els.length > 0 &&
 				<div className="table-responsive">
 					<table id="transaction-list" className="table table-hover">
 						<thead className="text-sm">
@@ -55,7 +55,7 @@ export default function TransactionList({ transactions, budgetOptions, refreshAl
 				</div>
 			}
 
-			{transactions.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
+			{els.length === 0 && <div className="alert alert-info text-center">You don't have any transactions. Start by clicking "Add Transaction".</div>}
 		</div>
 	);
 }

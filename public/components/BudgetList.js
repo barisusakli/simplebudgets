@@ -59,7 +59,7 @@ export default function BudgetList({
 	}
 
 	const allBudgets = budgetData.budgets
-		.filter(budget => !currentBudget || budget.name === currentBudget);
+		.filter(budget => !currentBudget || budget._id === currentBudget);
 
 	const incomeBudgets = allBudgets.filter(b => b.type === 'income');
 	const expenseBudgets = allBudgets.filter(b => b.type === 'expense');
