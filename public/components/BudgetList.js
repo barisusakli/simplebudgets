@@ -2,6 +2,7 @@ import React from 'react';
 import fetchJson from '../fetchJson';
 import BudgetModal from './BudgetModal';
 import ConfirmModal from './ConfirmModal';
+import BudgetSection from './BudgetSection';
 import formatCentsToDollars from '../format';
 import useAlert from '../hooks/useAlert';
 
@@ -106,30 +107,21 @@ export default function BudgetList({
 
 			<div className="d-flex flex-column gap-5">
 				{ incomeBudgets.length > 0 &&
-					<div>
-						<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
-							<h5 className="fw-semibold mb-0">Income</h5>
-							<div className="fs-6">
-								<span className="fw-semibold">{formatCentsToDollars(budgetData.currentIncome)}</span> of {formatCentsToDollars(budgetData.totalIncome)}
-							</div>
-						</div>
-						<div className="d-flex flex-column gap-3 ms-0 ms-lg-1">
-							{incomeBudgets.map(budgetToJsx)}
-						</div>
-					</div>
+					<BudgetSection
+						title="Income"
+						current={budgetData.currentIncome}
+						total={budgetData.totalIncome}>
+						{incomeBudgets.map(budgetToJsx)}
+					</BudgetSection>
 				}
 				{ expenseBudgets.length > 0 &&
-					<div>
-						<div className="border-bottom pb-1 mb-3 d-flex gap-2 justify-content-between align-items-center">
-							<h5 className="fw-semibold mb-0">Spending</h5>
-							<div className="fs-6">
-								<span className="fw-semibold">{formatCentsToDollars(budgetData.currentSpending)}</span> of {formatCentsToDollars(budgetData.totalSpending)}
-							</div>
-						</div>
-						<div className="d-flex flex-column gap-3 ms-0 ms-lg-1">
-							{expenseBudgets.map(budgetToJsx)}
-						</div>
-					</div>
+					<BudgetSection
+						title="Spending"
+						current={budgetData.currentSpending}
+						total={budgetData.totalSpending}
+					>
+						{expenseBudgets.map(budgetToJsx)}
+					</BudgetSection>
 				}
 				{budgetData.budgets.length <= 1 && <div className="alert alert-info text-center">You don't have any budgets. Start by clicking "Create Budget".</div>}
 			</div>
