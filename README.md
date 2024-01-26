@@ -1,8 +1,10 @@
 https://simplebudgets.ca
 
---- 
+---
 
 ### Development
+
+Copy config.default.js to config.js, update db connection string if necessary.
 
 Start mongodb
 
@@ -11,6 +13,14 @@ Start mongodb
 `npm run dev` to bundle client side resources
 
 Access at http://127.0.0.1:3000
+
+### Deploy
+
+`git pull`
+
+`npm run build`
+
+`pm2 restart server`
 
 ### Screenshots
 
