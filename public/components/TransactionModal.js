@@ -14,6 +14,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 	});
 	const [descriptionErrorMsg, setDescriptionErrorMsg] = useState('');
 	const [deleteTransaction, setDeleteTransaction] = React.useState(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const myModalEl = useRef(null);
 
 	function onSubmit() {
@@ -24,7 +25,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			setDescriptionErrorMsg('Description too long');
 			return;
 		}
-
+		setIsSubmitting(true);
 		const newDate = new Date(txData.date);
 		const parts = formData.date.split('-');
 		newDate.setFullYear(parts[0], parts[1] - 1, parts[2]);
@@ -60,9 +61,9 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			data: { _id },
 			method: 'post',
 		}).then(() => {
-			refreshAll();
 			setDeleteTransaction(null);
 			myModalEl.current.hide();
+			refreshAll();
 		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
@@ -98,7 +99,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 					{formData._id &&
 						<button type="button" className="btn btn-outline-danger" onClick={onDeleteClick}>Delete</button>
 					}
-					<button type="button" className="btn btn-primary" onClick={onSubmit}>Save</button>
+					<button type="button" className="btn btn-primary" onClick={onSubmit} disabled={isSubmitting}>Save</button>
 				</div>
 			</Modal>
 
