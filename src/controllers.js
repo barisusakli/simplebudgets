@@ -368,6 +368,10 @@ exports.getBudgets = async (req, res) => {
 		}
 	});
 
+	carryOverTxs.forEach((tx) => {
+		tx.isInThisMonth = !!allMonthTxs.find(mtx => mtx._id.equals(tx._id));
+	});
+
 	const txs = monthlyTxs.concat(carryOverTxs);
 
 	let currentSpending = 0;
@@ -377,7 +381,7 @@ exports.getBudgets = async (req, res) => {
 		if (budget) {
 			budget.current = budget.current || 0;
 			budget.current += tx.amount;
-			if (budget.type === 'expense') {
+			if (budget.type === 'expense' && tx.isInThisMonth) {
 				currentSpending += tx.amount;
 			} else if (budget.type === 'income') {
 				currentIncome += tx.amount;
