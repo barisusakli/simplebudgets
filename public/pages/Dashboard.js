@@ -88,6 +88,7 @@ export default function Dashboard() {
 							currentBudget={currentBudget}
 							setCurrentBudget={setCurrentBudget}
 							budgetOptions={budgetOptions}
+							transactionMonths={budgetData.transactionOptions}
 						/>
 
 						<div className="tab-content" id="myTabContent">

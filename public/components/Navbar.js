@@ -4,7 +4,7 @@ import useUser from '../hooks/useUser';
 
 export default function Navbar({
 	month, year, setMonth, setYear, activeTab, setActiveTab,
-	currentBudget, setCurrentBudget, budgetOptions,
+	currentBudget, setCurrentBudget, budgetOptions, transactionMonths,
 }) {
 	const { user } = useUser();
 
@@ -44,18 +44,7 @@ export default function Navbar({
 					value={month}
 					onChange={e => setMonth(parseInt(e.target.value, 10))}
 				>
-					<option value="0">January</option>
-					<option value="1">February</option>
-					<option value="2">March</option>
-					<option value="3">April</option>
-					<option value="4">May</option>
-					<option value="5">June</option>
-					<option value="6">July</option>
-					<option value="7">August</option>
-					<option value="8">September</option>
-					<option value="9">October</option>
-					<option value="10">November</option>
-					<option value="11">December</option>
+					{transactionMonths.map((t, i) => <option key={i} value={t.value}>{t.name} ({t.count})</option>)}
 				</select>
 
 				<select id="year-select"

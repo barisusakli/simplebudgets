@@ -346,7 +346,7 @@ exports.getBudgets = async (req, res) => {
 
 	budgets.forEach(b => calculateCarryOverAmounts(b, monthEndDate));
 
-	const [monthlyTxs, carryOverTxs, allMonthTxs] = await Promise.all([
+	const [monthlyTxs, carryOverTxs, allMonthTxs, transactionOptions] = await Promise.all([
 		getTxsForBudgets(req.user._id, monthStartDate, monthEndDate, monthlyBudgets),
 		getTxsForBudgets(req.user._id, yearStartDate, monthEndDate, carryOverBudgets),
 		db.collection('transactions').find({
@@ -358,6 +358,7 @@ exports.getBudgets = async (req, res) => {
 		}).sort({
 			date: -1,
 		}).toArray(),
+		getTxsOptions(req.user._id),
 	]);
 
 	allMonthTxs.forEach((tx) => {
@@ -410,8 +411,39 @@ exports.getBudgets = async (req, res) => {
 		totalSpending,
 		budgets,
 		transactions: allMonthTxs,
+		transactionOptions,
 	});
 };
+
+async function getTxsOptions(uid) {
+	const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
+	const now = new Date();
+	const txs = await db.collection('transactions').find({
+		uid: uid,
+		date: {
+			$gte: yearStartDate,
+			$lt: now,
+		},
+	}).sort({
+		date: -1,
+	}).toArray();
+	const months = [
+		'January', 'February', 'March', 'April', 'May', 'June',
+		'July', 'August', 'September', 'October', 'November', 'December',
+	];
+	const counts = {};
+	txs.forEach((tx) => {
+		const month = tx.date.getMonth();
+		counts[month] = counts[month] || 0;
+		counts[month] += 1;
+	});
+
+	return months.map((name, i) => ({
+		value: i,
+		name: name,
+		count: counts[i] || 0,
+	}));
+}
 
 exports.createBudget = async (req, res) => {
 	const { name, type } = req.body;
