@@ -23,7 +23,7 @@
     "connect-mongo": "5.1.0",
     "cookie-parser": "1.4.6",
     "cors": "2.8.5",
-    "csrf-sync": "4.0.1",
+    "csrf-sync": "4.0.3",
     "express": "4.20.0",
     "express-session": "1.17.3",
     "hcaptcha": "^0.1.1",
