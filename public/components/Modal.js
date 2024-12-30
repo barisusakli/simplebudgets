@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useImperativeHandle } from 'react';
 import { Modal } from 'bootstrap';
 
-const MyModal = forwardRef(({
-	children, onHidden, backdrop = true, className = '',
-}, ref) => {
+const MyModal = ({
+	ref, children, onHidden, backdrop = true, className = '',
+}) => {
 	const myModalEl = useRef(null);
 
 	useImperativeHandle(ref, () => ({
@@ -30,7 +30,7 @@ const MyModal = forwardRef(({
 			</div>
 		</div>
 	);
-});
+};
 
 MyModal.displayName = 'My Modal';
 

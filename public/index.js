@@ -6,7 +6,14 @@ import App from './app';
 import { AlertProvider } from './contexts/AlertContext';
 
 const container = document.getElementById('root');
-const root = createRoot(container);
+const root = createRoot(container, {
+	onUncaughtError: (error, errorInfo) => {
+		console.error(error, errorInfo);
+	},
+	onCaughtError: (error, errorInfo) => {
+		console.error(error, errorInfo);
+	},
+});
 root.render(
 	<AlertProvider >
 		<App />

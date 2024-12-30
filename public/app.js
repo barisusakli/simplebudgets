@@ -21,7 +21,7 @@ export default function App() {
 	return (
 		<div className="container-lg">
 			<BrowserRouter>
-				<UserContext.Provider value={{ user, setUser: setData }}>
+				<UserContext value={{ user, setUser: setData }}>
 					<Routes>
 						<Route path="/" element={<SharedLayout />}>
 							<Route index element={<Landing isLoading={isLoading} />} />
@@ -36,7 +36,7 @@ export default function App() {
 							<Route path="*" element={<Error />} />
 						</Route>
 					</Routes>
-				</UserContext.Provider>
+				</UserContext>
 			</BrowserRouter>
 			<AlertPopup />
 		</div>
