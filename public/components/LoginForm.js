@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 import useUser from '../hooks/useUser';
 import fetchJson from '../fetchJson';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, Navigate } from 'react-router';
 import fetchJson from '../fetchJson';
 import formHandleChange from '../formHandleChange';
 import useUser from '../hooks/useUser';
