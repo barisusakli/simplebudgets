@@ -15,7 +15,7 @@ const root = createRoot(container, {
 	},
 });
 root.render(
-	<AlertProvider >
+	<AlertProvider>
 		<App />
 	</AlertProvider>
 );
