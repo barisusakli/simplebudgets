@@ -340,9 +340,11 @@ exports.getBudgets = async (req, res) => {
 	const monthlyBudgets = budgets.filter(b => !b.carryover);
 
 	const { monthStart, monthEnd } = req.query;
+	const selectedYear = new Date(parseInt(req.query.monthStart, 10)).getFullYear();
 	const monthStartDate = new Date(parseInt(monthStart, 10));
 	const monthEndDate = new Date(parseInt(monthEnd, 10));
-	const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
+	const yearStartDate = new Date(selectedYear, 0, 1);
+	const yearEndDate = new Date(selectedYear + 1, 0, 0)
 
 	budgets.forEach(b => calculateCarryOverAmounts(b, monthEndDate));
 
@@ -358,7 +360,7 @@ exports.getBudgets = async (req, res) => {
 		}).sort({
 			date: -1,
 		}).toArray(),
-		getTxsOptions(req.user._id),
+		getTxsOptions(req.user._id, yearStartDate, yearEndDate),
 	]);
 
 	allMonthTxs.forEach((tx) => {
@@ -415,14 +417,12 @@ exports.getBudgets = async (req, res) => {
 	});
 };
 
-async function getTxsOptions(uid) {
-	const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
-	const now = new Date();
+async function getTxsOptions(uid, yearStartDate, yearEndDate) {
 	const txs = await db.collection('transactions').find({
 		uid: uid,
 		date: {
 			$gte: yearStartDate,
-			$lt: now,
+			$lt: yearEndDate,
 		},
 	}).sort({
 		date: -1,
