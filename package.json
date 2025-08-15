@@ -15,7 +15,6 @@
   "dependencies": {
     "@hcaptcha/react-hcaptcha": "^1.9.2",
     "@popperjs/core": "2.11.8",
-    "@sendgrid/mail": "^8.0.0",
     "bcryptjs": "2.4.3",
     "body-parser": "1.20.3",
     "bootbox": "6.0.0",
@@ -27,6 +26,7 @@
     "express": "4.21.2",
     "express-session": "1.18.1",
     "hcaptcha": "^0.2.0",
+    "mailgun.js": "^12.0.3",
     "mongodb": "6.13.1",
     "passport": "0.7.0",
     "passport-local": "1.0.0",

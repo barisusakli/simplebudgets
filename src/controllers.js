@@ -7,13 +7,18 @@ const passport = require('passport');
 const bcryptjs = require('bcryptjs');
 const mongodb = require('mongodb');
 const crypto = require('crypto');
-const sgMail = require('@sendgrid/mail');
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
 const hcaptcha = require('hcaptcha');
 const config = require('../config');
 
-const { sendgrid } = config;
+const { mailgun: mailgunConfig } = config;
 
-sgMail.setApiKey(sendgrid.key);
+const mailgun = new Mailgun(formData);
+const mgMail = mailgun.client({
+	username: mailgunConfig.username || 'api',
+	key: mailgunConfig.key || 'key-yourkeyhere',
+});
 
 const db = require('./database').db();
 
@@ -235,9 +240,9 @@ exports.passwordResetSend = async function (req, res, next) {
 	}
 	const code = crypto.randomBytes(16).toString('hex');
 
-	await sgMail.send({
-		to: email,
-		from: sendgrid.from,
+	await mgMail.messages.create(mailgunConfig.domain, {
+		to: [email],
+		from: `${mailgunConfig.from.name} <${mailgunConfig.from.email}>`,
 		subject: 'Password reset request from SimpleBudgets.ca',
 		html: `
 			<p>Hello from Simple Budgets!</p>
@@ -344,7 +349,7 @@ exports.getBudgets = async (req, res) => {
 	const monthStartDate = new Date(parseInt(monthStart, 10));
 	const monthEndDate = new Date(parseInt(monthEnd, 10));
 	const yearStartDate = new Date(selectedYear, 0, 1);
-	const yearEndDate = new Date(selectedYear + 1, 0, 0)
+	const yearEndDate = new Date(selectedYear + 1, 0, 0);
 
 	budgets.forEach(b => calculateCarryOverAmounts(b, monthEndDate));
 

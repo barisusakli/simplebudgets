@@ -19,6 +19,15 @@ module.exports = {
 		},
 		key: 'add sendgrid key',
 	},
+	mailgun: {
+		domain: 'mailgun.domain.com',
+		from: {
+			email: 'support@simplebudgets.ca',
+			name: 'SimpleBudgets.ca',
+		},
+		username: 'simplebudgets',
+		key: 'add mailgun key',
+	},
 	hcaptcha: {
 		sitekey: 'enter hcatpcha site key',
 		secret: 'enter hcatpcha secret',
