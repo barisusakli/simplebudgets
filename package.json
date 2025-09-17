@@ -16,7 +16,7 @@
     "@hcaptcha/react-hcaptcha": "^1.9.2",
     "@popperjs/core": "2.11.8",
     "bcryptjs": "2.4.3",
-    "body-parser": "1.20.3",
+    "body-parser": "2.2.0",
     "bootbox": "6.0.0",
     "bootstrap": "5.3.3",
     "connect-mongo": "5.1.0",
