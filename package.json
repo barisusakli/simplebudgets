@@ -17,7 +17,7 @@
     "@popperjs/core": "2.11.8",
     "bcryptjs": "2.4.3",
     "body-parser": "1.20.3",
-    "bootbox": "6.0.0",
+    "bootbox": "6.0.4",
     "bootstrap": "5.3.3",
     "connect-mongo": "5.1.0",
     "cookie-parser": "1.4.7",
