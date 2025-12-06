@@ -311,7 +311,7 @@ function calculateCarryOverAmounts(budget, monthEndDate) {
 		let monthsToUse = now.getMonth();
 		if (budgetCreateDate.getFullYear() === now.getFullYear()) {
 			// if budget was created this year only use available months,
-			// ie, if budget is created in october and we are in december we have we months
+			// ie, if budget is created in october and we are in december we have three months
 			monthsToUse -= budgetCreateDate.getMonth();
 		}
 		monthsToUse += 1; // jan is 0, dec is 11, add 1 to get actual month count
