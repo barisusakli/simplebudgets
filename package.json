@@ -4,7 +4,7 @@
   "description": "A simple budgeting app",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test node --test test/*.js",
     "dev": "rm -rf assets/dist && webpack --config webpack.dev.js",
     "build": "rm -rf assets/dist && webpack --config webpack.prod.js",
     "server": "nodemon server.js"

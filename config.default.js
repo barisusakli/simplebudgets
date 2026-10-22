@@ -6,6 +6,7 @@ module.exports = {
 	url: 'https://simplebudgets.ca',
 	port: 3000,
 	dbConnectionString: 'mongodb://127.0.0.1:27017/mybudget',
+	dbConnectionStringTest: 'mongodb://127.0.0.1:27017/mybudget_test',
 	secret: 'get me from config',
 	sessionKey: 'simplebudgets.sid',
 	cookie: {

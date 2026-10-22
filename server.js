@@ -37,7 +37,7 @@ function setupExpress() {
 		resave: false,
 		saveUninitialized: false,
 		store: connectMongo.create({
-			mongoUrl: config.dbConnectionString,
+			client: database.getClient(),
 		}),
 		cookie: config.cookie,
 	}));
@@ -66,13 +66,21 @@ function setupExpress() {
 		res.status(500).json(err.message);
 	});
 
-	app.listen(config.port, () => {
-		console.log(`listening on port ${config.port}`);
-	});
+	return app;
 }
 
-(async function () {
-	await database.connect(config.dbConnectionString);
-	setupExpress();
-}());
+async function start() {
+	await database.connect(process.env.NODE_ENV === 'test' ? config.dbConnectionStringTest : config.dbConnectionString);
+	const app = setupExpress();
+	const server = app.listen(config.port, () => {
+		console.log(`listening on port ${config.port}`);
+	});
+	return server;
+}
+
+module.exports = { start, setupExpress, close: database.close };
+
+if (require.main === module) {
+	start();
+}
 
