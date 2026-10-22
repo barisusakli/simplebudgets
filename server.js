@@ -54,7 +54,7 @@ function setupExpress() {
 	const DIST_DIR = path.join(__dirname, 'assets/dist');
 	const HTML_FILE = path.join(DIST_DIR, 'index.html');
 
-	app.get('*', (req, res) => {
+	app.get('*splat', (req, res) => {
 		res.sendFile(HTML_FILE);
 	});
 
