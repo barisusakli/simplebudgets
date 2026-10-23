@@ -17,7 +17,7 @@ export default function Dashboard() {
 	const [budgetOptions, setBudgetOptions] = useState([]);
 	const { setAlert } = useAlert();
 
-	const date = new Date();
+	const [date] = useState(() => new Date());
 	const [year, setYear] = useState(date.getFullYear());
 	const [month, setMonth] = useState(date.getMonth());
 	const isCurrentMonth = month === date.getMonth() && year === date.getFullYear();

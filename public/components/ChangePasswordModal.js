@@ -10,7 +10,7 @@ export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 		passwordConfirm: '',
 	});
 	const [errorMsg, setErrorMsg] = useState('');
-	const myModalEl = useRef(null);
+	const modalRef = useRef(null);
 
 	const noMatch = formData.newpassword && formData.passwordConfirm && formData.newpassword !== formData.passwordConfirm;
 
@@ -26,7 +26,7 @@ export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
-			myModalEl.current.hide();
+			modalRef.current.hide();
 			onPasswordChanged();
 		}).catch((err) => {
 			setErrorMsg(err.message);
@@ -34,7 +34,7 @@ export default function ChangePasswordModal({ onPasswordChanged, onHidden }) {
 	}
 
 	return (
-		<Modal ref={myModalEl} onHidden={onHidden}>
+		<Modal ref={modalRef} onHidden={onHidden}>
 			<form onSubmit={handleSubmit}>
 				<div className="modal-header">
 					<h5 className="modal-title">Change Password</h5>

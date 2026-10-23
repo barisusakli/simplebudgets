@@ -9,7 +9,7 @@ export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 		email: '',
 	});
 	const [errorMsg, setErrorMsg] = useState('');
-	const myModalEl = useRef(null);
+	const modalRef = useRef(null);
 
 	function handleSubmit(ev) {
 		ev.preventDefault();
@@ -23,7 +23,7 @@ export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
-			myModalEl.current.hide();
+			modalRef.current.hide();
 			onEmailChanged();
 		}).catch((err) => {
 			setErrorMsg(err.message);
@@ -31,7 +31,7 @@ export default function ChangeEmailModal({ onEmailChanged, onHidden }) {
 	}
 
 	return (
-		<Modal ref={myModalEl} onHidden={onHidden}>
+		<Modal ref={modalRef} onHidden={onHidden}>
 			<form onSubmit={handleSubmit}>
 				<div className="modal-header">
 					<h5 className="modal-title">Change Email</h5>

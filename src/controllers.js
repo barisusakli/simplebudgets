@@ -102,7 +102,7 @@ exports.register = async function (req, res) {
 		});
 	} catch (err) {
 		if (err.code === 11000 && err.keyPattern && err.keyPattern.email === 1) {
-			throw new Error('User already exists');
+			throw new Error('User already exists', { cause: err });
 		}
 		throw err;
 	}
@@ -179,7 +179,7 @@ exports.changeEmail = async function (req, res) {
 		});
 	} catch (err) {
 		if (err.code === 11000 && err.keyPattern && err.keyPattern.email === 1) {
-			throw new Error('Email already taken');
+			throw new Error('Email already taken', { cause: err });
 		}
 		throw err;
 	}

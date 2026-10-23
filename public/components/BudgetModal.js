@@ -9,7 +9,7 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 	const [formData, setFormData] = useState({ ...budgetData });
 	const [errorMsg, setErrorMsg] = useState('');
 	const [carryOverVisibility, setCarryOverVisibility] = useState(formData.type === 'expense');
-	const myModalEl = useRef(null);
+	const modalRef = useRef(null);
 	const { setAlert } = useAlert();
 
 	function onSubmit() {
@@ -28,7 +28,7 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 			data: formData,
 			method: 'post',
 		}).then(() => {
-			myModalEl.current.hide();
+			modalRef.current.hide();
 			refreshAll();
 		}).catch(err => setAlert(err.message, 'danger'));
 	}
@@ -39,7 +39,7 @@ export default function BudgetModal({ refreshAll, budgetData, onHidden }) {
 	}
 
 	return (
-		<Modal ref={myModalEl} onHidden={onHidden}>
+		<Modal ref={modalRef} onHidden={onHidden}>
 			<div className="modal-header">
 				<h5 className="modal-title">{`${formData._id ? 'Edit Budget' : 'Create Budget'}`}</h5>
 				<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

@@ -8,14 +8,14 @@ import useAlert from '../hooks/useAlert';
 
 export default function TransactionModal({ budgetOptions, refreshAll, txData, onHidden }) {
 	const { setAlert } = useAlert();
-	const [formData, setFormData] = useState({
+	const [formData, setFormData] = useState(() => ({
 		...txData,
 		date: getYYYYmmdd(txData.date),
-	});
+	}));
 	const [descriptionErrorMsg, setDescriptionErrorMsg] = useState('');
 	const [deleteTransaction, setDeleteTransaction] = React.useState(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const myModalEl = useRef(null);
+	const modalRef = useRef(null);
 
 	function onSubmit() {
 		if (!formData.budget || !formData.amount || !formData.description) {
@@ -42,7 +42,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			data: submitData,
 			method: 'post',
 		}).then(() => {
-			myModalEl.current.hide();
+			modalRef.current.hide();
 			refreshAll();
 		}).catch(err => setAlert(err.message, 'danger'));
 	}
@@ -62,14 +62,14 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 			method: 'post',
 		}).then(() => {
 			setDeleteTransaction(null);
-			myModalEl.current.hide();
+			modalRef.current.hide();
 			refreshAll();
 		}).catch(err => setAlert(err.message, 'danger'));
 	}
 
 	return (
 		<>
-			<Modal ref={myModalEl} onHidden={onHidden} className={`${deleteTransaction ? 'd-none' : ''}`}>
+			<Modal ref={modalRef} onHidden={onHidden} className={`${deleteTransaction ? 'd-none' : ''}`}>
 				<div className="modal-header">
 					<h5 className="modal-title">{`${formData._id ? 'Edit Transaction' : 'Add Transaction'}`}</h5>
 					<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -78,7 +78,7 @@ export default function TransactionModal({ budgetOptions, refreshAll, txData, on
 					<div className="mb-3">
 						<label className="form-label">Budget</label>
 						<select className="form-select" name="budget" id="budget" value={formData.budget} onChange={ev => formHandleChange(ev, setFormData)}>
-							${budgetOptions.map((opt, i) => <option key={i} value={opt._id}>{opt.name}</option>)}
+							${budgetOptions.map((opt, i) => <option key={opt._id} value={opt._id}>{opt.name}</option>)}
 						</select>
 					</div>
 					<div className="mb-3">

@@ -8,7 +8,7 @@ export default function Navbar({
 }) {
 	const { user } = useUser();
 
-	const currentYear = new Date().getFullYear();
+	const [currentYear] = React.useState(() => new Date().getFullYear());
 	const joinedYear = new Date(user.joined).getFullYear();
 
 	const yearEls = [];
@@ -36,7 +36,7 @@ export default function Navbar({
 
 				<select className="form-select form-select-sm flex-shrink-1" value={currentBudget} onChange={ev => setCurrentBudget(ev.target.value)}>
 					<option value="">All budgets</option>
-					{budgetOptions.map((b, i) => <option key={i} value={b._id}>{b.name}</option>)}
+					{budgetOptions.map((b, i) => <option key={b._id} value={b._id}>{b.name}</option>)}
 				</select>
 
 				<select id="month-select"
@@ -44,7 +44,7 @@ export default function Navbar({
 					value={month}
 					onChange={e => setMonth(parseInt(e.target.value, 10))}
 				>
-					{transactionMonths.map((t, i) => <option key={i} value={t.value}>{t.name} ({t.count})</option>)}
+					{transactionMonths.map((t, i) => <option key={t.value} value={t.value}>{t.name} ({t.count})</option>)}
 				</select>
 
 				<select id="year-select"

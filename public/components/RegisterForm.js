@@ -16,7 +16,7 @@ export default function RegisterForm() {
 		hcaptchaToken: '',
 	});
 
-	const [userNameTaken, setUsernameTaken] = useState('');
+	const [userNameTaken, setUserNameTaken] = useState('');
 	const [registerError, setRegisterError] = useState('');
 
 	const noMatch = formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm;
@@ -36,7 +36,7 @@ export default function RegisterForm() {
 			setUser(user);
 		} catch (err) {
 			if (err.message === 'User already exists') {
-				setUsernameTaken(err.message);
+				setUserNameTaken(err.message);
 			} else {
 				setRegisterError(err.message);
 			}

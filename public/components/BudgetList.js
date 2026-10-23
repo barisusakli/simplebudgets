@@ -13,11 +13,11 @@ export default function BudgetList({
 	const [currentBudgetData, setCurrentBudgetData] = React.useState(null);
 	const [deleteBudget, setDeleteBudget] = React.useState(null);
 
-	const now = new Date();
+	const [now] = React.useState(() => new Date());
 	const numberOfDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
 	function calculateMonthProgressPercent() {
-		return Math.min(99.5, parseFloat((new Date().getDate() / numberOfDaysInMonth) * 100));
+		return Math.min(99.5, parseFloat((now.getDate() / numberOfDaysInMonth) * 100));
 	}
 
 	function handleFilterBudget(ev, _id) {

@@ -32,11 +32,11 @@ export const AlertProvider = ({ children }) => {
 	}), [text, type, setAlert]);
 
 	return (
-		<AlertContext.Provider
+		<AlertContext
 			value={alertCtx}
 		>
 			{children}
-		</AlertContext.Provider>
+		</AlertContext>
 	);
 };
 
