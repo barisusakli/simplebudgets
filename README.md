@@ -12,6 +12,10 @@ Start mongodb
 
 `npm run dev` to bundle client side resources
 
+`npm run test` run tests
+
+`npm run lint` to run eslint
+
 Access at http://127.0.0.1:3000
 
 ### Deploy

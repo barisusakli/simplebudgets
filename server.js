@@ -9,7 +9,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const session = require('express-session');
-const connectMongo = require('connect-mongo');
+const { MongoStore } = require('connect-mongo');
+
 const database = require('./src/database');
 
 const config = require('./config');
@@ -36,8 +37,8 @@ function setupExpress() {
 		secret: config.secret,
 		resave: false,
 		saveUninitialized: false,
-		store: connectMongo.create({
-			client: database.getClient(),
+		store: MongoStore.create({
+			clientPromise: new Promise(resolve => resolve(database.getClient())),
 		}),
 		cookie: config.cookie,
 	}));
