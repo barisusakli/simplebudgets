@@ -25,6 +25,7 @@ export default function ProfileDropdown() {
 				<ul className="dropdown-menu dropdown-menu-end p-1">
 					<li><a className="dropdown-item rounded-1" href="#" onClick={() => setShowChangeEmail(true)}>Change Email</a></li>
 					<li><a className="dropdown-item rounded-1" href="#" onClick={() => setShowChangePassword(true)}>Change Password</a></li>
+					<li><a className="dropdown-item rounded-1" href="/api/transactions/export">Export Transactions (CSV)</a></li>
 					<li className="dropdown-divider"></li>
 					<li><a className="dropdown-item rounded-1" href="#" onClick={handleLogout}>Logout</a></li>
 				</ul>

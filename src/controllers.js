@@ -495,6 +495,38 @@ exports.editBudget = async (req, res) => {
 	res.json('ok');
 };
 
+exports.exportTransactions = async (req, res) => {
+	const [txs, budgets] = await Promise.all([
+		db.collection('transactions').find({
+			uid: req.user._id,
+		}).sort({
+			date: -1,
+		}).toArray(),
+		db.collection('budgets').find({
+			uid: req.user._id,
+		}).toArray(),
+	]);
+	const budgetNameById = new Map(budgets.map(b => [b._id.toString(), b.name]));
+
+	const header = ['date', 'description', 'budget', 'amount'];
+	const rows = txs.map((tx) => {
+		const date = tx.date instanceof Date ? tx.date.toISOString() : String(tx.date);
+		return [
+			JSON.stringify(date),
+			JSON.stringify(tx.description || ''),
+			JSON.stringify(budgetNameById.get(tx.budget.toString?.() || '') || ''),
+			JSON.stringify((tx.amount || 0) / 100),
+		].join(',');
+	});
+
+	const csv = [header.join(','), ...rows].join('\n');
+
+	res.status(200)
+		.type('text/csv')
+		.setHeader('content-disposition', 'attachment; filename=transactions.csv')
+		.send(csv);
+};
+
 exports.getTransactions = async (req, res) => {
 	const { monthStart, monthEnd } = req.query;
 

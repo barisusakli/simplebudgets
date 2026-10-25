@@ -46,6 +46,7 @@ module.exports = function (app) {
 
 	router.get('/budgets', ensureLoggedIn, tryRoute(controllers.getBudgets));
 	router.get('/transactions', ensureLoggedIn, tryRoute(controllers.getTransactions));
+	router.get('/transactions/export', ensureLoggedIn, tryRoute(controllers.exportTransactions));
 
 	const middlewares = [ensureLoggedIn, csrfSynchronisedProtection];
 	router.post('/budgets/create', middlewares, tryRoute(controllers.createBudget));
