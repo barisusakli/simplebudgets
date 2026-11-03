@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 import Header from '../components/Header';
 import fetchJson from '../fetchJson';
 import useAlert from '../hooks/useAlert';
 
 export default function Admin() {
+	const navigate = useNavigate();
 	const [users, setUsers] = useState([]);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const { setAlert } = useAlert();
@@ -16,8 +18,14 @@ export default function Admin() {
 		}).then((data) => {
 			setUsers(data.users);
 			setIsLoaded(true);
-		}).catch(err => setAlert(err.message, 'danger'));
-	}, [setAlert]);
+		}).catch(err => {
+			if (/not found/i.test(err.message)) {
+				navigate('/dashboard', { replace: true });
+			} else {
+				setAlert(err.message, 'danger');
+			}
+		});
+	}, [navigate, setAlert]);
 
 	return (
 		<section className="section d-flex flex-column gap-3 pb-5 mb-5 mb-lg-0">
