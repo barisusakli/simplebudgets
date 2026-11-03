@@ -7,6 +7,7 @@ import Landing from './pages/Landing';
 import ProtectedRoute from './pages/ProtectedRoute';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Admin from './pages/Admin';
 import Error from './pages/Error';
 import Reset from './pages/Reset';
 
@@ -29,8 +30,13 @@ export default function App() {
 							<Route path="reset" element={<Reset />} />
 							<Route path="reset/:code" element={<Reset />} />
 							<Route path="dashboard" element={
-								<ProtectedRoute user={user}>
+								<ProtectedRoute user={user} isLoading={isLoading}>
 									<Dashboard />
+								</ProtectedRoute>
+							} />
+							<Route path="admin" element={
+								<ProtectedRoute user={user} isLoading={isLoading}>
+									<Admin />
 								</ProtectedRoute>
 							} />
 							<Route path="*" element={<Error />} />

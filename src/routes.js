@@ -3,6 +3,7 @@
 const express = require('express');
 const { csrfSync } = require('csrf-sync');
 const controllers = require('./controllers');
+const adminControllers = require('./admin-controllers');
 
 const {
 	generateToken,
@@ -55,5 +56,7 @@ module.exports = function (app) {
 	router.post('/transactions/create', middlewares, tryRoute(controllers.createTransaction));
 	router.post('/transactions/delete', middlewares, tryRoute(controllers.deleteTransaction));
 	router.post('/transactions/edit', middlewares, tryRoute(controllers.editTransaction));
+	router.get('/admin', adminControllers.adminAuth, tryRoute(adminControllers.adminUsers));
+
 	app.use('/api', router);
 };

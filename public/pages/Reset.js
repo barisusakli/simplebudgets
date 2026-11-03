@@ -16,7 +16,7 @@ export default function Reset() {
 	const [success, setSuccess] = useState(false);
 
 	if (user) {
-		return <Navigate to="/dashboard" />;
+		return <Navigate to="/dashboard" replace />;
 	}
 
 	const noMatch = formData.password && formData.passwordConfirm && formData.password !== formData.passwordConfirm;
@@ -98,7 +98,7 @@ export default function Reset() {
 					type="password"
 					onChange={ev => formHandleChange(ev, setFormData)}
 					name="password"
-					value={formData.pasword}
+					value={formData.password}
 					minLength="8"
 					maxLength="64"
 					required

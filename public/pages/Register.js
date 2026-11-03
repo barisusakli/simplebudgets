@@ -7,7 +7,7 @@ import useUser from '../hooks/useUser';
 export default function Register() {
 	const { user } = useUser();
 	if (user) {
-		return <Navigate to="/dashboard" />;
+		return <Navigate to="/dashboard" replace />;
 	}
 	return (
 		<div className="pt-4 d-flex flex-column gap-4">

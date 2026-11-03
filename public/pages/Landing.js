@@ -5,8 +5,8 @@ import useUser from '../hooks/useUser';
 
 export default function Landing({ isLoading }) {
 	const { user } = useUser();
-	if (user) {
-		return <Navigate to="/dashboard" />;
+	if (user && !isLoading) {
+		return <Navigate to="/dashboard" replace />;
 	}
 
 	return (
