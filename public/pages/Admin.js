@@ -22,7 +22,7 @@ export default function Admin() {
 	return (
 		<section className="section d-flex flex-column gap-3 pb-5 mb-5 mb-lg-0">
 			<Header />
-			<div className="card shadow-sm">
+			<div className="card shadow-sm border-0">
 				<div className="card-body">
 					{ isLoaded &&
 					<table className="table table-hover align-middle">
