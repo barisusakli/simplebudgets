@@ -37,16 +37,16 @@ export default function Admin() {
 						<thead>
 							<tr>
 								<th>Email</th>
-								<th>Transactions</th>
-								<th>Budgets</th>
+								<th className="text-end">Transactions</th>
+								<th className="text-end">Budgets</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody className="text-tabular">
 							{users.map((user) => (
 								<tr key={user._id}>
 									<td>{user.email}</td>
-									<td>{user.numTransactions}</td>
-									<td>{user.numBudgets}</td>
+									<td className="text-end">{user.numTransactions}</td>
+									<td className="text-end">{user.numBudgets}</td>
 								</tr>
 							))}
 						</tbody>
