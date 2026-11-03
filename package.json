@@ -44,7 +44,7 @@
     "babel-loader": "^10.1.1",
     "css-loader": "^7.0.0",
     "esbuild": "0.28.2",
-    "eslint": "10.13.0",
+    "eslint": "10.14.0",
     "eslint-config-nodebb": "2.0.3",
     "globals": "^17.3.0",
     "html-loader": "^5.0.0",
